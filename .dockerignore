@@ -1,0 +1,16 @@
+**/*.md
+**/.gitkeep
+**/.vscode
+.dockerignore
+.editorconfig
+.eslintrc.js
+.git
+.gitconfig
+.github
+.gitignore
+.env
+dist
+Dockerfile*
+compose.yaml
+LICENSE
+node_modules

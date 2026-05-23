@@ -1,0 +1,143 @@
+import { Router } from 'express';
+import {
+  authenticateApiKey,
+  authenticateMasterKey,
+  createApiKey,
+  deleteApiKey,
+  listApiKeys,
+} from '../auth';
+import { downloadQueue } from '../lib/queue';
+import { getSettings, updateSettings } from '../settings';
+
+const router: Router = Router();
+
+router.post('/download', authenticateApiKey, (req, res) => {
+  const body = req.body;
+
+  if (!body.source?.type || !body.source?.url) {
+    res.status(400).json({ error: 'source.type and source.url are required' });
+    return;
+  }
+
+  if (!body.destination?.title || !body.destination?.mediaType) {
+    res.status(400).json({
+      error: 'destination.title and destination.mediaType are required',
+    });
+    return;
+  }
+
+  const job = downloadQueue.enqueue(body);
+
+  res.status(202).json({
+    id: job.id,
+    status: job.status,
+    progress: 0,
+    bytesDownloaded: 0,
+    totalBytes: 0,
+  });
+});
+
+router.get('/status/:downloadId', authenticateApiKey, (req, res) => {
+  const job = downloadQueue.getStatus(req.params.downloadId);
+
+  if (!job) {
+    res.status(404).json({ error: 'Download not found' });
+    return;
+  }
+
+  res.status(200).json(job);
+});
+
+router.post('/api-keys', authenticateMasterKey, (req, res) => {
+  const { label } = req.body;
+
+  if (!label) {
+    res.status(400).json({ error: 'label is required' });
+    return;
+  }
+
+  const apiKey = createApiKey(label);
+  res.status(201).json({ apiKey: apiKey.key });
+});
+
+router.get('/api-keys', authenticateMasterKey, (_req, res) => {
+  const keys = listApiKeys();
+  res.status(200).json({ keys });
+});
+
+router.delete('/api-keys/:key', authenticateMasterKey, (req, res) => {
+  const deleted = deleteApiKey(req.params.key);
+
+  if (!deleted) {
+    res.status(404).json({ error: 'API key not found' });
+    return;
+  }
+
+  res.status(204).send();
+});
+
+router.get('/queue', authenticateMasterKey, (_req, res) => {
+  const jobs = downloadQueue.listJobs();
+  res.status(200).json({ jobs, globalPaused: downloadQueue.isGlobalPaused() });
+});
+
+router.post('/queue/:id/pause', authenticateMasterKey, (req, res) => {
+  const ok = downloadQueue.pauseJob(req.params.id);
+  if (!ok) {
+    res.status(404).json({ error: 'Job not found' });
+    return;
+  }
+  res.status(200).json({ status: 'paused' });
+});
+
+router.post('/queue/:id/resume', authenticateMasterKey, (req, res) => {
+  const ok = downloadQueue.resumeJob(req.params.id);
+  if (!ok) {
+    res.status(404).json({ error: 'Job not found' });
+    return;
+  }
+  res.status(200).json({ status: 'resumed' });
+});
+
+router.delete('/queue/:id', authenticateMasterKey, (req, res) => {
+  const ok = downloadQueue.cancelJob(req.params.id);
+  if (!ok) {
+    res.status(404).json({ error: 'Job not found' });
+    return;
+  }
+  res.status(200).json({ status: 'cancelled' });
+});
+
+router.delete('/queue', authenticateMasterKey, (_req, res) => {
+  const count = downloadQueue.clearCompleted();
+  res.status(200).json({ cleared: count });
+});
+
+router.post('/queue/pause-all', authenticateMasterKey, (_req, res) => {
+  downloadQueue.setGlobalPaused(true);
+  res.status(200).json({ globalPaused: true });
+});
+
+router.post('/queue/resume-all', authenticateMasterKey, (_req, res) => {
+  downloadQueue.setGlobalPaused(false);
+  res.status(200).json({ globalPaused: false });
+});
+
+router.get('/settings', authenticateMasterKey, (_req, res) => {
+  res.status(200).json(getSettings());
+});
+
+router.put('/settings', authenticateMasterKey, (req, res) => {
+  const updated = updateSettings(req.body);
+  downloadQueue.triggerProcess();
+  res.status(200).json(updated);
+});
+
+router.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    activeDownloads: downloadQueue.getActiveCount(),
+  });
+});
+
+export default router;

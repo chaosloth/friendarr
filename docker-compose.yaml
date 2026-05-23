@@ -1,0 +1,13 @@
+services:
+  friendarr:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - 5056:5056
+    environment:
+      - PORT=5056
+    volumes:
+      - .:/app:rw,cached
+      - /app/node_modules
+      - /app/dist
