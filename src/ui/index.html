@@ -6,7 +6,7 @@
   <title>Friendarr</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -27,27 +27,51 @@
       background: linear-gradient(180deg, rgba(31,41,55,1) 0%, #131928 100%);
       border-right: 1px solid #374151;
     }
-    input[type='text'], input[type='password'], input[type='number'], select, textarea {
+    input[type='text'], input[type='password'], input[type='number'], select:not([multiple]), textarea {
+      appearance: none;
       background-color: #374151; border: 1px solid #6b7280; border-radius: 0.375rem;
       color: white; padding: 0.5rem 0.75rem; font-size: 0.875rem; line-height: 1.25rem;
       width: 100%; min-width: 0; flex: 1 1 0%;
       transition: border-color 150ms ease-in-out;
     }
-    input[type='text']:focus, input[type='password']:focus, input[type='number']:focus, select:focus, textarea:focus {
-      outline: none; border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1;
+    input[type='text']:focus, input[type='password']:focus, input[type='number']:focus, select:not([multiple]):focus, textarea:focus {
+      outline: none; border-color: #059669; box-shadow: 0 0 0 1px #059669;
+    }
+    select:not([multiple]) {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      color-scheme: dark;
+      display: block;
+      background-color: #374151;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+    select:not([multiple]) option {
+      background-color: #1f2937;
+      color: #fff;
+    }
+    .form-input-field {
+      display: flex;
+      max-width: 36rem;
+      border-radius: 0.375rem;
     }
     input[type='checkbox'] {
       height: 1.5rem; width: 1.5rem; border-radius: 0.375rem;
-      color: #4f46e5; transition: 150ms ease-in-out;
+      color: #059669; transition: 150ms ease-in-out;
     }
     .btn-primary {
       display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #6366f1; border-radius: 0.375rem; font-weight: 500;
+      border: 1px solid #059669; border-radius: 0.375rem; font-weight: 500;
       padding: 0.5rem 1rem; font-size: 0.875rem; line-height: 1.25rem;
-      color: white; background-color: rgba(79,70,229,0.8);
+      color: white; background-color: rgba(5,150,105,0.8);
       transition: 150ms ease-in-out; cursor: pointer; white-space: nowrap;
     }
-    .btn-primary:hover { background-color: #4f46e5; border-color: #6366f1; }
+    .btn-primary:hover { background-color: #047857; border-color: #059669; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-ghost {
       display: inline-flex; align-items: center; justify-content: center;
@@ -67,8 +91,35 @@
     .btn-danger:hover { background-color: #dc2626; border-color: #ef4444; }
     .btn-sm { padding: 0.25rem 0.625rem; font-size: 0.75rem; line-height: 1rem; }
     .btn-xs { padding: 0.125rem 0.5rem; font-size: 0.75rem; line-height: 1rem; }
+    .input-action {
+      position: relative; margin-left: -1px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid #6b7280;
+      background-color: rgba(5,150,105,0.8);
+      padding: 0 0.75rem; min-width: 2.5rem;
+      color: white;
+      border-radius: 0 0.375rem 0.375rem 0;
+      transition: all 150ms ease-in-out;
+      cursor: pointer;
+    }
+    .input-action:hover { background-color: #047857; }
+    .input-leading { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .btn-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid #4b5563; border-radius: 0.375rem;
+      padding: 0.375rem; color: #d1d5db; background-color: transparent;
+      transition: all 150ms ease-in-out; cursor: pointer;
+    }
+    .btn-icon:hover { color: white; border-color: #9ca3af; background-color: rgba(55,65,81,0.5); }
+    .btn-icon-danger {
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid #4b5563; border-radius: 0.375rem;
+      padding: 0.375rem; color: #f87171; background-color: transparent;
+      transition: all 150ms ease-in-out; cursor: pointer;
+    }
+    .btn-icon-danger:hover { color: #fca5a5; border-color: #ef4444; background-color: rgba(127,29,29,0.3); }
     .text-brand {
-      background: linear-gradient(to bottom right, #818cf8, #c084fc);
+      background: linear-gradient(to bottom right, #34d399, #4ade80);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
@@ -82,28 +133,33 @@
   <!-- Sidebar -->
   <aside class="sidebar fixed bottom-0 left-0 top-0 z-30 flex w-64 flex-col">
     <div class="flex flex-1 flex-col overflow-y-auto pb-4">
-      <div class="flex flex-shrink-0 items-center px-6 py-6">
-        <span class="text-2xl font-bold"><span class="text-brand">Friendarr</span></span>
+      <div class="flex flex-shrink-0 flex-col items-center py-6">
+        <svg class="w-16 h-16 mb-2" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="14" fill="#059669" fill-opacity="0.7" stroke="#059669" stroke-width="1.5"/>
+          <circle cx="40" cy="24" r="14" fill="#059669" fill-opacity="0.7" stroke="#059669" stroke-width="1.5"/>
+          <circle cx="32" cy="40" r="14" fill="#059669" fill-opacity="0.7" stroke="#059669" stroke-width="1.5"/>
+        </svg>
+        <span class="w-full px-4 text-3xl font-bold text-center" style="font-family:'Silkscreen',monospace"><span class="text-brand">Friendarr</span></span>
       </div>
-      <nav class="mt-4 flex-1 space-y-1 px-3" id="nav">
-        <a href="#" data-view="queue" class="nav-link group flex items-center rounded-md px-3 py-2.5 text-sm font-medium text-white transition duration-150 ease-in-out bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500">
-          <svg class="icon mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      <nav class="mt-8 flex-1 space-y-1 px-4" id="nav">
+        <a href="#" data-view="queue" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-green-700 to-emerald-700 hover:from-green-600 hover:to-emerald-600">
+          <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
           Queue
         </a>
-        <a href="#" data-view="settings" class="nav-link group flex items-center rounded-md px-3 py-2.5 text-sm font-medium text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white">
-          <svg class="icon mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <a href="#" data-view="settings" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white">
+          <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           Settings
         </a>
       </nav>
-      <div class="px-4 py-3 border-t border-gray-700 mt-auto" id="auth-status">
+      <div class="px-4 py-3 border-t border-gray-700 mt-auto text-center" id="auth-status">
         <div class="text-xs text-gray-500">Not authenticated</div>
       </div>
     </div>
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-1 ml-64 relative">
-    <header class="sticky top-0 z-10 flex items-center justify-between h-16 px-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur">
+  <main class="flex-1 ml-64 relative flex flex-col min-h-0">
+    <header class="sticky top-0 z-10 flex items-center justify-between h-16 px-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur flex-shrink-0">
       <h2 class="text-xl font-bold text-gray-100" id="page-title">Queue</h2>
       <button onclick="showAuthModal()" class="btn-ghost btn-sm" id="auth-btn">
         <svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
@@ -111,7 +167,7 @@
       </button>
     </header>
 
-    <div class="px-6 py-6 max-w-7xl" id="content"></div>
+    <div class="px-6 flex-1 min-h-0 overflow-auto" id="content"></div>
   </main>
 
 </div>
@@ -124,13 +180,114 @@
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-400 mb-1">Master API Key</label>
-        <input type="password" id="auth-key-input" placeholder="sk-..." class="w-full">
+        <div class="form-input-field"><input type="password" id="auth-key-input" placeholder="sk-..."></div>
       </div>
-      <div class="flex justify-end gap-2">
-        <button onclick="hideAuthModal()" class="btn-ghost">Cancel</button>
-        <button onclick="authenticate()" class="btn-primary">Connect</button>
+    </div>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="hideAuthModal()" class="btn-ghost">Cancel</button>
+      <button onclick="authenticate()" class="btn-primary">Connect</button>
+    </div>
+    <div id="auth-error" class="mt-3 text-sm text-red-500 hidden"></div>
+  </div>
+</div>
+
+<!-- Endpoint Modal -->
+<div id="ep-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
+  <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
+    <h3 class="text-brand text-xl font-bold mb-4">Add Source Endpoint</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">Label</label>
+        <div class="form-input-field"><input type="text" id="ep-label" placeholder="My Servers"></div>
       </div>
-      <div id="auth-error" class="text-sm text-red-500 hidden"></div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">Type</label>
+        <div class="form-input-field"><select id="ep-type">
+          <option value="plex">Plex</option>
+          <option value="emby">Emby</option>
+          <option value="jellyfin">Jellyfin</option>
+        </select></div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
+        <div class="form-input-field"><input type="text" id="ep-url" placeholder="https://server.example.com"></div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">Auth Token</label>
+        <div class="form-input-field">
+          <input type="password" id="ep-token" class="input-leading" placeholder="API key or token">
+          <button onclick="toggleTokenVisibility()" class="input-action" title="Toggle visibility">
+            <svg id="ep-token-eye" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
+      <button onclick="hideEndpointModal()" class="btn-ghost">Cancel</button>
+      <button onclick="saveEndpoint()" class="btn-primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
+  <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
+    <h3 class="text-brand text-xl font-bold mb-4">New API Key</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">Label</label>
+        <div class="form-input-field"><input type="text" id="new-key-label" placeholder="e.g. Seerr instance"></div>
+      </div>
+      <div id="key-result" class="hidden rounded-md border border-emerald-500 bg-gray-800 px-3 py-2">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-emerald-300 font-mono truncate flex-1" id="key-result-text"></span>
+          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="Copy to clipboard">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Copy this key now. It will be masked in the API keys list for security.</p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
+      <button onclick="hideKeyModal()" class="btn-ghost">Close</button>
+      <button onclick="createApiKey()" class="btn-primary">Create Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- Webhook Modal -->
+<div id="webhook-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
+  <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
+    <h3 class="text-brand text-xl font-bold mb-4">Add Webhook</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
+        <div class="form-input-field"><input type="text" id="wh-url" placeholder="https://hooks.example.com/endpoint"></div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">Secret (optional)</label>
+        <div class="form-input-field"><input type="password" id="wh-secret" placeholder="Shared secret for HMAC signature"></div>
+        <p class="mt-1 text-xs text-gray-500">If set, webhook payloads include an X-Friendarr-Signature header for recipient verification.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-2">Events</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.requested" class="wh-event-cb w-4 h-4 rounded text-green-700"> Requested</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.started" class="wh-event-cb w-4 h-4 rounded text-green-700"> Started</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.complete" class="wh-event-cb w-4 h-4 rounded text-green-700"> Complete</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.failed" class="wh-event-cb w-4 h-4 rounded text-green-700"> Failed</label>
+        </div>
+      </div>
+      <div>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" id="wh-enabled" checked class="w-5 h-5 rounded text-green-700">
+          <span class="text-sm text-white">Enabled</span>
+        </label>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
+      <button onclick="hideWebhookModal()" class="btn-ghost">Cancel</button>
+      <button onclick="saveWebhook()" class="btn-primary">Save</button>
     </div>
   </div>
 </div>
@@ -141,9 +298,15 @@ let apiKey = localStorage.getItem('friendarr_key') || '';
 let currentView = 'queue';
 let queueTimer = null;
 let settingsData = null;
+let activeSettingsTab = 'endpoints';
 
 // === Init ===
 document.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('friendarr_key')) {
+    setTimeout(showWizard, 500);
+    setupNav();
+    return;
+  }
   if (apiKey) { updateAuthUI(true); }
   setupNav();
   showView(currentView);
@@ -158,8 +321,8 @@ function setupNav() {
       showView(view);
       document.querySelectorAll('.nav-link').forEach(l => {
         l.className = l.dataset.view === view
-          ? 'nav-link group flex items-center rounded-md px-3 py-2.5 text-sm font-medium text-white transition duration-150 ease-in-out bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500'
-          : 'nav-link group flex items-center rounded-md px-3 py-2.5 text-sm font-medium text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white';
+          ? 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-green-700 to-emerald-700 hover:from-green-600 hover:to-emerald-600'
+          : 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white';
       });
     });
   });
@@ -174,8 +337,8 @@ function showView(view) {
   document.getElementById('nav').querySelectorAll('.nav-link').forEach(l => {
     const isActive = l.dataset.view === view;
     l.className = isActive
-      ? 'nav-link group flex items-center rounded-md px-3 py-2.5 text-sm font-medium text-white transition duration-150 ease-in-out bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500'
-      : 'nav-link group flex items-center rounded-md px-3 py-2.5 text-sm font-medium text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white';
+      ? 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-green-700 to-emerald-700 hover:from-green-600 hover:to-emerald-600'
+      : 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white';
   });
 }
 
@@ -195,7 +358,7 @@ async function authenticate() {
   const key = document.getElementById('auth-key-input').value.trim();
   if (!key) return;
   try {
-    const r = await fetch('/api/v1/settings', { headers: { Authorization: `Bearer ${key}` } });
+    const r = await fetch('/api/v1/verify', { headers: { Authorization: `Bearer ${key}` } });
     if (!r.ok) throw new Error('Invalid key');
     apiKey = key;
     localStorage.setItem('friendarr_key', key);
@@ -246,7 +409,7 @@ function stopQueuePolling() {
 }
 
 function formatBytes(bytes) {
-  if (!bytes || bytes === 0) return '—';
+  if (!bytes || bytes === 0) return '&mdash;';
   const units = ['B','KB','MB','GB','TB'];
   let i = 0;
   let b = bytes;
@@ -255,14 +418,14 @@ function formatBytes(bytes) {
 }
 
 function formatDate(d) {
-  if (!d) return '—';
+  if (!d) return '&mdash;';
   return new Date(d).toLocaleString();
 }
 
 function statusBadge(status) {
   const colors = {
     queued: 'bg-gray-600 text-gray-200',
-    downloading: 'bg-indigo-500/80 text-indigo-100 border border-indigo-500',
+    downloading: 'bg-green-600/80 text-green-100 border border-green-600',
     complete: 'bg-green-500/80 text-green-100 border border-green-500',
     failed: 'bg-red-600/80 text-red-100 border border-red-500',
   };
@@ -284,12 +447,12 @@ async function renderQueue() {
     const counts = { queued: 0, downloading: 0, complete: 0, failed: 0 };
     jobs.forEach(j => { if (counts[j.status] !== undefined) counts[j.status]++; });
 
-    let html = '';
+    let html = '<div class="flex flex-col h-full">';
 
     // Stats bar
-    html += `<div class="flex flex-wrap items-center gap-3 mb-4">`;
+    html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
     html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued} queued</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-indigo-500/80 text-indigo-100 border border-indigo-500">${counts.downloading} downloading</span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading} downloading</span>`;
     html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete} complete</span>`;
     html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed} failed</span>`;
     html += `<span class="flex-1"></span>`;
@@ -307,9 +470,9 @@ async function renderQueue() {
 
     // Table
     if (jobs.length === 0) {
-      html += `<div class="text-gray-400 text-sm py-8 text-center">No downloads in queue.</div>`;
+      html += `<div class="text-gray-400 text-sm py-8 text-center flex-1">No downloads in queue.</div>`;
     } else {
-      html += `<div class="overflow-hidden rounded-lg ring-1 ring-gray-700"><table class="min-w-full"><thead>`;
+      html += `<div class="flex-1 min-h-0 overflow-auto rounded-lg ring-1 ring-gray-700"><table class="min-w-full"><thead>`;
       html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Title</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Size</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Created</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
       for (const job of jobs) {
         const progress = job.totalBytes ? Math.round((job.bytesDownloaded / job.totalBytes) * 100) : 0;
@@ -317,7 +480,7 @@ async function renderQueue() {
         html += `<td class="px-4 py-3 text-sm text-white">${esc(job.request.destination.title)}</td>`;
         html += `<td class="px-4 py-3 text-sm text-gray-300">${esc(job.request.source.type)}</td>`;
         html += `<td class="px-4 py-3">${statusBadge(job.status)}${job.status === 'failed' ? `<div class="text-xs text-red-400 mt-1">${esc(job.error || '')}</div>` : ''}</td>`;
-        html += `<td class="px-4 py-3 text-sm text-gray-300">${job.totalBytes ? `${formatBytes(job.bytesDownloaded)} / ${formatBytes(job.totalBytes)}` : '—'}${job.status === 'downloading' && job.totalBytes ? `<div class="mt-1 w-full bg-gray-700 rounded-full h-1.5"><div class="bg-indigo-500 h-1.5 rounded-full" style="width:${progress}%"></div></div>` : ''}</td>`;
+        html += `<td class="px-4 py-3 text-sm text-gray-300">${job.totalBytes ? `${formatBytes(job.bytesDownloaded)} / ${formatBytes(job.totalBytes)}` : '&mdash;'}${job.status === 'downloading' && job.totalBytes ? `<div class="mt-1 w-full bg-gray-700 rounded-full h-1.5"><div class="bg-green-600 h-1.5 rounded-full" style="width:${progress}%"></div></div>` : ''}</td>`;
         html += `<td class="px-4 py-3 text-sm text-gray-400">${formatDate(job.createdAt)}</td>`;
         html += `<td class="px-4 py-3">`;
         if (job.status === 'queued' || job.status === 'downloading') {
@@ -360,36 +523,85 @@ async function renderSettings() {
 
   let html = '';
 
-  // Limits section
-  html += renderLimitsSection();
-  // API Keys section
-  html += '<div class="mt-10">';
-  html += await renderApiKeysSection();
-  html += '</div>';
-  // Source Endpoints section
-  html += '<div class="mt-10">';
-  html += renderSourceEndpointsSection();
-  html += '</div>';
-  // Schedules section
-  html += '<div class="mt-10">';
-  html += renderSchedulesSection();
-  html += '</div>';
+  // Tab bar
+  const tabs = [
+    { id: 'endpoints', label: 'Friend Libraries' },
+    { id: 'keys', label: 'API Keys' },
+    { id: 'limits', label: 'Limits' },
+    { id: 'paths', label: 'Paths' },
+    { id: 'schedules', label: 'Schedules' },
+    { id: 'webhooks', label: 'Webhooks' },
+    { id: 'logs', label: 'Logs' },
+  ];
+  html += `<div class="overflow-x-scroll border-b border-gray-600"><nav class="flex">`;
+  for (const tab of tabs) {
+    const active = tab.id === activeSettingsTab;
+    html += `<button onclick="switchSettingsTab('${tab.id}')" class="px-1 py-4 ml-8 text-sm font-medium leading-5 transition duration-300 border-b-2 whitespace-nowrap first:ml-0 ${active ? 'text-green-600 border-green-700' : 'text-gray-500 border-transparent hover:text-gray-300 hover:border-gray-400'}">${tab.label}</button>`;
+  }
+  html += `</nav></div>`;
+
+  // Tab content
+  html += `<div id="settings-tab-content" class="max-w-6xl">`;
+  if (activeSettingsTab === 'limits') {
+    html += renderLimitsSection();
+  } else if (activeSettingsTab === 'paths') {
+    html += renderPathsSection();
+  } else if (activeSettingsTab === 'endpoints') {
+    html += renderSourceEndpointsSection();
+  } else if (activeSettingsTab === 'keys') {
+    html += await renderApiKeysSection();
+  } else if (activeSettingsTab === 'schedules') {
+    html += renderSchedulesSection();
+  } else if (activeSettingsTab === 'webhooks') {
+    html += renderWebhooksSection();
+  } else if (activeSettingsTab === 'logs') {
+    html += renderLogsSection();
+  }
+  html += `</div>`;
 
   document.getElementById('content').innerHTML = html;
+
+  if (activeSettingsTab === 'logs') {
+    await fetchLogs();
+  }
+}
+
+function switchSettingsTab(tabId) {
+  activeSettingsTab = tabId;
+  renderSettings();
 }
 
 function renderLimitsSection() {
-  return `<div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
-    <h3 class="text-brand text-lg font-bold mb-2">Limits</h3>
-    <p class="text-sm text-gray-400 mb-4">Control download concurrency and bandwidth.</p>
-    <div class="grid grid-cols-2 gap-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Max Concurrent Downloads</label>
-        <input type="number" id="s-max-concurrent" value="${settingsData.maxConcurrentDownloads}" min="1" max="50" class="w-24" onchange="saveLimits()">
+  return `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Limits</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Control download concurrency and bandwidth.</p>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Max Concurrent Downloads</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <input type="number" id="s-max-concurrent" value="${settingsData.maxConcurrentDownloads}" min="1" max="50" class="w-24" onchange="saveLimits()">
+        </div>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Max Bandwidth (bytes/sec, 0 = unlimited)</label>
-        <input type="number" id="s-max-bandwidth" value="${settingsData.maxBandwidth}" min="0" class="w-48" onchange="saveLimits()">
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Max Bandwidth</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <input type="number" id="s-max-bandwidth" value="${settingsData.maxBandwidth}" min="0" class="w-48" onchange="saveLimits()">
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Bytes per second. 0 = unlimited.</p>
+      </div>
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-1">Test Mode</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" id="s-test-mode" ${settingsData.testMode ? 'checked' : ''} onchange="saveTestMode()" class="w-5 h-5 rounded text-green-700">
+          <div>
+            <span class="text-sm text-white">Enabled</span>
+            <p class="text-xs text-gray-500">Accept download requests but skip actual file fetching. Jobs complete instantly with a fake output path.</p>
+          </div>
+        </label>
       </div>
     </div>
   </div>`;
@@ -407,46 +619,145 @@ async function saveLimits() {
   } catch {}
 }
 
+async function saveTestMode() {
+  const testMode = document.getElementById('s-test-mode').checked;
+  try {
+    await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: authHeaders(),
+      body: JSON.stringify({ testMode }),
+    });
+  } catch {}
+}
+
+function renderPathsSection() {
+  return `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Paths</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Control where files are downloaded during transfer and where completed media is placed.</p>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Incomplete Downloads</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <input type="text" id="s-incomplete-path" value="${esc(settingsData.incompletePath)}" onchange="savePaths()">
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Directory where files are temporarily stored during download. Cleared on completion.</p>
+      </div>
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Completed Media</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <input type="text" id="s-completed-path" value="${esc(settingsData.completedPath)}" onchange="savePaths()">
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Root directory for finished media. Movies go into <code class="text-gray-500">movies/</code>, TV into <code class="text-gray-500">tv/</code> beneath this path.</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function savePaths() {
+  const incompletePath = document.getElementById('s-incomplete-path').value.trim() || '/downloads/incomplete';
+  const completedPath = document.getElementById('s-completed-path').value.trim() || '/downloads/complete';
+  try {
+    await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: authHeaders(),
+      body: JSON.stringify({ incompletePath, completedPath }),
+    });
+  } catch {}
+}
+
 async function renderApiKeysSection() {
-  let inner = `<div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
-    <h3 class="text-brand text-lg font-bold mb-2">API Keys</h3>
-    <p class="text-sm text-gray-400 mb-4">Manage API keys for external services to submit downloads.</p>`;
+  let inner = `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">API Keys</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">API keys let external services (like Seerr) authenticate and submit download jobs to Friendarr.</p>`;
   try {
     const r = await fetch('/api/v1/api-keys', { headers: authHeaders() });
     const data = await r.json();
     const keys = data.keys || [];
     if (keys.length > 0) {
-      inner += `<div class="mb-4 space-y-2">`;
+      inner += `<div class="mt-6 space-y-3">`;
       for (const k of keys) {
-        inner += `<div class="flex items-center justify-between rounded-md bg-gray-700 px-4 py-2"><span class="text-sm text-white font-mono">${esc(k.key)}</span><span class="text-xs text-gray-400">${esc(k.label)}</span><button onclick="deleteApiKey('${esc(k.key)}')" class="btn-danger btn-xs">Revoke</button></div>`;
+        const shortPrefix = k.key.slice(0, 10);
+        inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
+          <div class="flex-1 min-w-0 mr-4">
+            <span class="text-sm text-white font-mono truncate block" id="kd-${shortPrefix}" style="filter:blur(4px)">${esc(k.key)}</span>
+            <div class="mt-0.5 text-xs text-gray-400">${esc(k.label)}</div>
+          </div>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button onclick="toggleKeyVisibility('${shortPrefix}')" class="btn-icon" title="Show key">
+              <svg id="ke-${shortPrefix}" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+            </button>
+            <button onclick="copyToClipboard('${esc(k.key)}')" class="btn-icon" title="Copy to clipboard">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+            <button onclick="deleteApiKey('${esc(k.key)}')" class="btn-icon-danger" title="Revoke">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>`;
       }
       inner += `</div>`;
+    } else {
+      inner += `<div class="mt-6 text-sm text-gray-500">No API keys configured. Use the master API key to authenticate.</div>`;
     }
-  } catch {}
-  inner += `<div class="flex gap-2 items-end">
-    <div><label class="block text-xs text-gray-400 mb-1">Label</label><input type="text" id="new-key-label" placeholder="e.g. Seerr instance" class="w-48"></div>
-    <button onclick="createApiKey()" class="btn-primary">Create Key</button>
-  </div>`;
-  inner += `<div id="api-key-result" class="mt-3 hidden rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200"></div>`;
+  } catch (e) {
+    console.error('Failed to load API keys', e);
+  }
+  inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary">New API Key</button></div>`;
   inner += `</div>`;
   return inner;
 }
 
+function showKeyModal() {
+  const modal = document.getElementById('key-modal');
+  document.getElementById('new-key-label').value = '';
+  document.getElementById('key-result').classList.add('hidden');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function hideKeyModal() {
+  const modal = document.getElementById('key-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+let generatedApiKey = '';
+
 async function createApiKey() {
-  const label = document.getElementById('new-key-label').value.trim();
+  const input = document.getElementById('new-key-label');
+  if (!input) return;
+  const label = input.value.trim();
   if (!label) return;
+  const resultDiv = document.getElementById('key-result');
+  const resultText = document.getElementById('key-result-text');
   try {
     const r = await fetch('/api/v1/api-keys', {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({ label }),
     });
+    if (!r.ok) throw new Error('Request failed');
     const data = await r.json();
-    const el = document.getElementById('api-key-result');
-    el.classList.remove('hidden');
-    el.textContent = `New key: ${data.apiKey} — copy it now, it won't be shown again.`;
-    setTimeout(() => renderSettings(), 500);
-  } catch {}
+    generatedApiKey = data.apiKey;
+    resultDiv.classList.remove('hidden');
+    resultDiv.className = 'rounded-md border border-emerald-500 bg-gray-800 px-3 py-2';
+    resultText.textContent = data.apiKey;
+    resultText.className = 'text-sm text-emerald-300 font-mono truncate flex-1';
+    input.value = '';
+    setTimeout(() => { hideKeyModal(); renderSettings(); }, 5000);
+  } catch (e) {
+    generatedApiKey = '';
+    resultDiv.classList.remove('hidden');
+    resultDiv.className = 'rounded-md border border-red-500 bg-red-500/20 px-3 py-2';
+    resultText.textContent = `Error: ${e.message || 'Failed to create key'}`;
+    resultText.className = 'text-sm text-red-200';
+  }
+}
+
+function copyGeneratedKey() {
+  if (generatedApiKey) copyToClipboard(generatedApiKey);
 }
 
 async function deleteApiKey(key) {
@@ -454,39 +765,122 @@ async function deleteApiKey(key) {
   renderSettings();
 }
 
+function toggleKeyVisibility(prefix) {
+  const display = document.getElementById('kd-' + prefix);
+  const eye = document.getElementById('ke-' + prefix);
+  if (!display || !eye) return;
+  const isBlurred = display.style.filter === 'blur(4px)';
+  display.style.filter = isBlurred ? '' : 'blur(4px)';
+  eye.innerHTML = isBlurred
+    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
+    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+}
+
+async function copyToClipboard(text) {
+  try { await navigator.clipboard.writeText(text); } catch {}
+}
+
 function renderSourceEndpointsSection() {
   const eps = settingsData.sourceEndpoints || [];
-  let inner = `<div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
-    <h3 class="text-brand text-lg font-bold mb-2">Source Endpoints</h3>
-    <p class="text-sm text-gray-400 mb-4">Pre-configured source servers for quick download submission.</p>`;
+  const typeLabels = { seerr: 'Seerr', plex: 'Plex', emby: 'Emby', jellyfin: 'Jellyfin' };
+  let inner = `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Friend Libraries</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">The remote servers Friendarr downloads from — your friends' Seerr, Plex, Emby, or Jellyfin instances.</p>`;
   if (eps.length > 0) {
-    inner += `<div class="mb-4 space-y-2">`;
+    inner += `<ul class="space-y-4 mb-4">`;
     for (const ep of eps) {
-      inner += `<div class="flex items-center justify-between rounded-md bg-gray-700 px-4 py-2"><div><span class="text-sm text-white">${esc(ep.label)}</span><span class="ml-2 text-xs text-gray-400">${esc(ep.type)} — ${esc(ep.url)}</span></div><button onclick="deleteEndpoint('${ep.id}')" class="btn-danger btn-xs">Remove</button></div>`;
+      inner += `<li class="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-medium text-gray-200">${esc(ep.label)}</span>
+              <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-gray-600 text-gray-200">${typeLabels[ep.type] || ep.type}</span>
+            </div>
+            <div class="mt-1 text-sm text-gray-400">${esc(ep.url)}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="showEndpointModal('${ep.id}')" class="btn-icon" title="Edit">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
+            <button onclick="deleteEndpoint('${ep.id}')" class="btn-icon-danger" title="Remove">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+      </li>`;
     }
-    inner += `</div>`;
+    inner += `</ul>`;
   }
-  inner += `<div class="grid grid-cols-2 gap-3 mb-3">
-    <div><label class="block text-xs text-gray-400 mb-1">Label</label><input type="text" id="ep-label" placeholder="My Server" class="w-full"></div>
-    <div><label class="block text-xs text-gray-400 mb-1">Type</label><select id="ep-type" class="w-full"><option value="seerr">Seerr</option><option value="plex">Plex</option><option value="emby">Emby</option><option value="jellyfin">Jellyfin</option></select></div>
-    <div><label class="block text-xs text-gray-400 mb-1">URL</label><input type="text" id="ep-url" placeholder="https://server.example.com" class="w-full"></div>
-    <div><label class="block text-xs text-gray-400 mb-1">Auth Token</label><input type="text" id="ep-token" placeholder="API key or token" class="w-full"></div>
-  </div>
-  <button onclick="addEndpoint()" class="btn-primary">Add Endpoint</button>`;
+  inner += `<div class="mt-6"><button onclick="showEndpointModal()" class="btn-primary">Add Endpoint</button></div>`;
   inner += `</div>`;
   return inner;
 }
 
-async function addEndpoint() {
+function showEndpointModal(editId) {
+  const modal = document.getElementById('ep-modal');
+  const title = modal.querySelector('h3');
+  const editingId = editId || '';
+  modal.dataset.editId = editingId;
+
+  if (editingId) {
+    title.textContent = 'Edit Source Endpoint';
+    const eps = settingsData.sourceEndpoints || [];
+    const ep = eps.find(e => e.id === editingId);
+    if (ep) {
+      document.getElementById('ep-label').value = ep.label;
+      document.getElementById('ep-type').value = ep.type;
+      document.getElementById('ep-url').value = ep.url;
+      document.getElementById('ep-token').value = ep.authToken;
+    }
+  } else {
+    title.textContent = 'Add Source Endpoint';
+    document.getElementById('ep-label').value = '';
+    document.getElementById('ep-type').value = 'plex';
+    document.getElementById('ep-url').value = '';
+    document.getElementById('ep-token').value = '';
+  }
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function hideEndpointModal() {
+  const modal = document.getElementById('ep-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function saveEndpoint() {
+  const modal = document.getElementById('ep-modal');
+  const editId = modal.dataset.editId;
   const label = document.getElementById('ep-label').value.trim();
   const type = document.getElementById('ep-type').value;
   const url = document.getElementById('ep-url').value.trim();
   const authToken = document.getElementById('ep-token').value.trim();
   if (!label || !url) return;
-  const eps = [...(settingsData.sourceEndpoints || [])];
-  eps.push({ id: crypto.randomUUID(), type, url, authToken, label });
+
+  let eps = [...(settingsData.sourceEndpoints || [])];
+  const entry = { id: editId || crypto.randomUUID(), type, url, authToken, label };
+
+  if (editId) {
+    eps = eps.map(e => e.id === editId ? entry : e);
+  } else {
+    eps.push(entry);
+  }
+
   settingsData = await saveSettings({ sourceEndpoints: eps });
+  hideEndpointModal();
   renderSettings();
+}
+
+function toggleTokenVisibility() {
+  const input = document.getElementById('ep-token');
+  const eye = document.getElementById('ep-token-eye');
+  const isPassword = input.type === 'password';
+  input.type = isPassword ? 'text' : 'password';
+  eye.innerHTML = isPassword
+    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
+    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
 }
 
 async function deleteEndpoint(id) {
@@ -498,22 +892,24 @@ async function deleteEndpoint(id) {
 function renderSchedulesSection() {
   const schedules = settingsData.schedules || [];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  let inner = `<div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
-    <h3 class="text-brand text-lg font-bold mb-2">Schedules</h3>
-    <p class="text-sm text-gray-400 mb-4">Restrict downloads to specific time windows. If no schedules are set, downloads run at any time.</p>`;
+  let inner = `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Schedules</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Restrict downloads to specific time windows. If no schedules are set, downloads run at any time.</p>`;
   if (schedules.length > 0) {
-    inner += `<div class="mb-4 space-y-3">`;
+    inner += `<div class="mt-6 space-y-3">`;
     schedules.forEach((s, i) => {
       const dayStr = s.days.map(d => dayNames[d]).join(', ');
-      const winStr = s.windows.map(w => `${w.start} – ${w.end}`).join(', ');
-      inner += `<div class="flex items-center justify-between rounded-md bg-gray-700 px-4 py-2"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs">Remove</button></div>`;
+      const winStr = s.windows.map(w => `${w.start} &ndash; ${w.end}`).join(', ');
+      inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs">Remove</button></div>`;
     });
     inner += `</div>`;
   }
-  inner += `<div class="border-t border-gray-700 pt-4 mt-4">
-    <p class="text-sm font-medium text-gray-300 mb-2">Add Schedule</p>
-    <div class="flex flex-wrap gap-2 mb-3" id="sched-days">
-      ${dayNames.map((d, i) => `<label class="flex items-center gap-1 text-xs text-gray-400"><input type="checkbox" value="${i}" class="sched-day w-4 h-4">${d}</label>`).join('')}
+  inner += `<div class="border-t border-gray-700 pt-6 mt-6">
+    <div class="mb-3">
+      <p class="text-sm font-medium text-gray-300 mb-2">Add Schedule</p>
+      <div class="flex flex-wrap gap-2" id="sched-days">
+        ${dayNames.map((d, i) => `<label class="flex items-center gap-1 text-xs text-gray-400"><input type="checkbox" value="${i}" class="sched-day w-4 h-4">${d}</label>`).join('')}
+      </div>
     </div>
     <div class="flex gap-3 items-end mb-3">
       <div><label class="block text-xs text-gray-400 mb-1">Start</label><input type="text" id="sched-start" placeholder="HH:MM" class="w-24"></div>
@@ -542,7 +938,7 @@ function addScheduleWindow() {
 function renderPendingWindows() {
   const el = document.getElementById('sched-windows');
   el.innerHTML = pendingWindows.map((w, i) =>
-    `<div class="flex items-center justify-between rounded bg-gray-700 px-3 py-1 text-xs text-white">${w.start} – ${w.end} <button onclick="removePendingWindow(${i})" class="text-red-400 hover:text-red-300 ml-2">&times;</button></div>`
+    `<div class="flex items-center justify-between rounded bg-gray-700 px-3 py-1 text-xs text-white">${w.start} &ndash; ${w.end} <button onclick="removePendingWindow(${i})" class="text-red-400 hover:text-red-300 ml-2">&times;</button></div>`
   ).join('');
 }
 
@@ -580,6 +976,394 @@ function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
+// === Logs ===
+let logsLevel = '';
+let logsAuto = false;
+let logsTimer = null;
+
+function renderLogsSection() {
+  return `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Logs</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Recent server log entries for diagnosis and monitoring.</p>
+    <div class="mt-4 flex items-center gap-2 flex-wrap">
+      ${['','info','warn','error','debug'].map(l => {
+        const label = l || 'All';
+        const active = logsLevel === l;
+        const colors = { info: 'text-green-400 border-green-700', warn: 'text-yellow-400 border-yellow-700', error: 'text-red-400 border-red-700', debug: 'text-blue-400 border-blue-700' };
+        const cls = !l ? (active ? 'text-white border-gray-400' : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500') : (active ? colors[l] : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500');
+        return `<button onclick="setLogsLevel('${l}')" class="px-2 py-1 text-xs font-medium border-b-2 transition ${cls}">${label}</button>`;
+      }).join('')}
+      <span class="flex-1"></span>
+      <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+        <input type="checkbox" id="logs-auto" ${logsAuto ? 'checked' : ''} onchange="toggleLogsAuto()" class="w-4 h-4 rounded text-green-700">
+        Auto-refresh
+      </label>
+    </div>
+    <div id="logs-container" class="mt-4 rounded-lg border border-gray-700 bg-gray-900 overflow-hidden">
+      <div class="text-center py-12 text-gray-500 text-sm">Loading...</div>
+    </div>
+  </div>`;
+}
+
+function setLogsLevel(level) {
+  logsLevel = level;
+  renderSettings();
+}
+
+function toggleLogsAuto() {
+  logsAuto = !logsAuto;
+  if (logsAuto) {
+    logsTimer = setInterval(fetchLogs, 3000);
+  } else {
+    if (logsTimer) { clearInterval(logsTimer); logsTimer = null; }
+  }
+}
+
+async function fetchLogs() {
+  const container = document.getElementById('logs-container');
+  if (!container) return;
+  try {
+    const params = new URLSearchParams();
+    if (logsLevel) params.set('level', logsLevel);
+    params.set('limit', '200');
+    const r = await fetch('/api/v1/logs?' + params, { headers: authHeaders() });
+    if (!r.ok) { container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">Failed to load logs.</div>'; return; }
+    const data = await r.json();
+    const logs = data.logs || [];
+    if (logs.length === 0) {
+      container.innerHTML = '<div class="text-center py-12 text-gray-500 text-sm">No log entries.</div>';
+      return;
+    }
+    const levelColors = { info: 'text-green-400 bg-green-500/10', warn: 'text-yellow-400 bg-yellow-500/10', error: 'text-red-400 bg-red-500/10', debug: 'text-blue-400 bg-blue-500/10' };
+    const levelLabels = { info: 'INFO', warn: 'WARN', error: 'ERROR', debug: 'DEBG' };
+    container.innerHTML = `<div class="overflow-auto max-h-96 font-mono text-xs">${logs.map(e => {
+      const lvl = e.level || 'info';
+      return `<div class="flex items-start gap-3 px-4 py-1.5 border-b border-gray-800 hover:bg-gray-800/50">
+        <span class="text-gray-600 whitespace-nowrap shrink-0">${e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : ''}</span>
+        <span class="inline-flex items-center rounded px-1.5 py-px text-xs font-semibold shrink-0 ${levelColors[lvl] || ''}">${levelLabels[lvl] || lvl}</span>
+        <span class="text-gray-500 shrink-0">[${esc(e.label || '')}]</span>
+        <span class="text-gray-200 break-all">${esc(e.message)}</span>
+      </div>`;
+    }).join('')}</div>`;
+  } catch {
+    container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">Failed to load logs.</div>';
+  }
+}
+
+// === Webhooks ===
+function renderWebhooksSection() {
+  const hooks = settingsData.webhooks || [];
+  let inner = `<div class="mt-10 text-white">
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Webhooks</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Send HTTP POST notifications to external services on download activity.</p>`;
+
+  if (hooks.length > 0) {
+    inner += `<ul class="mt-6 space-y-3">`;
+    for (const wh of hooks) {
+      const eventLabels = {
+        'download.requested': 'Requested',
+        'download.started': 'Started',
+        'download.complete': 'Complete',
+        'download.failed': 'Failed',
+      };
+      const events = (wh.events || []).map(e => eventLabels[e] || e);
+      inner += `<li class="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0 mr-4">
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-white font-mono truncate">${esc(wh.url)}</span>
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${wh.enabled ? 'bg-green-500/20 text-green-400' : 'bg-gray-600 text-gray-400'}">${wh.enabled ? 'Active' : 'Disabled'}</span>
+            </div>
+            <div class="mt-1 flex items-center gap-1 flex-wrap">
+              ${events.map(e => `<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-gray-700 text-gray-300">${e}</span>`).join('')}
+              ${wh.secret ? '<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400">Secret set</span>' : ''}
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick="testWebhookUrl('${esc(wh.id)}')" class="btn-icon" title="Test">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </button>
+            <button onclick="editWebhook('${esc(wh.id)}')" class="btn-icon" title="Edit">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
+            <button onclick="deleteWebhook('${esc(wh.id)}')" class="btn-icon-danger" title="Delete">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+      </li>`;
+    }
+    inner += `</ul>`;
+  }
+
+  inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary">Add Webhook</button></div>`;
+  inner += `</div>`;
+  return inner;
+}
+
+function showWebhookModal(editId) {
+  const modal = document.getElementById('webhook-modal');
+  const title = modal.querySelector('h3');
+  const editingId = editId || '';
+  modal.dataset.editId = editingId;
+
+  if (editingId) {
+    title.textContent = 'Edit Webhook';
+    const hooks = settingsData.webhooks || [];
+    const wh = hooks.find(h => h.id === editingId);
+    if (wh) {
+      document.getElementById('wh-url').value = wh.url;
+      document.getElementById('wh-secret').value = wh.secret || '';
+      document.getElementById('wh-enabled').checked = wh.enabled;
+      ['download.requested','download.started','download.complete','download.failed'].forEach(e => {
+        const cb = document.getElementById('wh-event-' + e);
+        if (cb) cb.checked = (wh.events || []).includes(e);
+      });
+    }
+  } else {
+    title.textContent = 'Add Webhook';
+    document.getElementById('wh-url').value = '';
+    document.getElementById('wh-secret').value = '';
+    document.getElementById('wh-enabled').checked = true;
+    document.querySelectorAll('.wh-event-cb').forEach(cb => { cb.checked = false; });
+  }
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function hideWebhookModal() {
+  const modal = document.getElementById('webhook-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function saveWebhook() {
+  const modal = document.getElementById('webhook-modal');
+  const editId = modal.dataset.editId;
+  const url = document.getElementById('wh-url').value.trim();
+  if (!url) return;
+  const secret = document.getElementById('wh-secret').value.trim();
+  const enabled = document.getElementById('wh-enabled').checked;
+  const events = ['download.requested','download.started','download.complete','download.failed'].filter(e => {
+    const cb = document.getElementById('wh-event-' + e);
+    return cb && cb.checked;
+  });
+
+  let hooks = [...(settingsData.webhooks || [])];
+  const entry = { id: editId || crypto.randomUUID(), url, secret, enabled, events };
+
+  if (editId) {
+    hooks = hooks.map(h => h.id === editId ? entry : h);
+  } else {
+    hooks.push(entry);
+  }
+
+  settingsData = await saveSettings({ webhooks: hooks });
+  hideWebhookModal();
+  renderSettings();
+}
+
+function editWebhook(id) { showWebhookModal(id); }
+
+async function deleteWebhook(id) {
+  const hooks = (settingsData.webhooks || []).filter(h => h.id !== id);
+  settingsData = await saveSettings({ webhooks: hooks });
+  renderSettings();
+}
+
+async function testWebhookUrl(id) {
+  const hooks = settingsData.webhooks || [];
+  const wh = hooks.find(h => h.id === id);
+  if (!wh) return;
+  try {
+    const r = await fetch('/api/v1/webhooks/test', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ url: wh.url, secret: wh.secret || undefined }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      alert('Test ping sent successfully.');
+    } else {
+      alert('Test failed: ' + (data.error || 'Unknown error'));
+    }
+    } catch (e) {
+      alert('Test failed: ' + (e.message || 'Connection error'));
+    }
+  }
+
+  // === Setup Wizard ===
+  let wizardStep = 1;
+  let wizardMasterKey = '';
+
+  function checkFirstRun() {
+    return !localStorage.getItem('friendarr_key');
+  }
+
+  function showWizard() {
+    const wizard = document.getElementById('setup-wizard');
+    if (wizard) {
+      wizard.classList.remove('hidden');
+      wizard.classList.add('flex');
+      renderWizardStep();
+    }
+  }
+
+  function hideWizard() {
+    const wizard = document.getElementById('setup-wizard');
+    if (wizard) {
+      wizard.classList.add('hidden');
+      wizard.classList.remove('flex');
+    }
+  }
+
+  function renderWizardStep() {
+    const dots = document.querySelectorAll('#wizard-dots .wizard-dot');
+    dots.forEach((d, i) => {
+      if (i + 1 === wizardStep) d.className = 'wizard-dot w-3 h-3 rounded-full bg-emerald-600';
+      else if (i + 1 < wizardStep) d.className = 'wizard-dot w-3 h-3 rounded-full bg-emerald-600/40';
+      else d.className = 'wizard-dot w-3 h-3 rounded-full bg-gray-600';
+    });
+
+    const body = document.getElementById('wizard-body');
+    const prev = document.getElementById('wizard-prev');
+    const next = document.getElementById('wizard-next');
+
+    prev.style.display = wizardStep === 1 ? 'none' : 'inline-flex';
+    next.textContent = wizardStep === 3 ? 'Finish' : 'Next';
+    next.className = wizardStep === 3 ? 'btn-primary' : 'btn-primary';
+
+    if (wizardStep === 1) {
+      body.innerHTML = `
+        <h3 class="text-brand text-xl font-bold mb-4">Step 1: Create Login</h3>
+        <p class="text-sm text-gray-400 mb-6">Authenticate with a master API key. This key grants full control — keep it secure.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Master API Key</label>
+            <div class="form-input-field"><input type="password" id="wizard-key" placeholder="sk-... or a memorable passphrase"></div>
+            <p class="mt-1 text-xs text-gray-500">If left empty, a random key will be generated on startup.</p>
+          </div>
+        </div>`;
+    } else if (wizardStep === 2) {
+      const incompletePath = localStorage.getItem('friendarr_incomplete') || '/downloads/incomplete';
+      const completedPath = localStorage.getItem('friendarr_completed') || '/downloads/complete';
+      body.innerHTML = `
+        <h3 class="text-brand text-xl font-bold mb-4">Step 2: Set Paths</h3>
+        <p class="text-sm text-gray-400 mb-6">Where should downloads go while in progress and when finished?</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Incomplete Downloads</label>
+            <div class="form-input-field"><input type="text" id="wiz-incomplete" value="${esc(incompletePath)}"></div>
+            <p class="mt-1 text-xs text-gray-500">Temporary storage during download. Cleared on completion.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Completed Media</label>
+            <div class="form-input-field"><input type="text" id="wiz-completed" value="${esc(completedPath)}"></div>
+            <p class="mt-1 text-xs text-gray-500">Root directory for finished media. Movies go into <code class="text-gray-500">movies/</code>, TV into <code class="text-gray-500">tv/</code>.</p>
+          </div>
+        </div>`;
+    } else if (wizardStep === 3) {
+      body.innerHTML = `
+        <h3 class="text-brand text-xl font-bold mb-4">Step 3: Add Friend Library</h3>
+        <p class="text-sm text-gray-400 mb-6">Optionally configure a remote server to download from. You can skip this and add more later in Settings.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Label</label>
+            <div class="form-input-field"><input type="text" id="wiz-ep-label" placeholder="My Server"></div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Type</label>
+            <div class="form-input-field"><select id="wiz-ep-type"><option value="plex">Plex</option><option value="emby">Emby</option><option value="jellyfin">Jellyfin</option></select></div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
+            <div class="form-input-field"><input type="text" id="wiz-ep-url" placeholder="https://server.example.com"></div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Auth Token</label>
+            <div class="form-input-field"><input type="password" id="wiz-ep-token" placeholder="API key or token"></div>
+          </div>
+        </div>`;
+    }
+  }
+
+  function wizardNext() {
+    if (wizardStep === 1) {
+      const keyEl = document.getElementById('wizard-key');
+      wizardMasterKey = keyEl ? keyEl.value.trim() : '';
+    }
+    if (wizardStep === 2) {
+      const incomplete = document.getElementById('wiz-incomplete');
+      const completed = document.getElementById('wiz-completed');
+      if (incomplete) localStorage.setItem('friendarr_incomplete', incomplete.value.trim() || '/downloads/incomplete');
+      if (completed) localStorage.setItem('friendarr_completed', completed.value.trim() || '/downloads/complete');
+    }
+    if (wizardStep === 3) {
+      finishWizard();
+      return;
+    }
+    wizardStep++;
+    renderWizardStep();
+  }
+
+  function wizardPrev() {
+    if (wizardStep > 1) {
+      wizardStep--;
+      if (wizardStep === 1) wizardMasterKey = '';
+      renderWizardStep();
+    }
+  }
+
+  async function finishWizard() {
+    // Save master key
+    if (wizardMasterKey) {
+      localStorage.setItem('friendarr_key', wizardMasterKey);
+      apiKey = wizardMasterKey;
+    }
+
+    // Save optional endpoint
+    const label = document.getElementById('wiz-ep-label')?.value.trim();
+    const type = document.getElementById('wiz-ep-type')?.value;
+    const url = document.getElementById('wiz-ep-url')?.value.trim();
+    const token = document.getElementById('wiz-ep-token')?.value.trim();
+
+    if (label && url) {
+      try {
+        await fetch('/api/v1/settings', {
+          method: 'PUT',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            sourceEndpoints: [{ id: crypto.randomUUID(), type, url, authToken: token, label }],
+          }),
+        });
+      } catch {}
+    }
+
+    hideWizard();
+    updateAuthUI(!!apiKey);
+    if (currentView === 'queue') { renderQueue(); startQueuePolling(); }
+    else { renderSettings(); }
+  }
 </script>
+
+<!-- Setup Wizard -->
+<div id="setup-wizard" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900">
+  <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-8 shadow-xl ring-1 ring-gray-700">
+    <div class="flex items-center justify-center space-x-3 mb-8" id="wizard-dots">
+      <div class="wizard-dot w-3 h-3 rounded-full bg-emerald-600"></div>
+      <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
+      <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
+    </div>
+    <div id="wizard-body"></div>
+    <div class="flex justify-between mt-8 border-t border-gray-700 pt-5">
+      <button id="wizard-prev" onclick="wizardPrev()" class="btn-ghost" style="display:none">Back</button>
+      <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost">Skip</button>
+      <button id="wizard-next" onclick="wizardNext()" class="btn-primary">Next</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

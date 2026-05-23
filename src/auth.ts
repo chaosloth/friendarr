@@ -18,13 +18,14 @@ export function deleteApiKey(key: string): boolean {
 
 export function listApiKeys(): { key: string; label: string; createdAt: Date }[] {
   return Array.from(apiKeys.entries()).map(([key, data]) => ({
-    key: `${key.slice(0, 10)}...`,
+    key,
     label: data.label,
     createdAt: data.createdAt,
   }));
 }
 
 function isValidApiKey(key: string): boolean {
+  if (!key) return false;
   return apiKeys.has(key) || key === config.masterKey;
 }
 
