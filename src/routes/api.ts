@@ -140,4 +140,8 @@ router.get('/health', (_req, res) => {
   });
 });
 
+router.get('/verify', authenticateApiKey, (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 export default router;
