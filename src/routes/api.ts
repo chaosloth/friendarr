@@ -19,9 +19,9 @@ router.post('/download', authenticateApiKey, (req, res) => {
     return;
   }
 
-  if (!body.destination?.title || !body.destination?.mediaType) {
+  if (!body.destination?.mediaType || !body.destination?.tmdbId) {
     res.status(400).json({
-      error: 'destination.title and destination.mediaType are required',
+      error: 'destination.mediaType and destination.tmdbId are required',
     });
     return;
   }
