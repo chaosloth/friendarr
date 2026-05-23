@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
-import path from 'path';
 import { createWriteStream } from 'fs';
+import path from 'path';
 import { config } from '../config';
 
 export function sanitizeFilename(name: string): string {
@@ -13,15 +13,24 @@ export function sanitizeFilename(name: string): string {
 export function getMoviePath(
   title: string,
   year: number,
-  libraryPath?: string
+  libraryPath?: string,
+  completedPath?: string
 ): string {
-  const base = libraryPath ?? path.join(config.libraryBasePath, 'movies');
+  const base =
+    libraryPath ??
+    path.join(completedPath ?? config.completedPath, 'movies');
   const folderName = sanitizeFilename(`${title} (${year})`);
   return path.join(base, folderName);
 }
 
-export function getShowPath(title: string, libraryPath?: string): string {
-  const base = libraryPath ?? path.join(config.libraryBasePath, 'tv');
+export function getShowPath(
+  title: string,
+  libraryPath?: string,
+  completedPath?: string
+): string {
+  const base =
+    libraryPath ??
+    path.join(completedPath ?? config.completedPath, 'tv');
   const folderName = sanitizeFilename(title);
   return path.join(base, folderName);
 }
@@ -31,9 +40,10 @@ export function getEpisodePath(
   seasonNumber: number,
   episodeNumber: number,
   extension: string,
-  libraryPath?: string
+  libraryPath?: string,
+  completedPath?: string
 ): string {
-  const showPath = getShowPath(showTitle, libraryPath);
+  const showPath = getShowPath(showTitle, libraryPath, completedPath);
   const seasonFolder = path.join(
     showPath,
     `Season ${String(seasonNumber).padStart(2, '0')}`
@@ -66,5 +76,34 @@ export async function writeFile(
       writeStream.on('error', reject);
       data.on('error', reject);
     });
+  }
+}
+
+export async function linkFile(
+  sourcePath: string,
+  destPath: string
+): Promise<void> {
+  await ensureDir(path.dirname(destPath));
+  try {
+    await fs.link(sourcePath, destPath);
+  } catch (e: unknown) {
+    if (
+      typeof e === 'object' &&
+      e !== null &&
+      'code' in e &&
+      (e as NodeJS.ErrnoException).code === 'EXDEV'
+    ) {
+      await fs.copyFile(sourcePath, destPath);
+    } else {
+      throw e;
+    }
+  }
+}
+
+export async function removeTemp(filePath: string): Promise<void> {
+  try {
+    await fs.unlink(filePath);
+  } catch {
+    // best-effort cleanup, ignore failures
   }
 }

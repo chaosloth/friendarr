@@ -118,8 +118,8 @@ Sent by Seerr's `POST /request/:id/send-to-remote`:
 |---|---|---|
 | `PORT` | `5056` | Listen port |
 | `API_KEY` | — | Master API key for managing API keys (also works as a regular API key) |
-| `LIBRARY_BASE_PATH` | `/media` | Root directory for media libraries |
-| `TEMP_DIR` | `/tmp/friendarr` | Temporary download directory |
+| `INCOMPLETE_PATH` | `/downloads/incomplete` | Directory for in-progress downloads |
+| `COMPLETED_PATH` | `/downloads/complete` | Root directory for completed media (movies/tv beneath) |
 | `MAX_CONCURRENT_DOWNLOADS` | `2` | Initial max parallel downloads (overridable at runtime via settings) |
 
 ## Source-Specific Auth

@@ -1,3 +1,31 @@
+import { config } from './config';
+
+export interface LogEntry {
+  timestamp: string;
+  level: string;
+  label: string;
+  message: string;
+}
+
+const logBuffer: LogEntry[] = [];
+
+function addToBuffer(entry: LogEntry): void {
+  logBuffer.push(entry);
+  while (logBuffer.length > config.logBufferSize) {
+    logBuffer.shift();
+  }
+}
+
+export function getLogs(level?: string, limit?: number): LogEntry[] {
+  let entries = level
+    ? logBuffer.filter((e) => e.level === level)
+    : [...logBuffer];
+  if (limit) {
+    entries = entries.slice(-limit);
+  }
+  return entries;
+}
+
 const colors = {
   reset: '\x1b[0m',
   dim: '\x1b[2m',
@@ -27,16 +55,45 @@ function format(
 
 export const logger = {
   info(message: string, label?: string): void {
-    console.log(format('info', colors.green, message, label));
+    const labelStr = label ?? 'Server';
+    addToBuffer({
+      timestamp: new Date().toISOString(),
+      level: 'info',
+      label: labelStr,
+      message,
+    });
+    console.log(format('info', colors.green, message, labelStr));
   },
   warn(message: string, label?: string): void {
-    console.warn(format('warn', colors.yellow, message, label));
+    const labelStr = label ?? 'Server';
+    addToBuffer({
+      timestamp: new Date().toISOString(),
+      level: 'warn',
+      label: labelStr,
+      message,
+    });
+    console.warn(format('warn', colors.yellow, message, labelStr));
   },
   error(message: string, label?: string): void {
-    console.error(format('error', colors.red, message, label));
+    const labelStr = label ?? 'Server';
+    addToBuffer({
+      timestamp: new Date().toISOString(),
+      level: 'error',
+      label: labelStr,
+      message,
+    });
+    console.error(format('error', colors.red, message, labelStr));
   },
   debug(message: string, label?: string): void {
-    console.debug(format('debug', colors.blue, message, label));
+    if (!config.debug) return;
+    const labelStr = label ?? 'Server';
+    addToBuffer({
+      timestamp: new Date().toISOString(),
+      level: 'debug',
+      label: labelStr,
+      message,
+    });
+    console.debug(format('debug', colors.blue, message, labelStr));
   },
 };
 

@@ -1,4 +1,5 @@
 import { config } from './config';
+import type { Webhook } from './types';
 
 export interface ScheduleWindow {
   start: string;
@@ -12,7 +13,7 @@ export interface Schedule {
 
 export interface SourceEndpoint {
   id: string;
-  type: 'seerr' | 'plex' | 'emby' | 'jellyfin';
+  type: 'plex' | 'emby' | 'jellyfin';
   url: string;
   authToken: string;
   label: string;
@@ -23,6 +24,10 @@ export interface AppSettings {
   maxBandwidth: number;
   schedules: Schedule[];
   sourceEndpoints: SourceEndpoint[];
+  webhooks: Webhook[];
+  incompletePath: string;
+  completedPath: string;
+  testMode: boolean;
 }
 
 const settings: AppSettings = {
@@ -30,6 +35,10 @@ const settings: AppSettings = {
   maxBandwidth: 0,
   schedules: [],
   sourceEndpoints: [],
+  webhooks: [],
+  incompletePath: config.incompletePath,
+  completedPath: config.completedPath,
+  testMode: false,
 };
 
 export function getSettings(): AppSettings {
@@ -48,6 +57,18 @@ export function updateSettings(partial: Partial<AppSettings>): AppSettings {
   }
   if (partial.sourceEndpoints !== undefined) {
     settings.sourceEndpoints = partial.sourceEndpoints;
+  }
+  if (partial.webhooks !== undefined) {
+    settings.webhooks = partial.webhooks;
+  }
+  if (partial.incompletePath !== undefined) {
+    settings.incompletePath = partial.incompletePath;
+  }
+  if (partial.completedPath !== undefined) {
+    settings.completedPath = partial.completedPath;
+  }
+  if (partial.testMode !== undefined) {
+    settings.testMode = partial.testMode;
   }
   return settings;
 }

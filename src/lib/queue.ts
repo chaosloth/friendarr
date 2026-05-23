@@ -1,14 +1,21 @@
+import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import type { DownloadJob, DownloadRequest } from '../types';
 import { logger } from '../logger';
-import { downloadFromSeerr } from '../sources/seerr';
 import { downloadFromEmbyJellyfin } from '../sources/emby-jellyfin';
 import { downloadFromPlex } from '../sources/plex';
-import { getEpisodePath, getMoviePath, writeFile } from './file-placer';
+import {
+  getEpisodePath,
+  getMoviePath,
+  linkFile,
+  removeTemp,
+  writeFile,
+} from './file-placer';
 import {
   getSettings,
   isInScheduleWindow,
 } from '../settings';
+import { fireWebhooks } from './webhooks';
 
 class DownloadQueue {
   private jobs = new Map<string, DownloadJob>();
@@ -35,6 +42,9 @@ class DownloadQueue {
       `Queued: ${request.destination.title} (${request.source.type})`,
       'Queue'
     );
+
+    const settings = getSettings();
+    void fireWebhooks('download.requested', job, settings.webhooks);
 
     this.processQueue();
     return job;
@@ -170,14 +180,45 @@ class DownloadQueue {
       'Queue'
     );
 
+    const settings = getSettings();
+    void fireWebhooks('download.started', job, settings.webhooks);
+
     const cancelController = new AbortController();
     this.cancelTokens.set(id, cancelController);
+
+    let tempPath: string | undefined;
 
     try {
       const { request } = job;
 
+      if (settings.testMode) {
+        const fakePath = request.destination.mediaType === 'tv'
+          ? getEpisodePath(
+              request.destination.title,
+              request.destination.seasonNumber ?? 1,
+              request.destination.episodeNumbers?.[0] ?? 1,
+              'mkv',
+              request.destination.libraryPath,
+              settings.completedPath
+            )
+          : `${getMoviePath(
+              request.destination.title,
+              request.destination.year,
+              request.destination.libraryPath,
+              settings.completedPath
+            )}/test.mkv`;
+
+        job.status = 'complete';
+        job.outputPath = fakePath;
+        job.progress = 100;
+        job.totalBytes = 0;
+        job.bytesDownloaded = 0;
+        logger.info(`Test mode complete: ${fakePath}`, 'Queue');
+        void fireWebhooks('download.complete', job, settings.webhooks);
+        return;
+      }
+
       const downloadFn = {
-        seerr: downloadFromSeerr,
         plex: downloadFromPlex,
         emby: downloadFromEmbyJellyfin,
         jellyfin: downloadFromEmbyJellyfin,
@@ -193,33 +234,43 @@ class DownloadQueue {
 
       job.totalBytes = contentLength;
 
-      let outputPath: string;
+      tempPath = path.join(settings.incompletePath, `${job.id}-${fileName}`);
+
+      await writeFile(tempPath, stream);
+
+      if (cancelController.signal.aborted) return;
+
+      let finalPath: string;
       if (request.destination.mediaType === 'tv') {
-        outputPath = getEpisodePath(
+        finalPath = getEpisodePath(
           request.destination.title,
           request.destination.seasonNumber ?? 1,
           request.destination.episodeNumbers?.[0] ?? 1,
           fileName.split('.').pop() ?? 'mkv',
-          request.destination.libraryPath
+          request.destination.libraryPath,
+          settings.completedPath
         );
       } else {
-        outputPath = `${getMoviePath(
+        finalPath = `${getMoviePath(
           request.destination.title,
           request.destination.year,
-          request.destination.libraryPath
+          request.destination.libraryPath,
+          settings.completedPath
         )}/${fileName}`;
       }
 
-      await writeFile(outputPath, stream);
+      await linkFile(tempPath, finalPath);
+      await removeTemp(tempPath);
 
       if (cancelController.signal.aborted) return;
 
       job.status = 'complete';
-      job.outputPath = outputPath;
+      job.outputPath = finalPath;
       job.progress = 100;
       job.bytesDownloaded = job.totalBytes;
 
-      logger.info(`Download complete: ${outputPath}`, 'Queue');
+      logger.info(`Download complete: ${finalPath}`, 'Queue');
+      void fireWebhooks('download.complete', job, settings.webhooks);
     } catch (e) {
       if ((e as Error).name === 'AbortError') return;
       job.status = 'failed';
@@ -229,7 +280,11 @@ class DownloadQueue {
         `Download failed: ${job.request.destination.title} — ${job.error}`,
         'Queue'
       );
+      void fireWebhooks('download.failed', job, settings.webhooks);
     } finally {
+      if (tempPath) {
+        await removeTemp(tempPath);
+      }
       this.cancelTokens.delete(id);
     }
   }

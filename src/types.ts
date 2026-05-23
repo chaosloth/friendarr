@@ -1,6 +1,6 @@
 export type DownloadStatus = 'queued' | 'downloading' | 'complete' | 'failed';
 
-export type SourceType = 'seerr' | 'plex' | 'emby' | 'jellyfin';
+export type SourceType = 'plex' | 'emby' | 'jellyfin';
 
 export interface DownloadRequest {
   source: {
@@ -43,4 +43,12 @@ export interface ApiKey {
   key: string;
   label: string;
   createdAt: Date;
+}
+
+export interface Webhook {
+  id: string;
+  url: string;
+  events: string[];
+  secret: string;
+  enabled: boolean;
 }

@@ -7,6 +7,8 @@ import {
   listApiKeys,
 } from '../auth';
 import { downloadQueue } from '../lib/queue';
+import { testWebhook } from '../lib/webhooks';
+import { getLogs } from '../logger';
 import { getSettings, updateSettings } from '../settings';
 
 const router: Router = Router();
@@ -142,6 +144,29 @@ router.get('/health', (_req, res) => {
 
 router.get('/verify', authenticateApiKey, (_req, res) => {
   res.status(200).json({ status: 'ok' });
+});
+
+router.get('/logs', authenticateMasterKey, (req, res) => {
+  const level = req.query.level as string | undefined;
+  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+  res.status(200).json({ logs: getLogs(level, limit) });
+});
+
+router.post('/webhooks/test', authenticateMasterKey, async (req, res) => {
+  const { url, secret } = req.body;
+  if (!url) {
+    res.status(400).json({ error: 'url is required' });
+    return;
+  }
+  try {
+    await testWebhook(url, secret);
+    res.status(200).json({ status: 'ok' });
+  } catch (e) {
+    res.status(502).json({
+      status: 'failed',
+      error: (e as Error).message,
+    });
+  }
 });
 
 export default router;

@@ -98,8 +98,9 @@ docker pull conno/friendarr:latest
 docker run -d \
   -p 5056:5056 \
   -e API_KEY=your-master-key-here \
-  -e LIBRARY_BASE_PATH=/media \
-  -v /path/to/your/media:/media:rw \
+  -e COMPLETED_PATH=/downloads/complete \
+  -e INCOMPLETE_PATH=/downloads/incomplete \
+  -v /path/to/your/downloads:/downloads:rw \
   conno/friendarr:latest
 ```
 
@@ -129,8 +130,8 @@ pnpm start
 |---|---|---|
 | `PORT` | `5056` | Listen port |
 | `API_KEY` | — | Master key for UI and API key management |
-| `LIBRARY_BASE_PATH` | `/media` | Root directory for media libraries |
-| `TEMP_DIR` | `/tmp/friendarr` | Temporary download directory |
+| `INCOMPLETE_PATH` | `/downloads/incomplete` | Directory for in-progress downloads |
+| `COMPLETED_PATH` | `/downloads/complete` | Root directory for completed media |
 | `MAX_CONCURRENT_DOWNLOADS` | `2` | Initial max parallel downloads |
 
 All settings (concurrency, bandwidth, schedules, source endpoints) can be changed at runtime via the web UI or `PUT /api/v1/settings`.
