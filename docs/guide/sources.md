@@ -8,10 +8,10 @@ Friendarr previously had a Seerr source adapter but it was removed. Seerr is a r
 
 ## Source Authentication
 
-| Source | Auth Method | Required Fields |
-|---|---|---|
-| Plex | `X-Plex-Token` header | `url`, `authToken`, `ratingKey` |
-| Emby | `MediaBrowser` auth header with `Token` | `url`, `authToken`, `deviceId`, `mediaId` |
+| Source   | Auth Method                             | Required Fields                           |
+| -------- | --------------------------------------- | ----------------------------------------- |
+| Plex     | `X-Plex-Token` header                   | `url`, `authToken`, `ratingKey`           |
+| Emby     | `MediaBrowser` auth header with `Token` | `url`, `authToken`, `deviceId`, `mediaId` |
 | Jellyfin | `MediaBrowser` auth header with `Token` | `url`, `authToken`, `deviceId`, `mediaId` |
 
 ## Plex (Two-Step Download)

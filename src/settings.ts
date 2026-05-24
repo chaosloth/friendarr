@@ -1,5 +1,5 @@
-import { config } from './config';
-import type { Webhook } from './types';
+import { config } from "./config";
+import type { Webhook } from "./types";
 
 export interface ScheduleWindow {
   start: string;
@@ -22,7 +22,7 @@ export interface AppSettings {
   moviePath: string;
   tvPath: string;
   testMode: boolean;
-  logLevel: 'debug' | 'info' | 'warn' | 'error';
+  logLevel: "debug" | "info" | "warn" | "error";
 }
 
 const settings: AppSettings = {
@@ -35,7 +35,7 @@ const settings: AppSettings = {
   moviePath: config.moviePath,
   tvPath: config.tvPath,
   testMode: false,
-  logLevel: config.debug ? 'debug' : 'info',
+  logLevel: config.debug ? "debug" : "info",
 };
 
 export function getSettings(): AppSettings {
@@ -86,8 +86,8 @@ export function isInScheduleWindow(schedules: Schedule[]): boolean {
   for (const schedule of schedules) {
     if (!schedule.days.includes(day)) continue;
     for (const window of schedule.windows) {
-      const [startH, startM] = window.start.split(':').map(Number);
-      const [endH, endM] = window.end.split(':').map(Number);
+      const [startH, startM] = window.start.split(":").map(Number);
+      const [endH, endM] = window.end.split(":").map(Number);
       const start = startH * 60 + startM;
       const end = endH * 60 + endM;
 
@@ -103,7 +103,7 @@ export function isInScheduleWindow(schedules: Schedule[]): boolean {
 }
 
 export function getActiveScheduleWindow(
-  schedules: Schedule[]
+  schedules: Schedule[],
 ): ScheduleWindow | null {
   if (schedules.length === 0) return null;
 
@@ -116,8 +116,8 @@ export function getActiveScheduleWindow(
   for (const schedule of schedules) {
     if (!schedule.days.includes(day)) continue;
     for (const window of schedule.windows) {
-      const [startH, startM] = window.start.split(':').map(Number);
-      const [endH, endM] = window.end.split(':').map(Number);
+      const [startH, startM] = window.start.split(":").map(Number);
+      const [endH, endM] = window.end.split(":").map(Number);
       const start = startH * 60 + startM;
       const end = endH * 60 + endM;
 
@@ -133,11 +133,11 @@ export function getActiveScheduleWindow(
 }
 
 export function getNextScheduleWindow(
-  schedules: Schedule[]
+  schedules: Schedule[],
 ): { day: string; start: string } | null {
   if (schedules.length === 0) return null;
 
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const now = new Date();
   const currentDay = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -150,7 +150,7 @@ export function getNextScheduleWindow(
     for (const schedule of schedules) {
       if (!schedule.days.includes(day)) continue;
       for (const window of schedule.windows) {
-        const [startH, startM] = window.start.split(':').map(Number);
+        const [startH, startM] = window.start.split(":").map(Number);
         const start = startH * 60 + startM;
         let minutesFromNow: number;
         if (dayOffset === 0 && start <= currentMinutes) {

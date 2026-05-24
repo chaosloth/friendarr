@@ -4,15 +4,15 @@ All settings can be changed at runtime via the web UI (Settings tab) or the `PUT
 
 ## Settings Reference
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `maxConcurrentDownloads` | `number` | `2` | Maximum parallel downloads |
-| `maxBandwidth` | `number` | `0` | Bandwidth limit in bytes/sec (0 = unlimited) |
-| `schedules` | `Schedule[]` | `[]` | Time windows when downloads are allowed |
-| `webhooks` | `Webhook[]` | `[]` | URLs to POST download event notifications |
-| `incompletePath` | `string` | env `INCOMPLETE_PATH` | Directory for in-progress downloads |
-| `completedPath` | `string` | env `COMPLETED_PATH` | Root directory for completed media |
-| `testMode` | `boolean` | `false` | Skip actual downloads, mark jobs as complete |
+| Field                    | Type         | Default               | Description                                  |
+| ------------------------ | ------------ | --------------------- | -------------------------------------------- |
+| `maxConcurrentDownloads` | `number`     | `2`                   | Maximum parallel downloads                   |
+| `maxBandwidth`           | `number`     | `0`                   | Bandwidth limit in bytes/sec (0 = unlimited) |
+| `schedules`              | `Schedule[]` | `[]`                  | Time windows when downloads are allowed      |
+| `webhooks`               | `Webhook[]`  | `[]`                  | URLs to POST download event notifications    |
+| `incompletePath`         | `string`     | env `INCOMPLETE_PATH` | Directory for in-progress downloads          |
+| `completedPath`          | `string`     | env `COMPLETED_PATH`  | Root directory for completed media           |
+| `testMode`               | `boolean`    | `false`               | Skip actual downloads, mark jobs as complete |
 
 ## Schedules
 
@@ -23,9 +23,7 @@ Schedule windows restrict downloads to specific days and times. When schedules a
   "schedules": [
     {
       "days": [1, 2, 3, 4, 5],
-      "windows": [
-        { "start": "02:00", "end": "06:00" }
-      ]
+      "windows": [{ "start": "02:00", "end": "06:00" }]
     }
   ]
 }
@@ -54,12 +52,12 @@ Friendarr sends HTTP POST notifications to configured webhook URLs on download e
 
 ### Webhook Events
 
-| Event | Fires when |
-|---|---|
-| `download.requested` | A download is queued |
-| `download.started` | A download begins processing |
-| `download.complete` | A download finishes successfully |
-| `download.failed` | A download fails |
+| Event                | Fires when                       |
+| -------------------- | -------------------------------- |
+| `download.requested` | A download is queued             |
+| `download.started`   | A download begins processing     |
+| `download.complete`  | A download finishes successfully |
+| `download.failed`    | A download fails                 |
 
 ### Webhook Payload
 

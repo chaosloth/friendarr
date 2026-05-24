@@ -1,23 +1,23 @@
-import path from 'path';
-import { Transform } from 'stream';
-import { v4 as uuidv4 } from 'uuid';
-import type { DownloadJob, DownloadRequest } from '../types';
-import { logger } from '../logger';
-import { downloadFromEmbyJellyfin } from '../sources/emby-jellyfin';
-import { downloadFromPlex } from '../sources/plex';
+import path from "path";
+import { Transform } from "stream";
+import { v4 as uuidv4 } from "uuid";
+import type { DownloadJob, DownloadRequest } from "../types";
+import { logger } from "../logger";
+import { downloadFromEmbyJellyfin } from "../sources/emby-jellyfin";
+import { downloadFromPlex } from "../sources/plex";
 import {
   getEpisodePath,
   getMoviePath,
   linkFile,
   removeTemp,
   writeFile,
-} from './file-placer';
+} from "./file-placer";
 import {
   getActiveScheduleWindow,
   getSettings,
   isInScheduleWindow,
-} from '../settings';
-import { fireWebhooks } from './webhooks';
+} from "../settings";
+import { fireWebhooks } from "./webhooks";
 
 function createThrottle(bytesPerSec: number): Transform {
   let tokens = bytesPerSec;
@@ -67,7 +67,7 @@ class DownloadQueue {
     const job: DownloadJob = {
       id: uuidv4(),
       request,
-      status: 'queued',
+      status: "queued",
       progress: 0,
       bytesDownloaded: 0,
       totalBytes: 0,
@@ -78,11 +78,11 @@ class DownloadQueue {
 
     logger.info(
       `Queued: ${request.destination.title} (${request.source.type})`,
-      'Queue'
+      "Queue",
     );
 
     const settings = getSettings();
-    void fireWebhooks('download.requested', job, settings.webhooks);
+    void fireWebhooks("download.requested", job, settings.webhooks);
 
     if (
       !isInScheduleWindow(settings.schedules) &&
@@ -91,7 +91,10 @@ class DownloadQueue {
       const now = Date.now();
       if (now - this.lastScheduleLog > 60000) {
         this.lastScheduleLog = now;
-        logger.info('Download deferred (schedule): jobs queued outside active window', 'Queue');
+        logger.info(
+          "Download deferred (schedule): jobs queued outside active window",
+          "Queue",
+        );
       }
     }
 
@@ -114,15 +117,15 @@ class DownloadQueue {
   public pauseJob(id: string): boolean {
     const job = this.jobs.get(id);
     if (!job) return false;
-    if (job.status === 'downloading') {
+    if (job.status === "downloading") {
       const token = this.cancelTokens.get(id);
       if (token) token.abort();
     }
     this.pausedJobIds.add(id);
-    if (job.status === 'queued' || job.status === 'downloading') {
-      job.status = 'queued';
+    if (job.status === "queued" || job.status === "downloading") {
+      job.status = "queued";
     }
-    logger.info(`Paused: ${job.request.destination.title}`, 'Queue');
+    logger.info(`Paused: ${job.request.destination.title}`, "Queue");
     return true;
   }
 
@@ -131,10 +134,10 @@ class DownloadQueue {
     if (!job) return false;
     this.pausedJobIds.delete(id);
     this.cancelTokens.delete(id);
-    if (job.status === 'queued' && !this.queue.includes(id)) {
+    if (job.status === "queued" && !this.queue.includes(id)) {
       this.queue.push(id);
     }
-    logger.info(`Resumed: ${job.request.destination.title}`, 'Queue');
+    logger.info(`Resumed: ${job.request.destination.title}`, "Queue");
     this.processQueue();
     return true;
   }
@@ -147,25 +150,25 @@ class DownloadQueue {
     this.queue = this.queue.filter((j) => j !== id);
     this.pausedJobIds.delete(id);
     this.cancelTokens.delete(id);
-    if (job.status === 'downloading') {
+    if (job.status === "downloading") {
       this.activeCount--;
     }
-    job.status = 'failed';
-    job.error = 'Cancelled by user';
-    logger.info(`Cancelled: ${job.request.destination.title}`, 'Queue');
+    job.status = "failed";
+    job.error = "Cancelled by user";
+    logger.info(`Cancelled: ${job.request.destination.title}`, "Queue");
     return true;
   }
 
   public retryJob(id: string): boolean {
     const job = this.jobs.get(id);
-    if (!job || job.status !== 'failed') return false;
-    job.status = 'queued';
+    if (!job || job.status !== "failed") return false;
+    job.status = "queued";
     job.progress = 0;
     job.bytesDownloaded = 0;
     job.error = undefined;
     job.outputPath = undefined;
     this.queue.push(job.id);
-    logger.info(`Retrying: ${job.request.destination.title}`, 'Queue');
+    logger.info(`Retrying: ${job.request.destination.title}`, "Queue");
     this.processQueue();
     return true;
   }
@@ -173,7 +176,7 @@ class DownloadQueue {
   public clearCompleted(): number {
     let count = 0;
     for (const [id, job] of this.jobs) {
-      if (job.status === 'complete' || job.status === 'failed') {
+      if (job.status === "complete" || job.status === "failed") {
         this.jobs.delete(id);
         this.queue = this.queue.filter((j) => j !== id);
         this.pausedJobIds.delete(id);
@@ -187,8 +190,8 @@ class DownloadQueue {
   public setGlobalPaused(paused: boolean): void {
     this.globalPaused = paused;
     logger.info(
-      paused ? 'Queue globally paused' : 'Queue globally resumed',
-      'Queue'
+      paused ? "Queue globally paused" : "Queue globally resumed",
+      "Queue",
     );
     if (!paused) {
       this.processQueue();
@@ -206,14 +209,14 @@ class DownloadQueue {
       const now = Date.now();
       if (now - this.lastScheduleLog > 60000) {
         this.lastScheduleLog = now;
-        logger.debug('Queue idle: outside schedule window', 'Queue');
+        logger.debug("Queue idle: outside schedule window", "Queue");
       }
       return;
     }
 
     if (this.lastScheduleLog > 0) {
       this.lastScheduleLog = 0;
-      logger.info('Queue active: entered schedule window', 'Queue');
+      logger.info("Queue active: entered schedule window", "Queue");
     }
 
     while (
@@ -227,7 +230,7 @@ class DownloadQueue {
 
       const job = this.jobs.get(id);
       if (!job) continue;
-      if (job.status === 'complete' || job.status === 'failed') continue;
+      if (job.status === "complete" || job.status === "failed") continue;
 
       this.activeCount++;
       this.processJob(id).finally(() => {
@@ -250,15 +253,15 @@ class DownloadQueue {
       return;
     }
 
-    job.status = 'downloading';
+    job.status = "downloading";
 
     logger.info(
       `Downloading: ${job.request.destination.title} from ${job.request.source.type}`,
-      'Queue'
+      "Queue",
     );
 
     const settings = getSettings();
-    void fireWebhooks('download.started', job, settings.webhooks);
+    void fireWebhooks("download.started", job, settings.webhooks);
 
     const cancelController = new AbortController();
     this.cancelTokens.set(id, cancelController);
@@ -269,29 +272,30 @@ class DownloadQueue {
       const { request } = job;
 
       if (settings.testMode) {
-        const fakePath = request.destination.mediaType === 'tv'
-          ? getEpisodePath(
-              request.destination.title,
-              request.destination.seasonNumber ?? 1,
-              request.destination.episodeNumbers?.[0] ?? 1,
-              'mkv',
-              request.destination.libraryPath,
-              settings.completedPath
-            )
-          : `${getMoviePath(
-              request.destination.title,
-              request.destination.year,
-              request.destination.libraryPath,
-              settings.completedPath
-            )}/test.mkv`;
+        const fakePath =
+          request.destination.mediaType === "tv"
+            ? getEpisodePath(
+                request.destination.title,
+                request.destination.seasonNumber ?? 1,
+                request.destination.episodeNumbers?.[0] ?? 1,
+                "mkv",
+                request.destination.libraryPath,
+                settings.completedPath,
+              )
+            : `${getMoviePath(
+                request.destination.title,
+                request.destination.year,
+                request.destination.libraryPath,
+                settings.completedPath,
+              )}/test.mkv`;
 
-        job.status = 'complete';
+        job.status = "complete";
         job.outputPath = fakePath;
         job.progress = 100;
         job.totalBytes = 0;
         job.bytesDownloaded = 0;
-        logger.info(`Test mode complete: ${fakePath}`, 'Queue');
-        void fireWebhooks('download.complete', job, settings.webhooks);
+        logger.info(`Test mode complete: ${fakePath}`, "Queue");
+        void fireWebhooks("download.complete", job, settings.webhooks);
         return;
       }
 
@@ -318,13 +322,12 @@ class DownloadQueue {
       if (bandwidthLimit > 0) {
         const mbps = (bandwidthLimit / (1024 * 1024)).toFixed(1);
         const source = activeWindow?.bandwidth
-          ? 'schedule window'
-          : 'global limit';
-        logger.info(
-          `Throttling to ${mbps} MB/s (${source})`,
-          'Queue'
-        );
-        throttledStream = stream.pipe(createThrottle(bandwidthLimit)) as unknown as NodeJS.ReadableStream;
+          ? "schedule window"
+          : "global limit";
+        logger.info(`Throttling to ${mbps} MB/s (${source})`, "Queue");
+        throttledStream = stream.pipe(
+          createThrottle(bandwidthLimit),
+        ) as unknown as NodeJS.ReadableStream;
       }
 
       tempPath = path.join(settings.incompletePath, `${job.id}-${fileName}`);
@@ -334,21 +337,21 @@ class DownloadQueue {
       if (cancelController.signal.aborted) return;
 
       let finalPath: string;
-      if (request.destination.mediaType === 'tv') {
+      if (request.destination.mediaType === "tv") {
         finalPath = getEpisodePath(
           request.destination.title,
           request.destination.seasonNumber ?? 1,
           request.destination.episodeNumbers?.[0] ?? 1,
-          fileName.split('.').pop() ?? 'mkv',
+          fileName.split(".").pop() ?? "mkv",
           request.destination.libraryPath,
-          settings.completedPath
+          settings.completedPath,
         );
       } else {
         finalPath = `${getMoviePath(
           request.destination.title,
           request.destination.year,
           request.destination.libraryPath,
-          settings.completedPath
+          settings.completedPath,
         )}/${fileName}`;
       }
 
@@ -357,27 +360,27 @@ class DownloadQueue {
 
       if (cancelController.signal.aborted) return;
 
-      job.status = 'complete';
+      job.status = "complete";
       job.outputPath = finalPath;
       job.progress = 100;
       job.bytesDownloaded = job.totalBytes;
 
-      logger.info(`Download complete: ${finalPath}`, 'Queue');
-      void fireWebhooks('download.complete', job, settings.webhooks);
+      logger.info(`Download complete: ${finalPath}`, "Queue");
+      void fireWebhooks("download.complete", job, settings.webhooks);
     } catch (e) {
-      if ((e as Error).name === 'AbortError') return;
-      job.status = 'failed';
+      if ((e as Error).name === "AbortError") return;
+      job.status = "failed";
       job.error = (e as Error).message;
 
       logger.error(
         `Download failed: ${job.request.destination.title} — ${job.error}`,
-        'Queue'
+        "Queue",
       );
-      void fireWebhooks('download.failed', job, settings.webhooks);
+      void fireWebhooks("download.failed", job, settings.webhooks);
     } finally {
       if (tempPath) {
         await removeTemp(tempPath);
-        logger.debug(`Temp file removed: ${tempPath}`, 'Queue');
+        logger.debug(`Temp file removed: ${tempPath}`, "Queue");
       }
       this.cancelTokens.delete(id);
     }

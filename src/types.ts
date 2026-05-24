@@ -1,6 +1,6 @@
-export type DownloadStatus = 'queued' | 'downloading' | 'complete' | 'failed';
+export type DownloadStatus = "queued" | "downloading" | "complete" | "failed";
 
-export type SourceType = 'plex' | 'emby' | 'jellyfin';
+export type SourceType = "plex" | "emby" | "jellyfin";
 
 export interface DownloadRequest {
   source: {
@@ -13,7 +13,7 @@ export interface DownloadRequest {
   };
   destination: {
     libraryPath: string;
-    mediaType: 'movie' | 'tv';
+    mediaType: "movie" | "tv";
     title: string;
     year: number;
     tmdbId: number;

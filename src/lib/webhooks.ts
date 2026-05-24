@@ -1,13 +1,13 @@
-import crypto from 'crypto';
-import axios from 'axios';
-import type { DownloadJob, Webhook } from '../types';
-import { logger } from '../logger';
+import crypto from "crypto";
+import axios from "axios";
+import type { DownloadJob, Webhook } from "../types";
+import { logger } from "../logger";
 
 interface WebhookPayload {
   event: string;
   downloadId: string;
   timestamp: string;
-  request: DownloadJob['request'];
+  request: DownloadJob["request"];
   outputPath?: string;
   error?: string;
 }
@@ -15,7 +15,7 @@ interface WebhookPayload {
 export async function fireWebhooks(
   event: string,
   job: DownloadJob,
-  webhooks: Webhook[]
+  webhooks: Webhook[],
 ): Promise<void> {
   const payload: WebhookPayload = {
     event,
@@ -25,7 +25,7 @@ export async function fireWebhooks(
       ...job.request,
       source: {
         ...job.request.source,
-        authToken: job.request.source.authToken ? '***' : undefined,
+        authToken: job.request.source.authToken ? "***" : undefined,
       },
     },
     outputPath: job.outputPath,
@@ -34,33 +34,31 @@ export async function fireWebhooks(
 
   const body = JSON.stringify(payload);
 
-  const targets = webhooks.filter(
-    (w) => w.enabled && w.events.includes(event)
-  );
+  const targets = webhooks.filter((w) => w.enabled && w.events.includes(event));
 
   for (const webhook of targets) {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (webhook.secret) {
-      headers['X-Friendarr-Signature'] = crypto
-        .createHmac('sha256', webhook.secret)
+      headers["X-Friendarr-Signature"] = crypto
+        .createHmac("sha256", webhook.secret)
         .update(body)
-        .digest('hex');
+        .digest("hex");
     }
 
     try {
-      logger.debug(`Webhook ${event} → ${webhook.url}`, 'Webhooks');
+      logger.debug(`Webhook ${event} → ${webhook.url}`, "Webhooks");
       await axios.post(webhook.url, body, {
         headers,
         timeout: 5000,
       });
-      logger.debug(`Webhook ${event} delivered to ${webhook.url}`, 'Webhooks');
+      logger.debug(`Webhook ${event} delivered to ${webhook.url}`, "Webhooks");
     } catch (e) {
       logger.warn(
         `Webhook delivery failed to ${webhook.url}: ${(e as Error).message}`,
-        'Webhooks'
+        "Webhooks",
       );
     }
   }
@@ -68,20 +66,20 @@ export async function fireWebhooks(
 
 export async function testWebhook(url: string, secret?: string): Promise<void> {
   const payload = {
-    event: 'test',
+    event: "test",
     timestamp: new Date().toISOString(),
-    message: 'Friendarr webhook test',
+    message: "Friendarr webhook test",
   };
   const body = JSON.stringify(payload);
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   if (secret) {
-    headers['X-Friendarr-Signature'] = crypto
-      .createHmac('sha256', secret)
+    headers["X-Friendarr-Signature"] = crypto
+      .createHmac("sha256", secret)
       .update(body)
-      .digest('hex');
+      .digest("hex");
   }
 
   await axios.post(url, body, { headers, timeout: 5000 });

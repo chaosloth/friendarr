@@ -1,53 +1,55 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectDir = path.join(__dirname, '..');
+const projectDir = path.join(__dirname, "..");
 
-const enData = JSON.parse(fs.readFileSync(path.join(projectDir, 'src/ui/locales/en.json'), 'utf8'));
+const enData = JSON.parse(
+  fs.readFileSync(path.join(projectDir, "src/ui/locales/en.json"), "utf8"),
+);
 const langNames = {
-  en: 'English',
-  es: 'Español',
-  'es-MX': 'Español (MX)',
-  fr: 'Français',
-  de: 'Deutsch',
-  ja: '日本語',
-  'zh-Hans': '简体中文',
-  'zh-Hant': '繁體中文',
-  'pt-BR': 'Português (BR)',
-  'pt-PT': 'Português (PT)',
-  it: 'Italiano',
-  nl: 'Nederlands',
-  pl: 'Polski',
-  ru: 'Русский',
-  sv: 'Svenska',
-  ko: '한국어',
-  tr: 'Türkçe',
-  vi: 'Tiếng Việt',
-  ar: 'العربية',
-  he: 'עברית',
-  cs: 'Čeština',
-  da: 'Dansk',
-  fi: 'Suomi',
-  hu: 'Magyar',
-  ro: 'Română',
-  sk: 'Slovenčina',
-  sl: 'Slovenščina',
-  uk: 'Українська',
-  bg: 'Български',
-  ca: 'Català',
-  el: 'Ελληνικά',
-  et: 'Eesti',
-  eu: 'Euskara',
-  hi: 'हिन्दी',
-  hr: 'Hrvatski',
-  kab: 'Taqbaylit',
-  lb: 'Lëtzebuergesch',
-  lt: 'Lietuvių',
-  'nb-NO': 'Norsk Bokmål',
-  sq: 'Shqip',
-  sr: 'Српски',
+  en: "English",
+  es: "Español",
+  "es-MX": "Español (MX)",
+  fr: "Français",
+  de: "Deutsch",
+  ja: "日本語",
+  "zh-Hans": "简体中文",
+  "zh-Hant": "繁體中文",
+  "pt-BR": "Português (BR)",
+  "pt-PT": "Português (PT)",
+  it: "Italiano",
+  nl: "Nederlands",
+  pl: "Polski",
+  ru: "Русский",
+  sv: "Svenska",
+  ko: "한국어",
+  tr: "Türkçe",
+  vi: "Tiếng Việt",
+  ar: "العربية",
+  he: "עברית",
+  cs: "Čeština",
+  da: "Dansk",
+  fi: "Suomi",
+  hu: "Magyar",
+  ro: "Română",
+  sk: "Slovenčina",
+  sl: "Slovenščina",
+  uk: "Українська",
+  bg: "Български",
+  ca: "Català",
+  el: "Ελληνικά",
+  et: "Eesti",
+  eu: "Euskara",
+  hi: "हिन्दी",
+  hr: "Hrvatski",
+  kab: "Taqbaylit",
+  lb: "Lëtzebuergesch",
+  lt: "Lietuvių",
+  "nb-NO": "Norsk Bokmål",
+  sq: "Shqip",
+  sr: "Српски",
 };
 
 const output = `/* eslint-env browser */
@@ -136,6 +138,10 @@ const output = `/* eslint-env browser */
 })();
 `;
 
-const outPath = path.join(projectDir, 'src/ui/i18n.js');
+const outPath = path.join(projectDir, "src/ui/i18n.js");
 fs.writeFileSync(outPath, output);
-console.log('Wrote i18n.js with inline English translations (' + Object.keys(enData).length + ' keys)');
+console.log(
+  "Wrote i18n.js with inline English translations (" +
+    Object.keys(enData).length +
+    " keys)",
+);

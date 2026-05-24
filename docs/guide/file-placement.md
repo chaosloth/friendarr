@@ -17,9 +17,9 @@ Friendarr places completed downloads into a directory structure compatible with 
 
 ## Configuring Paths
 
-| Path | Env Var | Description |
-|---|---|---|
-| Completed | `COMPLETED_PATH` | Root for final media files |
+| Path       | Env Var           | Description                              |
+| ---------- | ----------------- | ---------------------------------------- |
+| Completed  | `COMPLETED_PATH`  | Root for final media files               |
 | Incomplete | `INCOMPLETE_PATH` | Temp directory for in-progress downloads |
 
 Both can be overridden at runtime via settings.

@@ -27,26 +27,26 @@ Seerr's `POST /api/v1/request/:id/send-to-remote` route builds a `downloadServic
 
 ### Phase 1.5 — Web UI & UX
 
-| #      | Task                                                                     | Status    |
-| ------ | ------------------------------------------------------------------------ | --------- |
-| 1.5.1  | Seerr-themed web UI (sidebar, nav, dark theme)                           | done      |
-| 1.5.2  | Queue dashboard (stats, table, pause/resume/clear actions)               | done      |
-| 1.5.3  | Settings page (endpoints, API keys, limits, paths, schedules, webhooks)  | done      |
-| 1.5.4  | Auth modal (master API key authentication)                               | done      |
-| 1.5.5  | Logs viewer with auto-refresh and level filtering                        | done      |
-| 1.5.6  | Source endpoints management (add/edit/delete with token visibility)      | done      |
-| 1.5.7  | API key CRUD UI (generate, reveal, copy, revoke)                         | done      |
-| 1.5.8  | Webhook management (add, delete, event selection)                        | done      |
-| 1.5.9  | Schedule gating (time-window based download restrictions)                | done      |
-| 1.5.10 | First-run setup wizard (API key, paths, optional endpoint)               | done      |
-| 1.5.11 | Full-page queue and logs tables (flex-1 min-h-0 overflow-auto)           | done      |
-| 1.5.12 | API key reveal returns full key (server no longer truncates)             | done      |
-| 1.5.13 | Copy button on generated API keys                                        | done      |
-| 1.5.14 | Redact authToken from webhook payloads                                   | done      |
-| 1.5.15 | Venn diagram logo icon in sidebar                                        | done      |
-| 1.5.16 | Rename "Source Endpoints" to "Friend Libraries"                          | done      |
-| 1.5.17 | New API key result: emerald styling (not yellow), truncate+copy          | done      |
-| 1.5.18 | `/api/v1/verify` endpoint for auth validation                            | done      |
+| #      | Task                                                                    | Status |
+| ------ | ----------------------------------------------------------------------- | ------ |
+| 1.5.1  | Seerr-themed web UI (sidebar, nav, dark theme)                          | done   |
+| 1.5.2  | Queue dashboard (stats, table, pause/resume/clear actions)              | done   |
+| 1.5.3  | Settings page (endpoints, API keys, limits, paths, schedules, webhooks) | done   |
+| 1.5.4  | Auth modal (master API key authentication)                              | done   |
+| 1.5.5  | Logs viewer with auto-refresh and level filtering                       | done   |
+| 1.5.6  | Source endpoints management (add/edit/delete with token visibility)     | done   |
+| 1.5.7  | API key CRUD UI (generate, reveal, copy, revoke)                        | done   |
+| 1.5.8  | Webhook management (add, delete, event selection)                       | done   |
+| 1.5.9  | Schedule gating (time-window based download restrictions)               | done   |
+| 1.5.10 | First-run setup wizard (API key, paths, optional endpoint)              | done   |
+| 1.5.11 | Full-page queue and logs tables (flex-1 min-h-0 overflow-auto)          | done   |
+| 1.5.12 | API key reveal returns full key (server no longer truncates)            | done   |
+| 1.5.13 | Copy button on generated API keys                                       | done   |
+| 1.5.14 | Redact authToken from webhook payloads                                  | done   |
+| 1.5.15 | Venn diagram logo icon in sidebar                                       | done   |
+| 1.5.16 | Rename "Source Endpoints" to "Friend Libraries"                         | done   |
+| 1.5.17 | New API key result: emerald styling (not yellow), truncate+copy         | done   |
+| 1.5.18 | `/api/v1/verify` endpoint for auth validation                           | done   |
 
 ### Phase 2.0 — Production Readiness
 
@@ -81,15 +81,15 @@ Seerr's `POST /api/v1/request/:id/send-to-remote` route builds a `downloadServic
 
 ### Phase 5.0 — UX Polish
 
-| #     | Task                                                      | Status  |
-| ----- | --------------------------------------------------------- | ------- |
-| 5.0.1 | Runtime log level control from UI                         | done    |
-| 5.0.2 | Full-width logs table                                     | done    |
-| 5.0.3 | Configurable movie/TV directory paths                     | done    |
-| 5.0.4 | File browser for path inputs (server-side API + modal UI) | done    |
-| 5.0.5 | i18n translation system with 7 languages                  | done    |
-| 5.0.6 | Language selection in setup wizard (first question)       | done    |
-| 5.0.7 | Language selector in settings (new Display section)       | done    |
+| #     | Task                                                      | Status |
+| ----- | --------------------------------------------------------- | ------ |
+| 5.0.1 | Runtime log level control from UI                         | done   |
+| 5.0.2 | Full-width logs table                                     | done   |
+| 5.0.3 | Configurable movie/TV directory paths                     | done   |
+| 5.0.4 | File browser for path inputs (server-side API + modal UI) | done   |
+| 5.0.5 | i18n translation system with 7 languages                  | done   |
+| 5.0.6 | Language selection in setup wizard (first question)       | done   |
+| 5.0.7 | Language selector in settings (new Display section)       | done   |
 
 ## Source-Specific Download Details
 
@@ -126,14 +126,14 @@ Multi-part files are concatenated in order via a PassThrough stream.
 
 ## Environment Variables Reference
 
-| Variable                   | Default                | Purpose                                         |
-| -------------------------- | ---------------------  | ----------------------------------------------- |
-| `PORT`                     | `5056`                 | Listen port                                     |
-| `API_KEY`                  | —                      | Master API key (required for managing API keys) |
-| `INCOMPLETE_PATH`          | `/downloads/incomplete`| Directory for in-progress downloads             |
-| `COMPLETED_PATH`           | `/downloads/complete`  | Root directory for completed media              |
-| `MAX_CONCURRENT_DOWNLOADS` | `2`                    | Max parallel downloads                          |
-| `MAX_BANDWIDTH`            | `0` (unlimited)        | Bandwidth limit in bytes/sec                    |
+| Variable                   | Default                 | Purpose                                         |
+| -------------------------- | ----------------------- | ----------------------------------------------- |
+| `PORT`                     | `5056`                  | Listen port                                     |
+| `API_KEY`                  | —                       | Master API key (required for managing API keys) |
+| `INCOMPLETE_PATH`          | `/downloads/incomplete` | Directory for in-progress downloads             |
+| `COMPLETED_PATH`           | `/downloads/complete`   | Root directory for completed media              |
+| `MAX_CONCURRENT_DOWNLOADS` | `2`                     | Max parallel downloads                          |
+| `MAX_BANDWIDTH`            | `0` (unlimited)         | Bandwidth limit in bytes/sec                    |
 
 ## File Placement Convention
 

@@ -13,7 +13,7 @@
 }
 
 .VPHero .name {
-  font-family: 'Silkscreen', monospace;
+  font-family: "Silkscreen", monospace;
   background: linear-gradient(135deg, #0d9488, #059669);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -45,7 +45,7 @@
 }
 
 .VPNavBarTitle .title {
-  font-family: 'Silkscreen', monospace;
+  font-family: "Silkscreen", monospace;
   background: linear-gradient(135deg, #0d9488, #059669);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -70,10 +70,10 @@ Status values: `queued`, `downloading`, `complete`, `failed`.
 
 ### API Keys
 
-| Method | Path | Auth |
-|---|---|---|
-| POST | `/api/v1/api-keys` | Master key |
-| GET | `/api/v1/api-keys` | Master key |
+| Method | Path                    | Auth       |
+| ------ | ----------------------- | ---------- |
+| POST   | `/api/v1/api-keys`      | Master key |
+| GET    | `/api/v1/api-keys`      | Master key |
 | DELETE | `/api/v1/api-keys/:key` | Master key |
 
 #### POST /api/v1/api-keys
@@ -108,15 +108,15 @@ Revoke an API key.
 
 ### Queue Management
 
-| Method | Path | Auth |
-|---|---|---|
-| GET | `/api/v1/queue` | Master key |
-| POST | `/api/v1/queue/:id/pause` | Master key |
-| POST | `/api/v1/queue/:id/resume` | Master key |
-| DELETE | `/api/v1/queue/:id` | Master key |
-| DELETE | `/api/v1/queue` | Master key |
-| POST | `/api/v1/queue/pause-all` | Master key |
-| POST | `/api/v1/queue/resume-all` | Master key |
+| Method | Path                       | Auth       |
+| ------ | -------------------------- | ---------- |
+| GET    | `/api/v1/queue`            | Master key |
+| POST   | `/api/v1/queue/:id/pause`  | Master key |
+| POST   | `/api/v1/queue/:id/resume` | Master key |
+| DELETE | `/api/v1/queue/:id`        | Master key |
+| DELETE | `/api/v1/queue`            | Master key |
+| POST   | `/api/v1/queue/pause-all`  | Master key |
+| POST   | `/api/v1/queue/resume-all` | Master key |
 
 #### GET /api/v1/queue
 
@@ -154,10 +154,10 @@ Resume all queue processing.
 
 ### Settings
 
-| Method | Path | Auth |
-|---|---|---|
-| GET | `/api/v1/settings` | Master key |
-| PUT | `/api/v1/settings` | Master key |
+| Method | Path               | Auth       |
+| ------ | ------------------ | ---------- |
+| GET    | `/api/v1/settings` | Master key |
+| PUT    | `/api/v1/settings` | Master key |
 
 #### GET /api/v1/settings
 
@@ -181,9 +181,9 @@ Update runtime settings.
 
 ### Health & Auth
 
-| Method | Path | Auth |
-|---|---|---|
-| GET | `/api/v1/health` | None |
+| Method | Path             | Auth |
+| ------ | ---------------- | ---- |
+| GET    | `/api/v1/health` | None |
 
 #### GET /api/v1/health
 
@@ -197,9 +197,9 @@ Health check with active download count.
 
 ### Health & Auth
 
-| Method | Path | Auth |
-|---|---|---|
-| GET | `/api/v1/verify` | API key |
+| Method | Path             | Auth    |
+| ------ | ---------------- | ------- |
+| GET    | `/api/v1/verify` | API key |
 
 #### GET /api/v1/verify
 
@@ -213,9 +213,9 @@ Verify an API key is valid.
 
 ### Logs
 
-| Method | Path | Auth |
-|---|---|---|
-| GET | `/api/v1/logs` | Master key |
+| Method | Path           | Auth       |
+| ------ | -------------- | ---------- |
+| GET    | `/api/v1/logs` | Master key |
 
 #### GET /api/v1/logs
 
@@ -224,14 +224,18 @@ Get buffered log entries.
 **Response**
 
 ```json
-{ "logs": [{ "timestamp": "...", "level": "info", "label": "Queue", "message": "..." }] }
+{
+  "logs": [
+    { "timestamp": "...", "level": "info", "label": "Queue", "message": "..." }
+  ]
+}
 ```
 
 ### Webhooks
 
-| Method | Path | Auth |
-|---|---|---|
-| POST | `/api/v1/webhooks/test` | Master key |
+| Method | Path                    | Auth       |
+| ------ | ----------------------- | ---------- |
+| POST   | `/api/v1/webhooks/test` | Master key |
 
 #### POST /api/v1/webhooks/test
 
@@ -251,7 +255,6 @@ Test a webhook URL.
 
 ### other
 
-| Method | Path | Auth |
-|---|---|---|
-| GET | `/api/v1/browse` | Master key |
-
+| Method | Path             | Auth       |
+| ------ | ---------------- | ---------- |
+| GET    | `/api/v1/browse` | Master key |

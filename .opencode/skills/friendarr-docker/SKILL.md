@@ -7,10 +7,10 @@ description: Use ONLY when building, testing, or deploying Friendarr Docker imag
 
 ## Dockerfiles
 
-| File | Purpose |
-|---|---|
-| `Dockerfile` | Multi-stage production build (Alpine). Compiles TypeScript, outputs minimal image with `dist/` only. |
-| `Dockerfile.local` | Development image. Mounts source for hot-reload via `pnpm dev`. Used by `compose.yaml`. |
+| File               | Purpose                                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| `Dockerfile`       | Multi-stage production build (Alpine). Compiles TypeScript, outputs minimal image with `dist/` only. |
+| `Dockerfile.local` | Development image. Mounts source for hot-reload via `pnpm dev`. Used by `compose.yaml`.              |
 
 ## Compose stack (development)
 
@@ -157,17 +157,17 @@ docker run --rm --entrypoint sh friendarr:test -c "ls node_modules/.pnpm | grep 
 
 Two workflows automate Docker builds:
 
-| Workflow | Trigger | What it does |
-|---|---|---|
-| `.github/workflows/ci.yml` | Push to `develop`, PRs | Lint, typecheck, build. On `develop` push: build & push `:develop` tag to Docker Hub. |
-| `.github/workflows/release.yml` | Tag push `v*` | Build multi-arch (`amd64` + `arm64`), push `:version`, `:v{major}.{minor}`, `:v{major}`, `:latest` tags to Docker Hub. |
+| Workflow                        | Trigger                | What it does                                                                                                           |
+| ------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`      | Push to `develop`, PRs | Lint, typecheck, build. On `develop` push: build & push `:develop` tag to Docker Hub.                                  |
+| `.github/workflows/release.yml` | Tag push `v*`          | Build multi-arch (`amd64` + `arm64`), push `:version`, `:v{major}.{minor}`, `:v{major}`, `:latest` tags to Docker Hub. |
 
 Both workflows require these GitHub secrets:
 
-| Secret | Purpose |
-|---|---|
-| `DOCKER_USERNAME` | Docker Hub username |
-| `DOCKER_TOKEN` | Docker Hub access token (not password) |
+| Secret            | Purpose                                |
+| ----------------- | -------------------------------------- |
+| `DOCKER_USERNAME` | Docker Hub username                    |
+| `DOCKER_TOKEN`    | Docker Hub access token (not password) |
 
 ## Build caching
 

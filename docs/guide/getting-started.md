@@ -9,15 +9,15 @@
 
 Copy `.env.example` to `.env` and set the required values:
 
-| Variable | Default | Required | Purpose |
-|---|---|---|---|
-| `PORT` | `5056` | No | Listen port |
-| `API_KEY` | — | **Yes** | Master API key for managing API keys and accessing the UI |
-| `INCOMPLETE_PATH` | `/downloads/incomplete` | No | Directory for in-progress downloads |
-| `COMPLETED_PATH` | `/downloads/complete` | No | Root directory for completed media (movies/tv beneath) |
-| `MAX_CONCURRENT_DOWNLOADS` | `2` | No | Max parallel downloads (overridable at runtime) |
-| `DEBUG` | `false` | No | Enable debug-level logging |
-| `LOG_BUFFER_SIZE` | `500` | No | Number of log entries kept in memory |
+| Variable                   | Default                 | Required | Purpose                                                   |
+| -------------------------- | ----------------------- | -------- | --------------------------------------------------------- |
+| `PORT`                     | `5056`                  | No       | Listen port                                               |
+| `API_KEY`                  | —                       | **Yes**  | Master API key for managing API keys and accessing the UI |
+| `INCOMPLETE_PATH`          | `/downloads/incomplete` | No       | Directory for in-progress downloads                       |
+| `COMPLETED_PATH`           | `/downloads/complete`   | No       | Root directory for completed media (movies/tv beneath)    |
+| `MAX_CONCURRENT_DOWNLOADS` | `2`                     | No       | Max parallel downloads (overridable at runtime)           |
+| `DEBUG`                    | `false`                 | No       | Enable debug-level logging                                |
+| `LOG_BUFFER_SIZE`          | `500`                   | No       | Number of log entries kept in memory                      |
 
 ### About the API_KEY
 

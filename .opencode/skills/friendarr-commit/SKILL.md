@@ -35,12 +35,15 @@ This repo has **no husky hooks** installed. There is no automatic lint-staged or
 ## Commit workflow
 
 1. **Verify nothing is broken**: Run all checks BEFORE staging.
+
    ```bash
    pnpm typecheck && pnpm lint && pnpm format
    ```
+
    Fix every error before proceeding. **Do not skip this step.**
 
 2. **Build succeeds**:
+
    ```bash
    pnpm build
    ```
@@ -48,6 +51,7 @@ This repo has **no husky hooks** installed. There is no automatic lint-staged or
 3. **Stage only intended files**: `git add <specific files>` — avoid `git add -A` or `git add .`
 
 4. **Verify what's staged**:
+
    ```bash
    git diff --cached --stat
    ```
@@ -57,6 +61,7 @@ This repo has **no husky hooks** installed. There is no automatic lint-staged or
 6. **No unrelated changes**: Only files relevant to the change
 
 7. **Write the commit**:
+
    ```bash
    git commit -m "type(scope): description"
    ```

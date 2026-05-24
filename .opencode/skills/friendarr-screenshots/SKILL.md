@@ -38,6 +38,7 @@ npx tsx scripts/screenshot.ts --path "/" --name "queue"
 ## Authentication
 
 The script reads the `API_KEY` from `.env` and uses it to authenticate via the Friendarr auth modal. It:
+
 1. Navigates to `http://localhost:5056`
 2. Clicks the auth button to open the modal
 3. Fills in the master API key
@@ -56,11 +57,11 @@ Screenshots are saved to `docs/screenshots/<name>.png`. Reference them in docs l
 
 ## Available Targets
 
-| `--name` | Description |
-|---|---|
-| `queue` | Queue dashboard with job table, pause/resume controls |
-| `settings` | Settings page showing source endpoints tab |
-| `logs` | Logs viewer with auto-refresh and level filter |
+| `--name`   | Description                                           |
+| ---------- | ----------------------------------------------------- |
+| `queue`    | Queue dashboard with job table, pause/resume controls |
+| `settings` | Settings page showing source endpoints tab            |
+| `logs`     | Logs viewer with auto-refresh and level filter        |
 
 ## Viewport
 

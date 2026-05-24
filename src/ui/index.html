@@ -1,750 +1,1260 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="bg-gray-900">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Friendarr</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/tailwind.css">
-  <script src="/i18n.js"></script>
-  <style>
-    html { min-height: 100%; scrollbar-width: thin; scrollbar-color: #4b5563 #1f2937; }
-    html:hover { scrollbar-color: #6b7280 #1f2937; }
-    body { background-color: #111827; }
-    .sidebar {
-      background: linear-gradient(180deg, rgba(31,41,55,1) 0%, #131928 100%);
-      border-right: 1px solid #374151;
-    }
-    input[type='text'], input[type='password'], input[type='number'], select:not([multiple]), textarea {
-      appearance: none;
-      background-color: #374151; border: 1px solid #6b7280; border-radius: 0.375rem;
-      color: white; padding: 0.5rem 0.75rem; font-size: 0.875rem; line-height: 1.25rem;
-      width: 100%; min-width: 0; flex: 1 1 0%;
-      transition: border-color 150ms ease-in-out;
-    }
-    .form-input-field input:not([type='checkbox']):has(+ .input-action) {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    input[type='text']:focus, input[type='password']:focus, input[type='number']:focus, select:not([multiple]):focus, textarea:focus {
-      outline: none; border-color: #059669; box-shadow: 0 0 0 1px #059669;
-    }
-    select:not([multiple]) {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      color-scheme: dark;
-      display: block;
-      background-color: #374151;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.5rem center;
-      background-size: 1.5em 1.5em;
-      padding-right: 2.5rem;
-      cursor: pointer;
-    }
-    select:not([multiple]) option {
-      background-color: #1f2937;
-      color: #fff;
-    }
-    .form-input-field {
-      display: flex;
-      max-width: 36rem;
-      border-radius: 0.375rem;
-    }
-    input[type='checkbox'] {
-      height: 1.5rem; width: 1.5rem; border-radius: 0.375rem;
-      color: #059669; transition: 150ms ease-in-out;
-    }
-    input[type='number']::-webkit-outer-spin-button,
-    input[type='number']::-webkit-inner-spin-button {
-      -webkit-appearance: none; margin: 0;
-    }
-    input[type='number'] {
-      -moz-appearance: textfield;
-    }
-    .btn-primary {
-      display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #059669; border-radius: 0.375rem; font-weight: 500;
-      padding: 0.5rem 1rem; font-size: 0.875rem; line-height: 1.25rem;
-      color: white; background-color: rgba(5,150,105,0.8);
-      transition: 150ms ease-in-out; cursor: pointer; white-space: nowrap;
-    }
-    .btn-primary:hover { background-color: #047857; border-color: #059669; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-ghost {
-      display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #4b5563; border-radius: 0.375rem; font-weight: 500;
-      padding: 0.5rem 1rem; font-size: 0.875rem; line-height: 1.25rem;
-      color: #d1d5db; background-color: transparent;
-      transition: 150ms ease-in-out; cursor: pointer; white-space: nowrap;
-    }
-    .btn-ghost:hover { color: white; border-color: #9ca3af; }
-    .btn-danger {
-      display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #ef4444; border-radius: 0.375rem; font-weight: 500;
-      padding: 0.5rem 1rem; font-size: 0.875rem; line-height: 1.25rem;
-      color: white; background-color: rgba(220,38,38,0.8);
-      transition: 150ms ease-in-out; cursor: pointer; white-space: nowrap;
-    }
-    .btn-danger:hover { background-color: #dc2626; border-color: #ef4444; }
-    .btn-sm { padding: 0.25rem 0.625rem; font-size: 0.75rem; line-height: 1rem; }
-    .btn-xs { padding: 0.125rem 0.5rem; font-size: 0.75rem; line-height: 1rem; }
-    .input-action {
-      position: relative; margin-left: -1px;
-      display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #6b7280;
-      background-color: rgba(5,150,105,0.8);
-      padding: 0 0.75rem; min-width: 2.5rem;
-      color: white;
-      border-radius: 0 0.375rem 0.375rem 0;
-      transition: all 150ms ease-in-out;
-      cursor: pointer;
-    }
-    .input-action:hover { background-color: #047857; }
-    .input-leading { border-top-right-radius: 0; border-bottom-right-radius: 0; }
-    .btn-icon {
-      display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #4b5563; border-radius: 0.375rem;
-      padding: 0.375rem; color: #d1d5db; background-color: transparent;
-      transition: all 150ms ease-in-out; cursor: pointer;
-    }
-    .btn-icon:hover { color: white; border-color: #9ca3af; background-color: rgba(55,65,81,0.5); }
-    .btn-icon-danger {
-      display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid #4b5563; border-radius: 0.375rem;
-      padding: 0.375rem; color: #f87171; background-color: transparent;
-      transition: all 150ms ease-in-out; cursor: pointer;
-    }
-    .btn-icon-danger:hover { color: #fca5a5; border-color: #ef4444; background-color: rgba(127,29,29,0.3); }
-    .text-brand {
-      background: linear-gradient(to bottom right, #34d399, #4ade80);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .text-xxs { font-size: 0.6rem; line-height: 0.75rem; }
-    svg.icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
-    svg.icon-sm { width: 1rem; height: 1rem; flex-shrink: 0; }
-  </style>
-</head>
-<body class="text-white">
-<div id="app" class="flex h-screen min-h-screen min-w-0 bg-gray-900">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Friendarr</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Silkscreen:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/tailwind.css" />
+    <script src="/i18n.js"></script>
+    <style>
+      html {
+        min-height: 100%;
+        scrollbar-width: thin;
+        scrollbar-color: #4b5563 #1f2937;
+      }
+      html:hover {
+        scrollbar-color: #6b7280 #1f2937;
+      }
+      body {
+        background-color: #111827;
+      }
+      .sidebar {
+        background: linear-gradient(
+          180deg,
+          rgba(31, 41, 55, 1) 0%,
+          #131928 100%
+        );
+        border-right: 1px solid #374151;
+      }
+      input[type="text"],
+      input[type="password"],
+      input[type="number"],
+      select:not([multiple]),
+      textarea {
+        appearance: none;
+        background-color: #374151;
+        border: 1px solid #6b7280;
+        border-radius: 0.375rem;
+        color: white;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        width: 100%;
+        min-width: 0;
+        flex: 1 1 0%;
+        transition: border-color 150ms ease-in-out;
+      }
+      .form-input-field input:not([type="checkbox"]):has(+ .input-action) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      input[type="text"]:focus,
+      input[type="password"]:focus,
+      input[type="number"]:focus,
+      select:not([multiple]):focus,
+      textarea:focus {
+        outline: none;
+        border-color: #059669;
+        box-shadow: 0 0 0 1px #059669;
+      }
+      select:not([multiple]) {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        color-scheme: dark;
+        display: block;
+        background-color: #374151;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        cursor: pointer;
+      }
+      select:not([multiple]) option {
+        background-color: #1f2937;
+        color: #fff;
+      }
+      .form-input-field {
+        display: flex;
+        max-width: 36rem;
+        border-radius: 0.375rem;
+      }
+      input[type="checkbox"] {
+        height: 1.5rem;
+        width: 1.5rem;
+        border-radius: 0.375rem;
+        color: #059669;
+        transition: 150ms ease-in-out;
+      }
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #059669;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: white;
+        background-color: rgba(5, 150, 105, 0.8);
+        transition: 150ms ease-in-out;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-primary:hover {
+        background-color: #047857;
+        border-color: #059669;
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4b5563;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: #d1d5db;
+        background-color: transparent;
+        transition: 150ms ease-in-out;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-ghost:hover {
+        color: white;
+        border-color: #9ca3af;
+      }
+      .btn-danger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ef4444;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: white;
+        background-color: rgba(220, 38, 38, 0.8);
+        transition: 150ms ease-in-out;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-danger:hover {
+        background-color: #dc2626;
+        border-color: #ef4444;
+      }
+      .btn-sm {
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
+      }
+      .btn-xs {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
+      }
+      .input-action {
+        position: relative;
+        margin-left: -1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #6b7280;
+        background-color: rgba(5, 150, 105, 0.8);
+        padding: 0 0.75rem;
+        min-width: 2.5rem;
+        color: white;
+        border-radius: 0 0.375rem 0.375rem 0;
+        transition: all 150ms ease-in-out;
+        cursor: pointer;
+      }
+      .input-action:hover {
+        background-color: #047857;
+      }
+      .input-leading {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4b5563;
+        border-radius: 0.375rem;
+        padding: 0.375rem;
+        color: #d1d5db;
+        background-color: transparent;
+        transition: all 150ms ease-in-out;
+        cursor: pointer;
+      }
+      .btn-icon:hover {
+        color: white;
+        border-color: #9ca3af;
+        background-color: rgba(55, 65, 81, 0.5);
+      }
+      .btn-icon-danger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4b5563;
+        border-radius: 0.375rem;
+        padding: 0.375rem;
+        color: #f87171;
+        background-color: transparent;
+        transition: all 150ms ease-in-out;
+        cursor: pointer;
+      }
+      .btn-icon-danger:hover {
+        color: #fca5a5;
+        border-color: #ef4444;
+        background-color: rgba(127, 29, 29, 0.3);
+      }
+      .text-brand {
+        background: linear-gradient(to bottom right, #34d399, #4ade80);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .text-xxs {
+        font-size: 0.6rem;
+        line-height: 0.75rem;
+      }
+      svg.icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+      }
+      svg.icon-sm {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body class="text-white">
+    <div id="app" class="flex h-screen min-h-screen min-w-0 bg-gray-900">
+      <!-- Sidebar -->
+      <aside
+        class="sidebar fixed bottom-0 left-0 top-0 z-30 flex w-64 flex-col"
+      >
+        <div class="flex flex-1 flex-col overflow-y-auto pb-4">
+          <div class="flex flex-shrink-0 flex-col items-center py-6">
+            <svg
+              class="w-14 h-14 mb-2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#6ee7b7" />
+                  <stop offset="100%" stop-color="#047857" />
+                </linearGradient>
+              </defs>
+              <path
+                fill="url(#logo-grad)"
+                d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z"
+              />
+            </svg>
+            <span
+              class="w-full px-4 text-3xl font-bold text-center"
+              style="font-family: &quot;Silkscreen&quot;, monospace"
+              ><span class="text-brand">Friendarr</span></span
+            >
+          </div>
+          <nav class="mt-8 flex-1 space-y-1 px-4" id="nav">
+            <a
+              href="#"
+              data-view="queue"
+              class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400"
+            >
+              <svg
+                class="w-6 h-6 mr-3 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+              <span class="nav-label">Queue</span>
+            </a>
+            <a
+              href="#"
+              data-view="settings"
+              class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white"
+            >
+              <svg
+                class="w-6 h-6 mr-3 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <span class="nav-label">Settings</span>
+            </a>
+          </nav>
+          <div
+            class="px-4 py-3 border-t border-gray-700 mt-auto text-xs text-gray-500 space-y-1"
+            id="auth-status"
+          >
+            <div><span data-t="auth.notAuthenticated"></span></div>
+          </div>
+        </div>
+      </aside>
 
-  <!-- Sidebar -->
-  <aside class="sidebar fixed bottom-0 left-0 top-0 z-30 flex w-64 flex-col">
-    <div class="flex flex-1 flex-col overflow-y-auto pb-4">
-      <div class="flex flex-shrink-0 flex-col items-center py-6">
-        <svg class="w-14 h-14 mb-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#6ee7b7"/>
-              <stop offset="100%" stop-color="#047857"/>
-            </linearGradient>
-          </defs>
-          <path fill="url(#logo-grad)" d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z"/>
-        </svg>
-        <span class="w-full px-4 text-3xl font-bold text-center" style="font-family:'Silkscreen',monospace"><span class="text-brand">Friendarr</span></span>
-      </div>
-      <nav class="mt-8 flex-1 space-y-1 px-4" id="nav">
-        <a href="#" data-view="queue" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400">
-          <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-          <span class="nav-label">Queue</span>
-        </a>
-        <a href="#" data-view="settings" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white">
-          <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          <span class="nav-label">Settings</span>
-        </a>
-      </nav>
-      <div class="px-4 py-3 border-t border-gray-700 mt-auto text-xs text-gray-500 space-y-1" id="auth-status">
-        <div><span data-t="auth.notAuthenticated"></span></div>
-      </div>
+      <!-- Main Content -->
+      <main class="flex-1 ml-64 relative flex flex-col min-h-0">
+        <header
+          class="sticky top-0 z-10 flex items-center justify-between h-16 px-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur flex-shrink-0"
+        >
+          <h2 class="text-xl font-bold text-gray-100" id="page-title">
+            <span data-t="page.queue"></span>
+          </h2>
+          <button
+            onclick="showAuthModal()"
+            class="btn-ghost btn-sm"
+            id="auth-btn"
+          >
+            <svg
+              class="icon-sm mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+              />
+            </svg>
+            <span data-t="auth.authenticate"></span>
+          </button>
+        </header>
+
+        <div class="px-6 flex-1 min-h-0 overflow-auto" id="content"></div>
+      </main>
     </div>
-  </aside>
 
-  <!-- Main Content -->
-  <main class="flex-1 ml-64 relative flex flex-col min-h-0">
-    <header class="sticky top-0 z-10 flex items-center justify-between h-16 px-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur flex-shrink-0">
-      <h2 class="text-xl font-bold text-gray-100" id="page-title"><span data-t="page.queue"></span></h2>
-      <button onclick="showAuthModal()" class="btn-ghost btn-sm" id="auth-btn">
-        <svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-        <span data-t="auth.authenticate"></span>
-      </button>
-    </header>
-
-    <div class="px-6 flex-1 min-h-0 overflow-auto" id="content"></div>
-  </main>
-
-</div>
-
-<!-- Auth Modal -->
-<div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
-  <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4"><span data-t="auth.modalTitle"></span></h3>
-    <p class="text-sm text-gray-400 mb-4"><span data-t="auth.modalDescription"></span></p>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="auth.masterApiKey"></span></label>
-        <div class="form-input-field"><input type="password" id="auth-key-input" placeholder="sk-..."></div>
-      </div>
-    </div>
-    <div class="flex justify-end gap-2 mt-4">
-      <button onclick="hideAuthModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
-      <button onclick="authenticate()" class="btn-primary"><span data-t="auth.connect"></span></button>
-    </div>
-    <div id="auth-error" class="mt-3 text-sm text-red-500 hidden"></div>
-  </div>
-</div>
-
-<!-- API Key Modal -->
-<div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
-  <div class="relative w-full max-w-xl rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4"><span data-t="apiKeys.newKey"></span></h3>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="apiKeys.label"></span></label>
-        <div class="form-input-field"><input type="text" id="new-key-label" placeholder="e.g. Seerr instance" oninput="updateKeyButton()"></div>
-      </div>
-      <div id="key-result" class="rounded-md border border-emerald-500 bg-gray-800 px-3 py-2" style="display:none">
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-emerald-300 font-mono" id="key-result-text"></span>
-          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="Copy to clipboard">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+    <!-- Auth Modal -->
+    <div
+      id="auth-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70"
+    >
+      <div
+        class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700"
+      >
+        <h3 class="text-brand text-xl font-bold mb-4">
+          <span data-t="auth.modalTitle"></span>
+        </h3>
+        <p class="text-sm text-gray-400 mb-4">
+          <span data-t="auth.modalDescription"></span>
+        </p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"
+              ><span data-t="auth.masterApiKey"></span
+            ></label>
+            <div class="form-input-field">
+              <input type="password" id="auth-key-input" placeholder="sk-..." />
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button onclick="hideAuthModal()" class="btn-ghost">
+            <span data-t="common.cancel"></span>
+          </button>
+          <button onclick="authenticate()" class="btn-primary">
+            <span data-t="auth.connect"></span>
           </button>
         </div>
-        <p class="text-xs text-gray-500 mt-1"><span data-t="apiKeys.newKeyHint"></span></p>
+        <div id="auth-error" class="mt-3 text-sm text-red-500 hidden"></div>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideKeyModal()" class="btn-ghost"><span data-t="apiKeys.close"></span></button>
-      <button onclick="createApiKey()" class="btn-primary" id="key-create-btn" disabled><span data-t="apiKeys.createKey"></span></button>
-    </div>
-  </div>
-</div>
 
-<!-- Webhook Modal -->
-<div id="webhook-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
-  <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4" id="wh-modal-title"><span data-t="webhooks.addWebhook"></span></h3>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="webhooks.url"></span></label>
-        <div class="form-input-field"><input type="text" id="wh-url" placeholder="https://hooks.example.com/endpoint"></div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="webhooks.secret"></span></label>
-        <div class="form-input-field"><input type="password" id="wh-secret" placeholder="Shared secret for HMAC signature"></div>
-        <p class="mt-1 text-xs text-gray-500"><span data-t="webhooks.secretHint"></span></p>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-2"><span data-t="webhooks.events"></span></label>
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.requested" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.requested"></span></label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.started" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.started"></span></label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.complete" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.complete"></span></label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.failed" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.failed"></span></label>
+    <!-- API Key Modal -->
+    <div
+      id="key-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70"
+    >
+      <div
+        class="relative w-full max-w-xl rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700"
+      >
+        <h3 class="text-brand text-xl font-bold mb-4">
+          <span data-t="apiKeys.newKey"></span>
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"
+              ><span data-t="apiKeys.label"></span
+            ></label>
+            <div class="form-input-field">
+              <input
+                type="text"
+                id="new-key-label"
+                placeholder="e.g. Seerr instance"
+                oninput="updateKeyButton()"
+              />
+            </div>
+          </div>
+          <div
+            id="key-result"
+            class="rounded-md border border-emerald-500 bg-gray-800 px-3 py-2"
+            style="display: none"
+          >
+            <div class="flex items-center gap-2">
+              <span
+                class="text-sm text-emerald-300 font-mono"
+                id="key-result-text"
+              ></span>
+              <button
+                onclick="copyGeneratedKey()"
+                class="btn-icon btn-xs"
+                title="Copy to clipboard"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              <span data-t="apiKeys.newKeyHint"></span>
+            </p>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
+          <button onclick="hideKeyModal()" class="btn-ghost">
+            <span data-t="apiKeys.close"></span>
+          </button>
+          <button
+            onclick="createApiKey()"
+            class="btn-primary"
+            id="key-create-btn"
+            disabled
+          >
+            <span data-t="apiKeys.createKey"></span>
+          </button>
         </div>
       </div>
-      <div>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" id="wh-enabled" checked class="w-5 h-5 rounded text-green-700">
-          <span class="text-sm text-white"><span data-t="webhooks.enabled"></span></span>
-        </label>
+    </div>
+
+    <!-- Webhook Modal -->
+    <div
+      id="webhook-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70"
+    >
+      <div
+        class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700"
+      >
+        <h3 class="text-brand text-xl font-bold mb-4" id="wh-modal-title">
+          <span data-t="webhooks.addWebhook"></span>
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"
+              ><span data-t="webhooks.url"></span
+            ></label>
+            <div class="form-input-field">
+              <input
+                type="text"
+                id="wh-url"
+                placeholder="https://hooks.example.com/endpoint"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"
+              ><span data-t="webhooks.secret"></span
+            ></label>
+            <div class="form-input-field">
+              <input
+                type="password"
+                id="wh-secret"
+                placeholder="Shared secret for HMAC signature"
+              />
+            </div>
+            <p class="mt-1 text-xs text-gray-500">
+              <span data-t="webhooks.secretHint"></span>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-2"
+              ><span data-t="webhooks.events"></span
+            ></label>
+            <div class="grid grid-cols-2 gap-2">
+              <label
+                class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  id="wh-event-download.requested"
+                  class="wh-event-cb w-4 h-4 rounded text-green-700" />
+                <span data-t="event.download.requested"></span
+              ></label>
+              <label
+                class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  id="wh-event-download.started"
+                  class="wh-event-cb w-4 h-4 rounded text-green-700" />
+                <span data-t="event.download.started"></span
+              ></label>
+              <label
+                class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  id="wh-event-download.complete"
+                  class="wh-event-cb w-4 h-4 rounded text-green-700" />
+                <span data-t="event.download.complete"></span
+              ></label>
+              <label
+                class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  id="wh-event-download.failed"
+                  class="wh-event-cb w-4 h-4 rounded text-green-700" />
+                <span data-t="event.download.failed"></span
+              ></label>
+            </div>
+          </div>
+          <div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                id="wh-enabled"
+                checked
+                class="w-5 h-5 rounded text-green-700"
+              />
+              <span class="text-sm text-white"
+                ><span data-t="webhooks.enabled"></span
+              ></span>
+            </label>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
+          <button onclick="hideWebhookModal()" class="btn-ghost">
+            <span data-t="common.cancel"></span>
+          </button>
+          <button onclick="saveWebhook()" class="btn-primary">
+            <span data-t="common.save"></span>
+          </button>
+        </div>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideWebhookModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
-      <button onclick="saveWebhook()" class="btn-primary"><span data-t="common.save"></span></button>
+
+    <!-- Browse Modal -->
+    <div
+      id="browse-modal"
+      class="fixed inset-0 z-[60] hidden items-center justify-center bg-gray-800/70"
+    >
+      <div
+        class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700"
+      >
+        <h3 class="text-brand text-xl font-bold mb-2" id="browse-title">
+          <span data-t="browse.title"></span>
+        </h3>
+        <p class="text-sm text-gray-400 mb-3 font-mono" id="browse-path">/</p>
+        <div
+          id="browse-entries"
+          class="max-h-64 overflow-y-auto space-y-0.5 mb-4 rounded border border-gray-700 bg-gray-900 p-1"
+        >
+          <div class="text-center py-4 text-gray-500 text-sm">
+            <span data-t="logs.loading"></span>
+          </div>
+        </div>
+        <input type="hidden" id="browse-target" />
+        <div class="flex justify-end gap-2 border-t border-gray-700 pt-4">
+          <button onclick="hideBrowseModal()" class="btn-ghost">
+            <span data-t="common.cancel"></span>
+          </button>
+          <button onclick="selectBrowse()" class="btn-primary">
+            <span data-t="browse.select"></span>
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- Browse Modal -->
-<div id="browse-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-gray-800/70">
-  <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-2" id="browse-title"><span data-t="browse.title"></span></h3>
-    <p class="text-sm text-gray-400 mb-3 font-mono" id="browse-path">/</p>
-    <div id="browse-entries" class="max-h-64 overflow-y-auto space-y-0.5 mb-4 rounded border border-gray-700 bg-gray-900 p-1">
-      <div class="text-center py-4 text-gray-500 text-sm"><span data-t="logs.loading"></span></div>
-    </div>
-    <input type="hidden" id="browse-target">
-    <div class="flex justify-end gap-2 border-t border-gray-700 pt-4">
-      <button onclick="hideBrowseModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
-      <button onclick="selectBrowse()" class="btn-primary"><span data-t="browse.select"></span></button>
-    </div>
-  </div>
-</div>
+    <script>
+      // === State ===
+      let apiKey = localStorage.getItem("friendarr_key") || "";
+      let currentView = "queue";
+      let queueTimer = null;
+      let settingsData = null;
+      let activeSettingsTab = "schedules";
 
-<script>
-// === State ===
-let apiKey = localStorage.getItem('friendarr_key') || '';
-let currentView = 'queue';
-let queueTimer = null;
-let settingsData = null;
-let activeSettingsTab = 'schedules';
-
-// === Init ===
-document.addEventListener('DOMContentLoaded', async () => {
-  translateStatic();
-  if (!localStorage.getItem('friendarr_key')) {
-    setTimeout(showWizard, 500);
-    setupNav();
-    return;
-  }
-  setupNav();
-  try {
-    const r = await fetch('/api/v1/settings', { headers: authHeaders() });
-    if (r.ok) {
-      updateAuthUI(true);
-      showView(currentView);
-      return;
-    }
-  } catch(e) {}
-  apiKey = '';
-  localStorage.removeItem('friendarr_key');
-  updateAuthUI(false);
-  showView(currentView);
-});
-
-// === Translation ===
-function translateStatic() {
-  document.querySelectorAll('[data-t]').forEach(el => {
-    el.textContent = T(el.getAttribute('data-t'));
-  });
-}
-
-function retranslateUI() {
-  translateStatic();
-  setupNav();
-  var titleEl = document.getElementById('page-title');
-  if (titleEl) {
-    titleEl.textContent = currentView === 'queue' ? T('page.queue') : T('page.settings');
-  }
-  if (currentView === 'queue') {
-    renderQueue();
-  } else if (currentView === 'settings') {
-    renderSettings();
-  }
-}
-
-window.addEventListener('translationsloaded', retranslateUI);
-
-// === Navigation ===
-function setupNav() {
-  document.querySelectorAll('.nav-label').forEach(span => {
-    const link = span.closest('.nav-link');
-    if (!link) return;
-    const view = link.dataset.view;
-    span.textContent = view === 'queue' ? T('nav.queue') : T('nav.settings');
-  });
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const view = e.currentTarget.dataset.view;
-      showView(view);
-      document.querySelectorAll('.nav-link').forEach(l => {
-        l.className = l.dataset.view === view
-          ? 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400'
-          : 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white';
-      });
-    });
-  });
-}
-
-function showView(view) {
-  currentView = view;
-  const contentEl = document.getElementById('content');
-  contentEl.classList.add('flex-1', 'min-h-0', 'overflow-auto');
-  document.getElementById('page-title').textContent = view === 'queue' ? T('page.queue') : T('page.settings');
-  if (view === 'queue') { renderQueue(); startQueuePolling(); }
-  else { stopQueuePolling(); renderSettings(); }
-
-  document.getElementById('nav').querySelectorAll('.nav-link').forEach(l => {
-    const isActive = l.dataset.view === view;
-    l.className = isActive
-      ? 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400'
-      : 'nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white';
-  });
-}
-
-// === Auth ===
-function showAuthModal() {
-  document.getElementById('auth-modal').classList.remove('hidden');
-  document.getElementById('auth-modal').classList.add('flex');
-  document.getElementById('auth-error').classList.add('hidden');
-  const input = document.getElementById('auth-key-input');
-  const stored = localStorage.getItem('friendarr_key');
-  if (input && stored) input.value = stored;
-}
-
-function hideAuthModal() {
-  document.getElementById('auth-modal').classList.add('hidden');
-  document.getElementById('auth-modal').classList.remove('flex');
-}
-
-async function authenticate() {
-  const key = document.getElementById('auth-key-input').value.trim();
-  if (!key) return;
-  try {
-    const r = await fetch('/api/v1/verify', { headers: { Authorization: `Bearer ${key}` } });
-    if (!r.ok) throw new Error('Invalid key');
-    apiKey = key;
-    localStorage.setItem('friendarr_key', key);
-    updateAuthUI(true);
-    hideAuthModal();
-    if (currentView === 'queue') { renderQueue(); startQueuePolling(); }
-    else { renderSettings(); }
-  } catch {
-    document.getElementById('auth-error').classList.remove('hidden');
-    document.getElementById('auth-error').textContent = T('auth.invalidKey');
-  }
-}
-
-function logout() {
-  apiKey = '';
-  localStorage.removeItem('friendarr_key');
-  updateAuthUI(false);
-  stopQueuePolling();
-  document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">' + T('auth.authenticateToContinue') + '</div>';
-}
-
-function updateAuthUI(authed) {
-  const status = document.getElementById('auth-status');
-  const btn = document.getElementById('auth-btn');
-  if (authed) {
-    btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>' + T('auth.logout');
-    btn.onclick = logout;
-    refreshSidebar();
-  } else {
-    status.innerHTML = '<div><span data-t="auth.notAuthenticated"></span></div>';
-    btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>' + T('auth.authenticate');
-    btn.onclick = showAuthModal;
-  }
-}
-
-function updateTitle() {
-  var totalSpeed = 0;
-  try {
-    var jobs = JSON.parse(localStorage.getItem('_friendarr_jobs') || '[]');
-    jobs.forEach(function(j) {
-      if (j.status === 'downloading' && j.bytesDownloaded > 0) {
-        totalSpeed += (j._speed || 0);
-      }
-    });
-  } catch(e) {}
-  if (totalSpeed > 0) {
-    document.title = '(' + formatBytes(totalSpeed) + '/s) Friendarr';
-  } else {
-    document.title = 'Friendarr';
-  }
-}
-
-async function refreshSidebar() {
-  if (!apiKey) return;
-  var status = document.getElementById('auth-status');
-  if (!status) return;
-
-  var lines = [];
-  lines.push('<div class="text-green-400">' + T('auth.authenticated') + '</div>');
-
-  // Queue stats
-  try {
-    var r = await fetch('/api/v1/queue', { headers: authHeaders() });
-    if (r.ok) {
-      var d = await r.json();
-      var jobs = d.jobs || [];
-      var counts = { queued:0, downloading:0, complete:0, failed:0 };
-      jobs.forEach(function(j){ if (counts[j.status] !== undefined) counts[j.status]++; });
-      lines.push('<div>' + counts.queued + ' queued, ' + counts.downloading + ' active</div>');
-      if (counts.complete > 0) lines.push('<div>' + counts.complete + ' completed</div>');
-
-      // Track speed for title
-      jobs.forEach(function(j) {
-        if (j.status === 'downloading') {
-          var prev = (j._prevBytes || 0);
-          j._speed = j.bytesDownloaded - prev;
-          j._prevBytes = j.bytesDownloaded;
-        } else { j._speed = 0; j._prevBytes = 0; }
-      });
-      localStorage.setItem('_friendarr_jobs', JSON.stringify(jobs));
-      updateTitle();
-    }
-  } catch(e) {}
-
-  // Schedule / bandwidth
-  try {
-    var sr = await fetch('/api/v1/settings', { headers: authHeaders() });
-    if (sr.ok) {
-      var sd = await sr.json();
-      var scheds = sd.schedules || [];
-      var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      var now = new Date();
-      var currentMinutes = now.getHours() * 60 + now.getMinutes();
-      var currentDay = now.getDay();
-      var active = false;
-      var currentBw = sd.maxBandwidth || 0;
-
-      for (var i = 0; i < scheds.length; i++) {
-        var s = scheds[i];
-        if (!s.days.includes(currentDay)) continue;
-        for (var j = 0; j < s.windows.length; j++) {
-          var w = s.windows[j];
-          var startH = parseInt(w.start);
-          var endH = parseInt(w.end);
-          if (currentMinutes >= startH * 60 && currentMinutes < endH * 60) {
-            active = true;
-            if (w.bandwidth > 0) currentBw = w.bandwidth;
+      // === Init ===
+      document.addEventListener("DOMContentLoaded", async () => {
+        translateStatic();
+        if (!localStorage.getItem("friendarr_key")) {
+          setTimeout(showWizard, 500);
+          setupNav();
+          return;
+        }
+        setupNav();
+        try {
+          const r = await fetch("/api/v1/settings", { headers: authHeaders() });
+          if (r.ok) {
+            updateAuthUI(true);
+            showView(currentView);
+            return;
           }
+        } catch (e) {}
+        apiKey = "";
+        localStorage.removeItem("friendarr_key");
+        updateAuthUI(false);
+        showView(currentView);
+      });
+
+      // === Translation ===
+      function translateStatic() {
+        document.querySelectorAll("[data-t]").forEach((el) => {
+          el.textContent = T(el.getAttribute("data-t"));
+        });
+      }
+
+      function retranslateUI() {
+        translateStatic();
+        setupNav();
+        var titleEl = document.getElementById("page-title");
+        if (titleEl) {
+          titleEl.textContent =
+            currentView === "queue" ? T("page.queue") : T("page.settings");
+        }
+        if (currentView === "queue") {
+          renderQueue();
+        } else if (currentView === "settings") {
+          renderSettings();
         }
       }
 
-      if (active && scheds.length > 0) {
-        var bws = currentBw > 0 ? '(' + (currentBw / 1048576).toFixed(1) + ' MB/s) ' : '(unlimited) ';
-        var days = scheds.filter(function(s){ return s.days.includes(currentDay); }).map(function(s){ return dayNames[currentDay]; }).join(',');
-        lines.push('<div>' + days + ' ' + bws + '</div>');
-      } else if (scheds.length > 0) {
-        // Find next window
-        var nextWin = null;
-        var minDist = Infinity;
-        for (var di = 0; di < 8; di++) {
-          var day = (currentDay + di) % 7;
-          for (var si = 0; si < scheds.length; si++) {
-            if (!scheds[si].days.includes(day)) continue;
-            for (var wi = 0; wi < scheds[si].windows.length; wi++) {
-              var nw = scheds[si].windows[wi];
-              var nStart = parseInt(nw.start) * 60;
-              var dist = di * 24 * 60 + nStart - currentMinutes;
-              if (dist <= 0) dist += 7 * 24 * 60;
-              if (dist < minDist) { minDist = dist; nextWin = { day: dayNames[day], start: nw.start }; }
+      window.addEventListener("translationsloaded", retranslateUI);
+
+      // === Navigation ===
+      function setupNav() {
+        document.querySelectorAll(".nav-label").forEach((span) => {
+          const link = span.closest(".nav-link");
+          if (!link) return;
+          const view = link.dataset.view;
+          span.textContent =
+            view === "queue" ? T("nav.queue") : T("nav.settings");
+        });
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const view = e.currentTarget.dataset.view;
+            showView(view);
+            document.querySelectorAll(".nav-link").forEach((l) => {
+              l.className =
+                l.dataset.view === view
+                  ? "nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400"
+                  : "nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white";
+            });
+          });
+        });
+      }
+
+      function showView(view) {
+        currentView = view;
+        const contentEl = document.getElementById("content");
+        contentEl.classList.add("flex-1", "min-h-0", "overflow-auto");
+        document.getElementById("page-title").textContent =
+          view === "queue" ? T("page.queue") : T("page.settings");
+        if (view === "queue") {
+          renderQueue();
+          startQueuePolling();
+        } else {
+          stopQueuePolling();
+          renderSettings();
+        }
+
+        document
+          .getElementById("nav")
+          .querySelectorAll(".nav-link")
+          .forEach((l) => {
+            const isActive = l.dataset.view === view;
+            l.className = isActive
+              ? "nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400"
+              : "nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white";
+          });
+      }
+
+      // === Auth ===
+      function showAuthModal() {
+        document.getElementById("auth-modal").classList.remove("hidden");
+        document.getElementById("auth-modal").classList.add("flex");
+        document.getElementById("auth-error").classList.add("hidden");
+        const input = document.getElementById("auth-key-input");
+        const stored = localStorage.getItem("friendarr_key");
+        if (input && stored) input.value = stored;
+      }
+
+      function hideAuthModal() {
+        document.getElementById("auth-modal").classList.add("hidden");
+        document.getElementById("auth-modal").classList.remove("flex");
+      }
+
+      async function authenticate() {
+        const key = document.getElementById("auth-key-input").value.trim();
+        if (!key) return;
+        try {
+          const r = await fetch("/api/v1/verify", {
+            headers: { Authorization: `Bearer ${key}` },
+          });
+          if (!r.ok) throw new Error("Invalid key");
+          apiKey = key;
+          localStorage.setItem("friendarr_key", key);
+          updateAuthUI(true);
+          hideAuthModal();
+          if (currentView === "queue") {
+            renderQueue();
+            startQueuePolling();
+          } else {
+            renderSettings();
+          }
+        } catch {
+          document.getElementById("auth-error").classList.remove("hidden");
+          document.getElementById("auth-error").textContent =
+            T("auth.invalidKey");
+        }
+      }
+
+      function logout() {
+        apiKey = "";
+        localStorage.removeItem("friendarr_key");
+        updateAuthUI(false);
+        stopQueuePolling();
+        document.getElementById("content").innerHTML =
+          '<div class="text-gray-400 text-sm">' +
+          T("auth.authenticateToContinue") +
+          "</div>";
+      }
+
+      function updateAuthUI(authed) {
+        const status = document.getElementById("auth-status");
+        const btn = document.getElementById("auth-btn");
+        if (authed) {
+          btn.innerHTML =
+            '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>' +
+            T("auth.logout");
+          btn.onclick = logout;
+          refreshSidebar();
+        } else {
+          status.innerHTML =
+            '<div><span data-t="auth.notAuthenticated"></span></div>';
+          btn.innerHTML =
+            '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>' +
+            T("auth.authenticate");
+          btn.onclick = showAuthModal;
+        }
+      }
+
+      function updateTitle() {
+        var totalSpeed = 0;
+        try {
+          var jobs = JSON.parse(
+            localStorage.getItem("_friendarr_jobs") || "[]",
+          );
+          jobs.forEach(function (j) {
+            if (j.status === "downloading" && j.bytesDownloaded > 0) {
+              totalSpeed += j._speed || 0;
+            }
+          });
+        } catch (e) {}
+        if (totalSpeed > 0) {
+          document.title = "(" + formatBytes(totalSpeed) + "/s) Friendarr";
+        } else {
+          document.title = "Friendarr";
+        }
+      }
+
+      async function refreshSidebar() {
+        if (!apiKey) return;
+        var status = document.getElementById("auth-status");
+        if (!status) return;
+
+        var lines = [];
+        lines.push(
+          '<div class="text-green-400">' + T("auth.authenticated") + "</div>",
+        );
+
+        // Queue stats
+        try {
+          var r = await fetch("/api/v1/queue", { headers: authHeaders() });
+          if (r.ok) {
+            var d = await r.json();
+            var jobs = d.jobs || [];
+            var counts = { queued: 0, downloading: 0, complete: 0, failed: 0 };
+            jobs.forEach(function (j) {
+              if (counts[j.status] !== undefined) counts[j.status]++;
+            });
+            lines.push(
+              "<div>" +
+                counts.queued +
+                " queued, " +
+                counts.downloading +
+                " active</div>",
+            );
+            if (counts.complete > 0)
+              lines.push("<div>" + counts.complete + " completed</div>");
+
+            // Track speed for title
+            jobs.forEach(function (j) {
+              if (j.status === "downloading") {
+                var prev = j._prevBytes || 0;
+                j._speed = j.bytesDownloaded - prev;
+                j._prevBytes = j.bytesDownloaded;
+              } else {
+                j._speed = 0;
+                j._prevBytes = 0;
+              }
+            });
+            localStorage.setItem("_friendarr_jobs", JSON.stringify(jobs));
+            updateTitle();
+          }
+        } catch (e) {}
+
+        // Schedule / bandwidth
+        try {
+          var sr = await fetch("/api/v1/settings", { headers: authHeaders() });
+          if (sr.ok) {
+            var sd = await sr.json();
+            var scheds = sd.schedules || [];
+            var dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            var now = new Date();
+            var currentMinutes = now.getHours() * 60 + now.getMinutes();
+            var currentDay = now.getDay();
+            var active = false;
+            var currentBw = sd.maxBandwidth || 0;
+
+            for (var i = 0; i < scheds.length; i++) {
+              var s = scheds[i];
+              if (!s.days.includes(currentDay)) continue;
+              for (var j = 0; j < s.windows.length; j++) {
+                var w = s.windows[j];
+                var startH = parseInt(w.start);
+                var endH = parseInt(w.end);
+                if (
+                  currentMinutes >= startH * 60 &&
+                  currentMinutes < endH * 60
+                ) {
+                  active = true;
+                  if (w.bandwidth > 0) currentBw = w.bandwidth;
+                }
+              }
+            }
+
+            if (active && scheds.length > 0) {
+              var bws =
+                currentBw > 0
+                  ? "(" + (currentBw / 1048576).toFixed(1) + " MB/s) "
+                  : "(unlimited) ";
+              var days = scheds
+                .filter(function (s) {
+                  return s.days.includes(currentDay);
+                })
+                .map(function (s) {
+                  return dayNames[currentDay];
+                })
+                .join(",");
+              lines.push("<div>" + days + " " + bws + "</div>");
+            } else if (scheds.length > 0) {
+              // Find next window
+              var nextWin = null;
+              var minDist = Infinity;
+              for (var di = 0; di < 8; di++) {
+                var day = (currentDay + di) % 7;
+                for (var si = 0; si < scheds.length; si++) {
+                  if (!scheds[si].days.includes(day)) continue;
+                  for (var wi = 0; wi < scheds[si].windows.length; wi++) {
+                    var nw = scheds[si].windows[wi];
+                    var nStart = parseInt(nw.start) * 60;
+                    var dist = di * 24 * 60 + nStart - currentMinutes;
+                    if (dist <= 0) dist += 7 * 24 * 60;
+                    if (dist < minDist) {
+                      minDist = dist;
+                      nextWin = { day: dayNames[day], start: nw.start };
+                    }
+                  }
+                }
+              }
+              if (nextWin) {
+                lines.push(
+                  '<div class="text-yellow-400">Blocked — next: ' +
+                    nextWin.day +
+                    " " +
+                    nextWin.start +
+                    "</div>",
+                );
+              } else {
+                lines.push(
+                  '<div class="text-yellow-400">Blocked by schedule</div>',
+                );
+              }
             }
           }
+        } catch (e) {}
+
+        // Disk space
+        try {
+          var dr = await fetch("/api/v1/disk", { headers: authHeaders() });
+          if (dr.ok) {
+            var dd = await dr.json();
+            if (dd.completed && dd.completed.available > 0) {
+              lines.push(
+                "<div>" + formatBytes(dd.completed.available) + " free</div>",
+              );
+            }
+          }
+        } catch (e) {}
+
+        status.innerHTML = lines.join("");
+      }
+
+      // Poll sidebar every 5s
+      setInterval(function () {
+        if (apiKey) refreshSidebar();
+      }, 5000);
+
+      function authHeaders() {
+        return apiKey
+          ? {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            }
+          : {};
+      }
+
+      // === Queue ===
+      function startQueuePolling() {
+        stopQueuePolling();
+        queueTimer = setInterval(renderQueue, 3000);
+      }
+
+      function stopQueuePolling() {
+        if (queueTimer) {
+          clearInterval(queueTimer);
+          queueTimer = null;
         }
-        if (nextWin) {
-          lines.push('<div class="text-yellow-400">Blocked — next: ' + nextWin.day + ' ' + nextWin.start + '</div>');
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return "&mdash;";
+        const units = ["B", "KB", "MB", "GB", "TB"];
+        let i = 0;
+        let b = bytes;
+        while (b >= 1024 && i < units.length - 1) {
+          b /= 1024;
+          i++;
+        }
+        return `${b.toFixed(i > 0 ? 1 : 0)} ${units[i]}`;
+      }
+
+      function formatDate(d) {
+        if (!d) return "&mdash;";
+        return new Date(d).toLocaleString();
+      }
+
+      function statusBadge(status) {
+        const colors = {
+          queued: "bg-gray-600 text-gray-200",
+          downloading: "bg-green-600/80 text-green-100 border border-green-600",
+          complete: "bg-green-500/80 text-green-100 border border-green-500",
+          failed: "bg-red-600/80 text-red-100 border border-red-500",
+        };
+        const labels = {
+          queued: T("status.queued"),
+          downloading: T("status.downloading"),
+          complete: T("status.complete"),
+          failed: T("status.failed"),
+        };
+        return `<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${colors[status] || ""}">${labels[status] || status}</span>`;
+      }
+
+      async function renderQueue() {
+        if (!apiKey) {
+          document.getElementById("content").innerHTML =
+            '<div class="text-gray-400 text-sm">' +
+            T("auth.authenticateToViewQueue") +
+            "</div>";
+          return;
+        }
+        try {
+          const r = await fetch("/api/v1/queue", { headers: authHeaders() });
+          if (!r.ok) {
+            document.getElementById("content").innerHTML =
+              '<div class="text-red-400 text-sm">' +
+              T("queue.failedToLoad") +
+              "</div>";
+            return;
+          }
+          const data = await r.json();
+          const jobs = data.jobs || [];
+          const globalPaused = data.globalPaused;
+
+          const counts = { queued: 0, downloading: 0, complete: 0, failed: 0 };
+          jobs.forEach((j) => {
+            if (counts[j.status] !== undefined) counts[j.status]++;
+          });
+
+          let html = '<div class="flex flex-col h-full">';
+          html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
+          html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued}&nbsp;<span data-t="queue.stats.queued"></span></span>`;
+          html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading}&nbsp;<span data-t="queue.stats.downloading"></span></span>`;
+          html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete}&nbsp;<span data-t="queue.stats.complete"></span></span>`;
+          html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed}&nbsp;<span data-t="queue.stats.failed"></span></span>`;
+          html += `<span class="flex-1"></span>`;
+          if (globalPaused) {
+            html += `<button onclick="resumeAll()" class="btn-primary btn-sm"><span data-t="queue.resumeAll"></span></button>`;
+          } else {
+            html += `<button onclick="pauseAll()" class="btn-ghost btn-sm"><span data-t="queue.pauseAll"></span></button>`;
+          }
+          html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm"><span data-t="queue.clearFinished"></span></button>`;
+          html += `</div>`;
+          if (globalPaused) {
+            html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200"><span data-t="queue.globallyPaused"></span></div>`;
+          }
+          if (jobs.length === 0) {
+            html += `<div class="text-gray-400 text-sm py-8 text-center flex-1"><span data-t="queue.noDownloads"></span></div>`;
+          } else {
+            html += `<div class="flex-1 min-h-0 overflow-auto rounded-lg ring-1 ring-gray-700"><table class="min-w-full"><thead>`;
+            html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.title"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.type"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.status"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.size"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.created"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.actions"></span></th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
+            for (const job of jobs) {
+              const progress = job.totalBytes
+                ? Math.round((job.bytesDownloaded / job.totalBytes) * 100)
+                : 0;
+              html += `<tr>`;
+              html += `<td class="px-4 py-3 text-sm text-white">${esc(job.request.destination.title)}</td>`;
+              html += `<td class="px-4 py-3 text-sm text-gray-300">${esc(job.request.source.type)}</td>`;
+              html += `<td class="px-4 py-3">${statusBadge(job.status)}${job.status === "failed" ? `<div class="text-xs text-red-400 mt-1">${esc(job.error || "")}</div>` : ""}</td>`;
+              html += `<td class="px-4 py-3 text-sm text-gray-300">${job.totalBytes ? `${formatBytes(job.bytesDownloaded)} / ${formatBytes(job.totalBytes)}` : "&mdash;"}${job.status === "downloading" && job.totalBytes ? `<div class="mt-1 w-full bg-gray-700 rounded-full h-1.5"><div class="bg-green-600 h-1.5 rounded-full" style="width:${progress}%"></div></div>` : ""}</td>`;
+              html += `<td class="px-4 py-3 text-sm text-gray-400">${formatDate(job.createdAt)}</td>`;
+              html += `<td class="px-4 py-3">`;
+              if (job.status === "queued" || job.status === "downloading") {
+                html += `<button onclick="cancelJob('${job.id}')" class="btn-danger btn-xs mr-1"><span data-t="queue.cancel"></span></button>`;
+                html += `<button onclick="pauseJob('${job.id}')" class="btn-ghost btn-xs"><span data-t="queue.pause"></span></button>`;
+              }
+              if (job.status === "failed") {
+                html += `<button onclick="retryJob('${job.id}')" class="btn-primary btn-xs mr-1"><svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg><span data-t="queue.retry"></span></button>`;
+              }
+              html += `</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+          }
+          document.getElementById("content").innerHTML = html;
+          translateStatic();
+        } catch {
+          document.getElementById("content").innerHTML =
+            '<div class="text-red-400 text-sm">' +
+            T("queue.failedToLoad") +
+            "</div>";
+        }
+      }
+
+      async function pauseAll() {
+        await fetch("/api/v1/queue/pause-all", {
+          method: "POST",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+      async function resumeAll() {
+        await fetch("/api/v1/queue/resume-all", {
+          method: "POST",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+      async function clearCompleted() {
+        await fetch("/api/v1/queue", {
+          method: "DELETE",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+      async function cancelJob(id) {
+        await fetch(`/api/v1/queue/${id}`, {
+          method: "DELETE",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+      async function pauseJob(id) {
+        await fetch(`/api/v1/queue/${id}/pause`, {
+          method: "POST",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+      async function resumeJob(id) {
+        await fetch(`/api/v1/queue/${id}/resume`, {
+          method: "POST",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+      async function retryJob(id) {
+        await fetch(`/api/v1/queue/${id}/retry`, {
+          method: "POST",
+          headers: authHeaders(),
+        });
+        renderQueue();
+      }
+
+      // === Settings ===
+      async function renderSettings() {
+        if (!apiKey) {
+          document.getElementById("content").innerHTML =
+            '<div class="text-gray-400 text-sm">' +
+            T("auth.authenticateToManageSettings") +
+            "</div>";
+          return;
+        }
+        try {
+          const r = await fetch("/api/v1/settings", { headers: authHeaders() });
+          if (!r.ok) {
+            document.getElementById("content").innerHTML =
+              '<div class="text-red-400 text-sm">' +
+              T("common.failedToLoadSettings") +
+              "</div>";
+            return;
+          }
+          settingsData = await r.json();
+        } catch {
+          document.getElementById("content").innerHTML =
+            '<div class="text-red-400 text-sm">' +
+            T("common.failedToLoadSettings") +
+            "</div>";
+          return;
+        }
+
+        let html = "";
+
+        // Tab bar
+        const tabs = [
+          { id: "schedules", label: T("settings.tab.schedules") },
+          { id: "general", label: T("settings.tab.general") },
+          { id: "paths", label: T("settings.tab.paths") },
+          { id: "webhooks", label: T("settings.tab.webhooks") },
+          { id: "keys", label: T("settings.tab.apiKeys") },
+          { id: "logs", label: T("settings.tab.logs") },
+        ];
+        html += `<div class="overflow-x-scroll border-b border-gray-600"><nav class="flex">`;
+        for (const tab of tabs) {
+          const active = tab.id === activeSettingsTab;
+          html += `<button onclick="switchSettingsTab('${tab.id}')" class="px-1 py-4 ml-8 text-sm font-medium leading-5 transition duration-300 border-b-2 whitespace-nowrap first:ml-0 ${active ? "text-green-600 border-green-700" : "text-gray-500 border-transparent hover:text-gray-300 hover:border-gray-400"}">${tab.label}</button>`;
+        }
+        html += `</nav></div>`;
+
+        // Tab content - logs renders full width, others are max-w-6xl
+        const wrapperClass = activeSettingsTab === "logs" ? "" : "max-w-6xl";
+        html += `<div id="settings-tab-content" class="${wrapperClass}">`;
+        if (activeSettingsTab === "schedules") {
+          html += renderSchedulesSection();
+        } else if (activeSettingsTab === "general") {
+          html += renderGeneralSection();
+        } else if (activeSettingsTab === "paths") {
+          html += renderPathsSection();
+        } else if (activeSettingsTab === "keys") {
+          html += await renderApiKeysSection();
+        } else if (activeSettingsTab === "webhooks") {
+          html += renderWebhooksSection();
+        } else if (activeSettingsTab === "logs") {
+          html += renderLogsSection();
+        }
+        html += `</div>`;
+
+        document.getElementById("content").innerHTML = html;
+
+        // Full-width for logs: remove flex-1 overflow-auto constraints
+        const contentEl = document.getElementById("content");
+        if (activeSettingsTab === "logs") {
+          contentEl.classList.remove("flex-1", "min-h-0", "overflow-auto");
         } else {
-          lines.push('<div class="text-yellow-400">Blocked by schedule</div>');
+          contentEl.classList.add("flex-1", "min-h-0", "overflow-auto");
+        }
+
+        if (activeSettingsTab === "logs") {
+          await fetchLogs();
+        }
+        translateStatic();
+        if (activeSettingsTab === "schedules") {
+          setTimeout(initScheduleDrag, 100);
         }
       }
-    }
-  } catch(e) {}
 
-  // Disk space
-  try {
-    var dr = await fetch('/api/v1/disk', { headers: authHeaders() });
-    if (dr.ok) {
-      var dd = await dr.json();
-      if (dd.completed && dd.completed.available > 0) {
-        lines.push('<div>' + formatBytes(dd.completed.available) + ' free</div>');
+      function switchSettingsTab(tabId) {
+        activeSettingsTab = tabId;
+        renderSettings();
       }
-    }
-  } catch(e) {}
 
-  status.innerHTML = lines.join('');
-}
-
-// Poll sidebar every 5s
-setInterval(function(){ if (apiKey) refreshSidebar(); }, 5000);
-
-function authHeaders() {
-  return apiKey ? { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' } : {};
-}
-
-// === Queue ===
-function startQueuePolling() {
-  stopQueuePolling();
-  queueTimer = setInterval(renderQueue, 3000);
-}
-
-function stopQueuePolling() {
-  if (queueTimer) { clearInterval(queueTimer); queueTimer = null; }
-}
-
-function formatBytes(bytes) {
-  if (!bytes || bytes === 0) return '&mdash;';
-  const units = ['B','KB','MB','GB','TB'];
-  let i = 0;
-  let b = bytes;
-  while (b >= 1024 && i < units.length - 1) { b /= 1024; i++; }
-  return `${b.toFixed(i > 0 ? 1 : 0)} ${units[i]}`;
-}
-
-function formatDate(d) {
-  if (!d) return '&mdash;';
-  return new Date(d).toLocaleString();
-}
-
-function statusBadge(status) {
-  const colors = {
-    queued: 'bg-gray-600 text-gray-200',
-    downloading: 'bg-green-600/80 text-green-100 border border-green-600',
-    complete: 'bg-green-500/80 text-green-100 border border-green-500',
-    failed: 'bg-red-600/80 text-red-100 border border-red-500',
-  };
-  const labels = {
-    queued: T('status.queued'),
-    downloading: T('status.downloading'),
-    complete: T('status.complete'),
-    failed: T('status.failed'),
-  };
-  return `<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${colors[status] || ''}">${labels[status] || status}</span>`;
-}
-
-async function renderQueue() {
-  if (!apiKey) {
-    document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">' + T('auth.authenticateToViewQueue') + '</div>';
-    return;
-  }
-  try {
-    const r = await fetch('/api/v1/queue', { headers: authHeaders() });
-    if (!r.ok) { document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('queue.failedToLoad') + '</div>'; return; }
-    const data = await r.json();
-    const jobs = data.jobs || [];
-    const globalPaused = data.globalPaused;
-
-    const counts = { queued: 0, downloading: 0, complete: 0, failed: 0 };
-    jobs.forEach(j => { if (counts[j.status] !== undefined) counts[j.status]++; });
-
-    let html = '<div class="flex flex-col h-full">';
-    html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
-    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued}&nbsp;<span data-t="queue.stats.queued"></span></span>`;
-    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading}&nbsp;<span data-t="queue.stats.downloading"></span></span>`;
-    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete}&nbsp;<span data-t="queue.stats.complete"></span></span>`;
-    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed}&nbsp;<span data-t="queue.stats.failed"></span></span>`;
-    html += `<span class="flex-1"></span>`;
-    if (globalPaused) {
-      html += `<button onclick="resumeAll()" class="btn-primary btn-sm"><span data-t="queue.resumeAll"></span></button>`;
-    } else {
-      html += `<button onclick="pauseAll()" class="btn-ghost btn-sm"><span data-t="queue.pauseAll"></span></button>`;
-    }
-    html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm"><span data-t="queue.clearFinished"></span></button>`;
-    html += `</div>`;
-    if (globalPaused) {
-      html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200"><span data-t="queue.globallyPaused"></span></div>`;
-    }
-    if (jobs.length === 0) {
-      html += `<div class="text-gray-400 text-sm py-8 text-center flex-1"><span data-t="queue.noDownloads"></span></div>`;
-    } else {
-      html += `<div class="flex-1 min-h-0 overflow-auto rounded-lg ring-1 ring-gray-700"><table class="min-w-full"><thead>`;
-      html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.title"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.type"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.status"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.size"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.created"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.actions"></span></th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
-      for (const job of jobs) {
-        const progress = job.totalBytes ? Math.round((job.bytesDownloaded / job.totalBytes) * 100) : 0;
-        html += `<tr>`;
-        html += `<td class="px-4 py-3 text-sm text-white">${esc(job.request.destination.title)}</td>`;
-        html += `<td class="px-4 py-3 text-sm text-gray-300">${esc(job.request.source.type)}</td>`;
-        html += `<td class="px-4 py-3">${statusBadge(job.status)}${job.status === 'failed' ? `<div class="text-xs text-red-400 mt-1">${esc(job.error || '')}</div>` : ''}</td>`;
-        html += `<td class="px-4 py-3 text-sm text-gray-300">${job.totalBytes ? `${formatBytes(job.bytesDownloaded)} / ${formatBytes(job.totalBytes)}` : '&mdash;'}${job.status === 'downloading' && job.totalBytes ? `<div class="mt-1 w-full bg-gray-700 rounded-full h-1.5"><div class="bg-green-600 h-1.5 rounded-full" style="width:${progress}%"></div></div>` : ''}</td>`;
-        html += `<td class="px-4 py-3 text-sm text-gray-400">${formatDate(job.createdAt)}</td>`;
-        html += `<td class="px-4 py-3">`;
-        if (job.status === 'queued' || job.status === 'downloading') {
-          html += `<button onclick="cancelJob('${job.id}')" class="btn-danger btn-xs mr-1"><span data-t="queue.cancel"></span></button>`;
-          html += `<button onclick="pauseJob('${job.id}')" class="btn-ghost btn-xs"><span data-t="queue.pause"></span></button>`;
-        }
-        if (job.status === 'failed') {
-          html += `<button onclick="retryJob('${job.id}')" class="btn-primary btn-xs mr-1"><svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg><span data-t="queue.retry"></span></button>`;
-        }
-        html += `</td></tr>`;
-      }
-      html += `</tbody></table></div>`;
-    }
-    document.getElementById('content').innerHTML = html;
-    translateStatic();
-  } catch {
-    document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('queue.failedToLoad') + '</div>';
-  }
-}
-
-async function pauseAll() { await fetch('/api/v1/queue/pause-all', { method: 'POST', headers: authHeaders() }); renderQueue(); }
-async function resumeAll() { await fetch('/api/v1/queue/resume-all', { method: 'POST', headers: authHeaders() }); renderQueue(); }
-async function clearCompleted() { await fetch('/api/v1/queue', { method: 'DELETE', headers: authHeaders() }); renderQueue(); }
-async function cancelJob(id) { await fetch(`/api/v1/queue/${id}`, { method: 'DELETE', headers: authHeaders() }); renderQueue(); }
-async function pauseJob(id) { await fetch(`/api/v1/queue/${id}/pause`, { method: 'POST', headers: authHeaders() }); renderQueue(); }
-async function resumeJob(id) { await fetch(`/api/v1/queue/${id}/resume`, { method: 'POST', headers: authHeaders() }); renderQueue(); }
-async function retryJob(id) { await fetch(`/api/v1/queue/${id}/retry`, { method: 'POST', headers: authHeaders() }); renderQueue(); }
-
-// === Settings ===
-async function renderSettings() {
-  if (!apiKey) {
-    document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">' + T('auth.authenticateToManageSettings') + '</div>';
-    return;
-  }
-  try {
-    const r = await fetch('/api/v1/settings', { headers: authHeaders() });
-    if (!r.ok) { document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('common.failedToLoadSettings') + '</div>'; return; }
-    settingsData = await r.json();
-  } catch {
-    document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('common.failedToLoadSettings') + '</div>';
-    return;
-  }
-
-  let html = '';
-
-  // Tab bar
-  const tabs = [
-    { id: 'schedules', label: T('settings.tab.schedules') },
-    { id: 'general', label: T('settings.tab.general') },
-    { id: 'paths', label: T('settings.tab.paths') },
-    { id: 'webhooks', label: T('settings.tab.webhooks') },
-    { id: 'keys', label: T('settings.tab.apiKeys') },
-    { id: 'logs', label: T('settings.tab.logs') },
-  ];
-  html += `<div class="overflow-x-scroll border-b border-gray-600"><nav class="flex">`;
-  for (const tab of tabs) {
-    const active = tab.id === activeSettingsTab;
-    html += `<button onclick="switchSettingsTab('${tab.id}')" class="px-1 py-4 ml-8 text-sm font-medium leading-5 transition duration-300 border-b-2 whitespace-nowrap first:ml-0 ${active ? 'text-green-600 border-green-700' : 'text-gray-500 border-transparent hover:text-gray-300 hover:border-gray-400'}">${tab.label}</button>`;
-  }
-  html += `</nav></div>`;
-
-  // Tab content - logs renders full width, others are max-w-6xl
-  const wrapperClass = activeSettingsTab === 'logs' ? '' : 'max-w-6xl';
-  html += `<div id="settings-tab-content" class="${wrapperClass}">`;
-  if (activeSettingsTab === 'schedules') {
-    html += renderSchedulesSection();
-  } else if (activeSettingsTab === 'general') {
-    html += renderGeneralSection();
-  } else if (activeSettingsTab === 'paths') {
-    html += renderPathsSection();
-  } else if (activeSettingsTab === 'keys') {
-    html += await renderApiKeysSection();
-  } else if (activeSettingsTab === 'webhooks') {
-    html += renderWebhooksSection();
-  } else if (activeSettingsTab === 'logs') {
-    html += renderLogsSection();
-  }
-  html += `</div>`;
-
-  document.getElementById('content').innerHTML = html;
-
-  // Full-width for logs: remove flex-1 overflow-auto constraints
-  const contentEl = document.getElementById('content');
-  if (activeSettingsTab === 'logs') {
-    contentEl.classList.remove('flex-1', 'min-h-0', 'overflow-auto');
-  } else {
-    contentEl.classList.add('flex-1', 'min-h-0', 'overflow-auto');
-  }
-
-  if (activeSettingsTab === 'logs') {
-    await fetchLogs();
-  }
-  translateStatic();
-  if (activeSettingsTab === 'schedules') {
-    setTimeout(initScheduleDrag, 100);
-  }
-}
-
-function switchSettingsTab(tabId) {
-  activeSettingsTab = tabId;
-  renderSettings();
-}
-
-function renderGeneralSection() {
-  const logLevel = settingsData.logLevel || 'info';
-  const logLevelOptions = ['debug', 'info', 'warn', 'error'];
-  const logLevelLabels = { debug: 'Debug', info: 'Info', warn: 'Warn', error: 'Error' };
-  const currentLang = window.getLanguage();
-  const languages = window.LANGUAGES || { en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', ja: '日本語', zh: '中文', pt: 'Português' };
-  return `<div class="mt-10 text-white">
+      function renderGeneralSection() {
+        const logLevel = settingsData.logLevel || "info";
+        const logLevelOptions = ["debug", "info", "warn", "error"];
+        const logLevelLabels = {
+          debug: "Debug",
+          info: "Info",
+          warn: "Warn",
+          error: "Error",
+        };
+        const currentLang = window.getLanguage();
+        const languages = window.LANGUAGES || {
+          en: "English",
+          es: "Español",
+          fr: "Français",
+          de: "Deutsch",
+          ja: "日本語",
+          zh: "中文",
+          pt: "Português",
+        };
+        return `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="general.title"></span></h2>
     <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="general.description"></span></p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
@@ -759,7 +1269,7 @@ function renderGeneralSection() {
       <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-1"><span data-t="limits.testMode"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <label class="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" id="s-test-mode" ${settingsData.testMode ? 'checked' : ''} onchange="saveTestMode()" class="w-5 h-5 rounded text-green-700">
+          <input type="checkbox" id="s-test-mode" ${settingsData.testMode ? "checked" : ""} onchange="saveTestMode()" class="w-5 h-5 rounded text-green-700">
           <div>
             <span class="text-sm text-white"><span data-t="limits.testModeEnabled"></span></span>
             <p class="text-xs text-gray-500"><span data-t="limits.testModeDescription"></span></p>
@@ -772,7 +1282,7 @@ function renderGeneralSection() {
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <select id="s-log-level" onchange="saveLogLevel()">
-            ${logLevelOptions.map(l => `<option value="${l}" ${logLevel === l ? 'selected' : ''}>${logLevelLabels[l]}</option>`).join('')}
+            ${logLevelOptions.map((l) => `<option value="${l}" ${logLevel === l ? "selected" : ""}>${logLevelLabels[l]}</option>`).join("")}
           </select>
         </div>
         <p class="mt-1 text-xs text-gray-500"><span data-t="limits.logLevelDescription"></span></p>
@@ -783,7 +1293,12 @@ function renderGeneralSection() {
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <select id="s-language" onchange="changeLanguage()">
-            ${Object.entries(languages).map(([code, name]) => `<option value="${code}" ${currentLang === code ? 'selected' : ''}>${name} (${code})</option>`).join('')}
+            ${Object.entries(languages)
+              .map(
+                ([code, name]) =>
+                  `<option value="${code}" ${currentLang === code ? "selected" : ""}>${name} (${code})</option>`,
+              )
+              .join("")}
           </select>
         </div>
       </div>
@@ -792,45 +1307,48 @@ function renderGeneralSection() {
       <button onclick="showWizard()" class="btn-ghost"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span data-t="general.setupWizard"></span></button>
     </div>
   </div>`;
-}
+      }
 
-async function saveLimits() {
-  const maxConcurrentDownloads = parseInt(document.getElementById('s-max-concurrent').value) || 2;
-  const logLevel = document.getElementById('s-log-level')?.value || 'info';
-  try {
-    await fetch('/api/v1/settings', {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify({ maxConcurrentDownloads, logLevel }),
-    });
-  } catch {}
-}
+      async function saveLimits() {
+        const maxConcurrentDownloads =
+          parseInt(document.getElementById("s-max-concurrent").value) || 2;
+        const logLevel =
+          document.getElementById("s-log-level")?.value || "info";
+        try {
+          await fetch("/api/v1/settings", {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({ maxConcurrentDownloads, logLevel }),
+          });
+        } catch {}
+      }
 
-async function saveLogLevel() {
-  const logLevel = document.getElementById('s-log-level').value;
-  try {
-    await fetch('/api/v1/settings', {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify({ logLevel }),
-    });
-  } catch {}
-}
+      async function saveLogLevel() {
+        const logLevel = document.getElementById("s-log-level").value;
+        try {
+          await fetch("/api/v1/settings", {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({ logLevel }),
+          });
+        } catch {}
+      }
 
-async function saveTestMode() {
-  const testMode = document.getElementById('s-test-mode').checked;
-  try {
-    await fetch('/api/v1/settings', {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify({ testMode }),
-    });
-  } catch {}
-}
+      async function saveTestMode() {
+        const testMode = document.getElementById("s-test-mode").checked;
+        try {
+          await fetch("/api/v1/settings", {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({ testMode }),
+          });
+        } catch {}
+      }
 
-function renderPathsSection() {
-  const completedPath = settingsData.completedPath || '/downloads/complete';
-  return `<div class="mt-10 text-white">
+      function renderPathsSection() {
+        const completedPath =
+          settingsData.completedPath || "/downloads/complete";
+        return `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="paths.title"></span></h2>
     <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="paths.description"></span></p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
@@ -838,7 +1356,7 @@ function renderPathsSection() {
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-incomplete-path" value="${esc(settingsData.incompletePath)}" onchange="savePaths()">
-          <button onclick="openBrowse('s-incomplete-path')" class="input-action" title="${T('paths.browse')}">
+          <button onclick="openBrowse('s-incomplete-path')" class="input-action" title="${T("paths.browse")}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
@@ -850,7 +1368,7 @@ function renderPathsSection() {
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-completed-path" value="${esc(settingsData.completedPath)}" onchange="savePaths()">
-          <button onclick="openBrowse('s-completed-path')" class="input-action" title="${T('paths.browse')}">
+          <button onclick="openBrowse('s-completed-path')" class="input-action" title="${T("paths.browse")}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
@@ -861,219 +1379,239 @@ function renderPathsSection() {
       <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="paths.movieDir"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
-          <input type="text" id="s-movie-path" value="${esc(settingsData.moviePath || completedPath + '/movies')}" onchange="savePaths()">
-          <button onclick="openBrowse('s-movie-path')" class="input-action" title="${T('paths.browse')}">
+          <input type="text" id="s-movie-path" value="${esc(settingsData.moviePath || completedPath + "/movies")}" onchange="savePaths()">
+          <button onclick="openBrowse('s-movie-path')" class="input-action" title="${T("paths.browse")}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('paths.movieDirHint')}</p>
+        <p class="mt-1 text-xs text-gray-500">${T("paths.movieDirHint")}</p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
       <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="paths.tvDir"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
-          <input type="text" id="s-tv-path" value="${esc(settingsData.tvPath || completedPath + '/tv')}" onchange="savePaths()">
-          <button onclick="openBrowse('s-tv-path')" class="input-action" title="${T('paths.browse')}">
+          <input type="text" id="s-tv-path" value="${esc(settingsData.tvPath || completedPath + "/tv")}" onchange="savePaths()">
+          <button onclick="openBrowse('s-tv-path')" class="input-action" title="${T("paths.browse")}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('paths.tvDirHint')}</p>
+        <p class="mt-1 text-xs text-gray-500">${T("paths.tvDirHint")}</p>
       </div>
     </div>
   </div>`;
-}
+      }
 
-async function savePaths() {
-  const incompletePath = document.getElementById('s-incomplete-path').value.trim() || '/downloads/incomplete';
-  const completedPath = document.getElementById('s-completed-path').value.trim() || '/downloads/complete';
-  const moviePath = document.getElementById('s-movie-path')?.value.trim() || '';
-  const tvPath = document.getElementById('s-tv-path')?.value.trim() || '';
-  try {
-    await fetch('/api/v1/settings', {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify({ incompletePath, completedPath, moviePath, tvPath }),
-    });
-  } catch {}
-}
+      async function savePaths() {
+        const incompletePath =
+          document.getElementById("s-incomplete-path").value.trim() ||
+          "/downloads/incomplete";
+        const completedPath =
+          document.getElementById("s-completed-path").value.trim() ||
+          "/downloads/complete";
+        const moviePath =
+          document.getElementById("s-movie-path")?.value.trim() || "";
+        const tvPath = document.getElementById("s-tv-path")?.value.trim() || "";
+        try {
+          await fetch("/api/v1/settings", {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({
+              incompletePath,
+              completedPath,
+              moviePath,
+              tvPath,
+            }),
+          });
+        } catch {}
+      }
 
-async function renderApiKeysSection() {
-  let inner = `<div class="mt-10 text-white">
+      async function renderApiKeysSection() {
+        let inner = `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="apiKeys.title"></span></h2>
     <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="apiKeys.description"></span></p>`;
-  try {
-    const r = await fetch('/api/v1/api-keys', { headers: authHeaders() });
-    const data = await r.json();
-    const keys = data.keys || [];
-    if (keys.length > 0) {
-      inner += `<div class="mt-6 space-y-3">`;
-      for (const k of keys) {
-        const shortPrefix = k.key.slice(0, 10);
-        inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
+        try {
+          const r = await fetch("/api/v1/api-keys", { headers: authHeaders() });
+          const data = await r.json();
+          const keys = data.keys || [];
+          if (keys.length > 0) {
+            inner += `<div class="mt-6 space-y-3">`;
+            for (const k of keys) {
+              const shortPrefix = k.key.slice(0, 10);
+              inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
           <div class="flex-1 min-w-0 mr-4">
             <span class="text-sm text-white font-mono truncate block" id="kd-${shortPrefix}" style="filter:blur(4px)">${esc(k.key)}</span>
             <div class="mt-0.5 text-xs text-gray-400">${esc(k.label)}</div>
           </div>
           <div class="flex items-center gap-1 flex-shrink-0">
-            <button onclick="toggleKeyVisibility('${shortPrefix}')" class="btn-icon" title="${T('apiKeys.showKey')}">
+            <button onclick="toggleKeyVisibility('${shortPrefix}')" class="btn-icon" title="${T("apiKeys.showKey")}">
               <svg id="ke-${shortPrefix}" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
             </button>
-            <button onclick="copyToClipboard('${esc(k.key)}')" class="btn-icon" title="${T('apiKeys.copyToClipboard')}">
+            <button onclick="copyToClipboard('${esc(k.key)}')" class="btn-icon" title="${T("apiKeys.copyToClipboard")}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
             </button>
-            <button onclick="deleteApiKey('${esc(k.key)}')" class="btn-icon-danger" title="${T('apiKeys.revoke')}">
+            <button onclick="deleteApiKey('${esc(k.key)}')" class="btn-icon-danger" title="${T("apiKeys.revoke")}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
         </div>`;
+            }
+            inner += `</div>`;
+          } else {
+            inner += `<div class="mt-6 text-sm text-gray-500"><span data-t="apiKeys.noKeys"></span></div>`;
+          }
+        } catch (e) {
+          console.error("Failed to load API keys", e);
+        }
+        inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary"><span data-t="apiKeys.newKey"></span></button></div>`;
+        inner += `</div>`;
+        return inner;
       }
-      inner += `</div>`;
-    } else {
-      inner += `<div class="mt-6 text-sm text-gray-500"><span data-t="apiKeys.noKeys"></span></div>`;
-    }
-  } catch (e) {
-    console.error('Failed to load API keys', e);
-  }
-  inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary"><span data-t="apiKeys.newKey"></span></button></div>`;
-  inner += `</div>`;
-  return inner;
-}
 
-function showKeyModal() {
-  const modal = document.getElementById('key-modal');
-  document.getElementById('new-key-label').value = '';
-  document.getElementById('key-result').style.display = 'none';
-  document.getElementById('key-create-btn').disabled = true;
-  generatedApiKey = '';
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-}
+      function showKeyModal() {
+        const modal = document.getElementById("key-modal");
+        document.getElementById("new-key-label").value = "";
+        document.getElementById("key-result").style.display = "none";
+        document.getElementById("key-create-btn").disabled = true;
+        generatedApiKey = "";
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
 
-function updateKeyButton() {
-  const label = document.getElementById('new-key-label').value.trim();
-  const btn = document.getElementById('key-create-btn');
-  btn.disabled = !label || generatedApiKey;
-}
+      function updateKeyButton() {
+        const label = document.getElementById("new-key-label").value.trim();
+        const btn = document.getElementById("key-create-btn");
+        btn.disabled = !label || generatedApiKey;
+      }
 
-function hideKeyModal() {
-  const modal = document.getElementById('key-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-}
+      function hideKeyModal() {
+        const modal = document.getElementById("key-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
 
-let generatedApiKey = '';
+      let generatedApiKey = "";
 
-async function createApiKey() {
-  if (generatedApiKey) return;
-  const input = document.getElementById('new-key-label');
-  if (!input) return;
-  const label = input.value.trim();
-  if (!label) return;
-  const resultDiv = document.getElementById('key-result');
-  const resultText = document.getElementById('key-result-text');
-  const createBtn = document.getElementById('key-create-btn');
-  try {
-    const r = await fetch('/api/v1/api-keys', {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ label }),
-    });
-    if (!r.ok) throw new Error('Request failed');
-    const data = await r.json();
-    generatedApiKey = data.apiKey;
-    resultDiv.style.display = 'block';
-    resultDiv.className = 'rounded-md border border-emerald-500 bg-gray-800 px-3 py-2';
-    resultText.textContent = data.apiKey;
-    resultText.className = 'text-sm text-emerald-300 font-mono break-all';
-    createBtn.disabled = true;
-    createBtn.innerHTML = '<span data-t="apiKeys.created"></span>';
-    translateStatic();
-    // Refresh the key list underneath
-    renderSettings();
-  } catch (e) {
-    generatedApiKey = '';
-    resultDiv.style.display = 'block';
-    resultDiv.className = 'rounded-md border border-red-500 bg-red-500/20 px-3 py-2';
-    resultText.textContent = (e && e.message) ? e.message : T('apiKeys.unknownError');
-    resultText.className = 'text-sm text-red-200';
-  }
-}
+      async function createApiKey() {
+        if (generatedApiKey) return;
+        const input = document.getElementById("new-key-label");
+        if (!input) return;
+        const label = input.value.trim();
+        if (!label) return;
+        const resultDiv = document.getElementById("key-result");
+        const resultText = document.getElementById("key-result-text");
+        const createBtn = document.getElementById("key-create-btn");
+        try {
+          const r = await fetch("/api/v1/api-keys", {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ label }),
+          });
+          if (!r.ok) throw new Error("Request failed");
+          const data = await r.json();
+          generatedApiKey = data.apiKey;
+          resultDiv.style.display = "block";
+          resultDiv.className =
+            "rounded-md border border-emerald-500 bg-gray-800 px-3 py-2";
+          resultText.textContent = data.apiKey;
+          resultText.className = "text-sm text-emerald-300 font-mono break-all";
+          createBtn.disabled = true;
+          createBtn.innerHTML = '<span data-t="apiKeys.created"></span>';
+          translateStatic();
+          // Refresh the key list underneath
+          renderSettings();
+        } catch (e) {
+          generatedApiKey = "";
+          resultDiv.style.display = "block";
+          resultDiv.className =
+            "rounded-md border border-red-500 bg-red-500/20 px-3 py-2";
+          resultText.textContent =
+            e && e.message ? e.message : T("apiKeys.unknownError");
+          resultText.className = "text-sm text-red-200";
+        }
+      }
 
-function copyGeneratedKey() {
-  if (generatedApiKey) copyToClipboard(generatedApiKey);
-}
+      function copyGeneratedKey() {
+        if (generatedApiKey) copyToClipboard(generatedApiKey);
+      }
 
-async function deleteApiKey(key) {
-  await fetch(`/api/v1/api-keys/${key}`, { method: 'DELETE', headers: authHeaders() });
-  renderSettings();
-}
+      async function deleteApiKey(key) {
+        await fetch(`/api/v1/api-keys/${key}`, {
+          method: "DELETE",
+          headers: authHeaders(),
+        });
+        renderSettings();
+      }
 
-function toggleKeyVisibility(prefix) {
-  const display = document.getElementById('kd-' + prefix);
-  const eye = document.getElementById('ke-' + prefix);
-  if (!display || !eye) return;
-  const isBlurred = display.style.filter === 'blur(4px)';
-  display.style.filter = isBlurred ? '' : 'blur(4px)';
-  eye.innerHTML = isBlurred
-    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
-    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
-}
+      function toggleKeyVisibility(prefix) {
+        const display = document.getElementById("kd-" + prefix);
+        const eye = document.getElementById("ke-" + prefix);
+        if (!display || !eye) return;
+        const isBlurred = display.style.filter === "blur(4px)";
+        display.style.filter = isBlurred ? "" : "blur(4px)";
+        eye.innerHTML = isBlurred
+          ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
+          : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+      }
 
-async function copyToClipboard(text) {
-  try { await navigator.clipboard.writeText(text); } catch {}
-}
+      async function copyToClipboard(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {}
+      }
 
-function renderSchedulesSection() {
-  const schedules = settingsData.schedules || [];
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      function renderSchedulesSection() {
+        const schedules = settingsData.schedules || [];
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  let inner = `<div class="mt-10 text-white">
+        let inner = `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100">Schedules</h2>
     <p class="mt-1 max-w-4xl text-sm text-gray-400">Click and drag on the grid to set download windows. Set bandwidth to 0 for unlimited. When windows overlap, the lower one in the list wins — drag to reorder.</p>
 
     <div class="mt-4 overflow-x-auto">
       <div class="inline-grid grid-cols-[60px_repeat(24,minmax(24px,1fr))] gap-px bg-gray-600 p-px">
         <div class="bg-gray-900 p-1"></div>
-        ${Array.from({length:24}, (_,h) => `<div class="bg-gray-900 p-1 text-center text-xxs text-gray-500">${h}</div>`).join('')}
+        ${Array.from({ length: 24 }, (_, h) => `<div class="bg-gray-900 p-1 text-center text-xxs text-gray-500">${h}</div>`).join("")}
 
-        ${dayNames.map((day, d) => {
-          const cells = Array.from({length:24}, (_, h) => {
-            let bestWindow = null;
-            for (const s of schedules) {
-              if (!s.days.includes(d)) continue;
-              for (const w of s.windows) {
-                const start = parseInt(w.start);
-                const end = parseInt(w.end);
-                if (h >= start && h < end) {
-                  bestWindow = w;
+        ${dayNames
+          .map((day, d) => {
+            const cells = Array.from({ length: 24 }, (_, h) => {
+              let bestWindow = null;
+              for (const s of schedules) {
+                if (!s.days.includes(d)) continue;
+                for (const w of s.windows) {
+                  const start = parseInt(w.start);
+                  const end = parseInt(w.end);
+                  if (h >= start && h < end) {
+                    bestWindow = w;
+                  }
                 }
               }
-            }
-            const bw = bestWindow?.bandwidth ?? 0;
-            let color = 'bg-gray-800';
-            if (bestWindow) {
-              if (bw <= 0) color = 'bg-emerald-600';
-              else if (bw <= 10*1024*1024) color = 'bg-teal-600';
-              else if (bw <= 50*1024*1024) color = 'bg-blue-600';
-              else color = 'bg-indigo-600';
-            }
-            return `<div class="${color} p-1 cursor-pointer hover:opacity-80 schedule-cell" data-day="${d}" data-hour="${h}"></div>`;
-          }).join('');
-          return `<div class="bg-gray-900 p-1 text-xxs text-gray-400 flex items-center justify-end pr-1">${day}</div>${cells}`;
-        }).join('')}
+              const bw = bestWindow?.bandwidth ?? 0;
+              let color = "bg-gray-800";
+              if (bestWindow) {
+                if (bw <= 0) color = "bg-emerald-600";
+                else if (bw <= 10 * 1024 * 1024) color = "bg-teal-600";
+                else if (bw <= 50 * 1024 * 1024) color = "bg-blue-600";
+                else color = "bg-indigo-600";
+              }
+              return `<div class="${color} p-1 cursor-pointer hover:opacity-80 schedule-cell" data-day="${d}" data-hour="${h}"></div>`;
+            }).join("");
+            return `<div class="bg-gray-900 p-1 text-xxs text-gray-400 flex items-center justify-end pr-1">${day}</div>${cells}`;
+          })
+          .join("")}
       </div>
     </div>
 
     <div class="mt-6 space-y-3" ondragover="event.preventDefault()" ondrop="event.preventDefault()">`;
 
-  schedules.forEach((s, si) => {
-    s.windows.forEach((w, wi) => {
-      const dayStr = s.days.map(d => dayNames[d]).join(', ');
-      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3 drag-row" draggable="true" data-si="${si}" data-wi="${wi}">
+        schedules.forEach((s, si) => {
+          s.windows.forEach((w, wi) => {
+            const dayStr = s.days.map((d) => dayNames[d]).join(", ");
+            inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3 drag-row" draggable="true" data-si="${si}" data-wi="${wi}">
         <span class="shrink-0 cursor-grab select-none text-gray-500 text-lg leading-none px-0.5">&#8942;</span>
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
-        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
+        <input type="number" value="${w.bandwidth / (1024 * 1024) || 0}" min="0" step="0.5"
           class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
           style="width:80px;flex:none;padding-left:4px;padding-right:4px;text-align:right"
           onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
@@ -1082,600 +1620,771 @@ function renderSchedulesSection() {
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>`;
-    });
-  });
+          });
+        });
 
-  if (!schedules.length || schedules.every(s => !s.windows.length)) {
-    inner += `<p class="text-sm text-gray-500">No download windows configured. Choose a day and hour above, then drag to create a window.</p>`;
-  }
+        if (!schedules.length || schedules.every((s) => !s.windows.length)) {
+          inner += `<p class="text-sm text-gray-500">No download windows configured. Choose a day and hour above, then drag to create a window.</p>`;
+        }
 
-  inner += `</div>
+        inner += `</div>
 
-    ${schedules.length === 0 ? `
+    ${
+      schedules.length === 0
+        ? `
     <div class="mt-6 border-t border-gray-700 pt-4">
       <label class="text-sm text-gray-400">Default bandwidth (when no schedules are set):</label>
       <div class="flex items-center gap-2 mt-1">
-        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5"
+        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024 * 1024)}" min="0" step="0.5"
           class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
           style="width:80px;flex:none;padding-left:4px;padding-right:4px;text-align:right"
           onchange="saveMaxBandwidth(this.value)">
         <span class="text-xs text-gray-400">MB/s (0 = unlimited)</span>
       </div>
     </div>
-    ` : `
+    `
+        : `
     <div class="mt-6 border-t border-gray-700 pt-4">
       <p class="text-sm text-gray-500">Downloads are blocked outside schedule windows. Remove all schedules to allow unrestricted downloads.</p>
     </div>
-    `}
+    `
+    }
   </div>`;
-  return inner;
-}
+        return inner;
+      }
 
-let isDragging = false;
-let dragStart = { day: -1, hour: -1 };
-let dragEnd = { day: -1, hour: -1 };
+      let isDragging = false;
+      let dragStart = { day: -1, hour: -1 };
+      let dragEnd = { day: -1, hour: -1 };
 
-function initScheduleDrag() {
-  document.querySelectorAll('.drag-row').forEach(row => {
-    row.addEventListener('dragstart', onDragStart);
-    row.addEventListener('dragend', onDragEnd);
-  });
+      function initScheduleDrag() {
+        document.querySelectorAll(".drag-row").forEach((row) => {
+          row.addEventListener("dragstart", onDragStart);
+          row.addEventListener("dragend", onDragEnd);
+        });
 
-  // Document-level dragover/drop — catches events on child elements too
-  document.removeEventListener('dragover', onDocDragOver);
-  document.removeEventListener('drop', onDocDrop);
-  document.addEventListener('dragover', onDocDragOver);
-  document.addEventListener('drop', onDocDrop);
+        // Document-level dragover/drop — catches events on child elements too
+        document.removeEventListener("dragover", onDocDragOver);
+        document.removeEventListener("drop", onDocDrop);
+        document.addEventListener("dragover", onDocDragOver);
+        document.addEventListener("drop", onDocDrop);
 
-  // Grid drag (separate from row reorder)
-  document.querySelectorAll('.schedule-cell').forEach(cell => {
-    cell.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      const d = parseInt(cell.dataset.day);
-      const h = parseInt(cell.dataset.hour);
-      dragStart = { day: d, hour: h };
-      dragEnd = { day: d, hour: h };
-      updateDragHighlight();
-      e.preventDefault();
-    });
-  });
+        // Grid drag (separate from row reorder)
+        document.querySelectorAll(".schedule-cell").forEach((cell) => {
+          cell.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            const d = parseInt(cell.dataset.day);
+            const h = parseInt(cell.dataset.hour);
+            dragStart = { day: d, hour: h };
+            dragEnd = { day: d, hour: h };
+            updateDragHighlight();
+            e.preventDefault();
+          });
+        });
 
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const cell = document.elementFromPoint(e.clientX, e.clientY);
-    if (!cell || !cell.classList.contains('schedule-cell')) return;
-    dragEnd.day = parseInt(cell.dataset.day);
-    dragEnd.hour = parseInt(cell.dataset.hour);
-    updateDragHighlight();
-  });
+        document.addEventListener("mousemove", (e) => {
+          if (!isDragging) return;
+          const cell = document.elementFromPoint(e.clientX, e.clientY);
+          if (!cell || !cell.classList.contains("schedule-cell")) return;
+          dragEnd.day = parseInt(cell.dataset.day);
+          dragEnd.hour = parseInt(cell.dataset.hour);
+          updateDragHighlight();
+        });
 
-  document.addEventListener('mouseup', () => {
-    if (!isDragging) return;
-    isDragging = false;
-    createWindowFromDrag();
-    clearDragHighlight();
-  });
-}
+        document.addEventListener("mouseup", () => {
+          if (!isDragging) return;
+          isDragging = false;
+          createWindowFromDrag();
+          clearDragHighlight();
+        });
+      }
 
-function updateDragHighlight() {
-  const minDay = Math.min(dragStart.day, dragEnd.day);
-  const maxDay = Math.max(dragStart.day, dragEnd.day);
-  const minHour = Math.min(dragStart.hour, dragEnd.hour);
-  const maxHour = Math.max(dragStart.hour, dragEnd.hour);
+      function updateDragHighlight() {
+        const minDay = Math.min(dragStart.day, dragEnd.day);
+        const maxDay = Math.max(dragStart.day, dragEnd.day);
+        const minHour = Math.min(dragStart.hour, dragEnd.hour);
+        const maxHour = Math.max(dragStart.hour, dragEnd.hour);
 
-  document.querySelectorAll('.schedule-cell').forEach(cell => {
-    const d = parseInt(cell.dataset.day);
-    const h = parseInt(cell.dataset.hour);
-    if (d >= minDay && d <= maxDay && h >= minHour && h <= maxHour) {
-      cell.classList.add('ring-2', 'ring-white', 'ring-inset');
-    } else {
-      cell.classList.remove('ring-2', 'ring-white', 'ring-inset');
-    }
-  });
-}
+        document.querySelectorAll(".schedule-cell").forEach((cell) => {
+          const d = parseInt(cell.dataset.day);
+          const h = parseInt(cell.dataset.hour);
+          if (d >= minDay && d <= maxDay && h >= minHour && h <= maxHour) {
+            cell.classList.add("ring-2", "ring-white", "ring-inset");
+          } else {
+            cell.classList.remove("ring-2", "ring-white", "ring-inset");
+          }
+        });
+      }
 
-function clearDragHighlight() {
-  document.querySelectorAll('.schedule-cell').forEach(cell => {
-    cell.classList.remove('ring-2', 'ring-white', 'ring-inset');
-  });
-}
+      function clearDragHighlight() {
+        document.querySelectorAll(".schedule-cell").forEach((cell) => {
+          cell.classList.remove("ring-2", "ring-white", "ring-inset");
+        });
+      }
 
-async function createWindowFromDrag() {
-  const minDay = Math.min(dragStart.day, dragEnd.day);
-  const maxDay = Math.max(dragStart.day, dragEnd.day);
-  const minHour = Math.min(dragStart.hour, dragEnd.hour);
-  const maxHour = Math.max(dragStart.hour, dragEnd.hour) + 1;
+      async function createWindowFromDrag() {
+        const minDay = Math.min(dragStart.day, dragEnd.day);
+        const maxDay = Math.max(dragStart.day, dragEnd.day);
+        const minHour = Math.min(dragStart.hour, dragEnd.hour);
+        const maxHour = Math.max(dragStart.hour, dragEnd.hour) + 1;
 
-  const days = [];
-  for (let d = minDay; d <= maxDay; d++) days.push(d);
+        const days = [];
+        for (let d = minDay; d <= maxDay; d++) days.push(d);
 
-  const schedules = [...(settingsData.schedules || [])];
-  const newWindow = { start: String(minHour).padStart(2,'0') + ':00', end: String(maxHour).padStart(2,'0') + ':00', bandwidth: 0 };
+        const schedules = [...(settingsData.schedules || [])];
+        const newWindow = {
+          start: String(minHour).padStart(2, "0") + ":00",
+          end: String(maxHour).padStart(2, "0") + ":00",
+          bandwidth: 0,
+        };
 
-  const existing = schedules.find(s =>
-    s.days.length === days.length && s.days.every(d => days.includes(d))
-  );
-  if (existing) {
-    existing.windows.push(newWindow);
-  } else {
-    schedules.push({ days, windows: [newWindow] });
-  }
+        const existing = schedules.find(
+          (s) =>
+            s.days.length === days.length &&
+            s.days.every((d) => days.includes(d)),
+        );
+        if (existing) {
+          existing.windows.push(newWindow);
+        } else {
+          schedules.push({ days, windows: [newWindow] });
+        }
 
-  settingsData = await saveSettings({ schedules });
-  renderSettings();
-  setTimeout(initScheduleDrag, 100);
-}
+        settingsData = await saveSettings({ schedules });
+        renderSettings();
+        setTimeout(initScheduleDrag, 100);
+      }
 
-async function updateWindowBandwidth(si, wi, mbps) {
-  const bw = Math.max(0, parseFloat(mbps) || 0) * 1024 * 1024;
-  const schedules = [...(settingsData.schedules || [])];
-  if (schedules[si]?.windows[wi]) {
-    schedules[si].windows[wi].bandwidth = bw;
-  }
-  settingsData = await saveSettings({ schedules });
-  renderSettings();
-  setTimeout(initScheduleDrag, 100);
-}
+      async function updateWindowBandwidth(si, wi, mbps) {
+        const bw = Math.max(0, parseFloat(mbps) || 0) * 1024 * 1024;
+        const schedules = [...(settingsData.schedules || [])];
+        if (schedules[si]?.windows[wi]) {
+          schedules[si].windows[wi].bandwidth = bw;
+        }
+        settingsData = await saveSettings({ schedules });
+        renderSettings();
+        setTimeout(initScheduleDrag, 100);
+      }
 
-async function deleteScheduleWindow(si, wi) {
-  const schedules = [...(settingsData.schedules || [])];
-  if (schedules[si]) {
-    schedules[si].windows.splice(wi, 1);
-    if (schedules[si].windows.length === 0) {
-      schedules.splice(si, 1);
-    }
-  }
-  settingsData = await saveSettings({ schedules });
-  renderSettings();
-  setTimeout(initScheduleDrag, 100);
-}
+      async function deleteScheduleWindow(si, wi) {
+        const schedules = [...(settingsData.schedules || [])];
+        if (schedules[si]) {
+          schedules[si].windows.splice(wi, 1);
+          if (schedules[si].windows.length === 0) {
+            schedules.splice(si, 1);
+          }
+        }
+        settingsData = await saveSettings({ schedules });
+        renderSettings();
+        setTimeout(initScheduleDrag, 100);
+      }
 
-let hoveredRow = null;
+      let hoveredRow = null;
 
-function onDocDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  var row = e.target.closest('.drag-row');
-  if (row !== hoveredRow) {
-    if (hoveredRow) hoveredRow.classList.remove('ring-1', 'ring-emerald-500');
-    hoveredRow = row;
-    if (hoveredRow) hoveredRow.classList.add('ring-1', 'ring-emerald-500');
-  }
-}
+      function onDocDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        var row = e.target.closest(".drag-row");
+        if (row !== hoveredRow) {
+          if (hoveredRow)
+            hoveredRow.classList.remove("ring-1", "ring-emerald-500");
+          hoveredRow = row;
+          if (hoveredRow)
+            hoveredRow.classList.add("ring-1", "ring-emerald-500");
+        }
+      }
 
-async function onDocDrop(e) {
-  e.preventDefault();
-  if (hoveredRow) hoveredRow.classList.remove('ring-1', 'ring-emerald-500');
-  hoveredRow = null;
+      async function onDocDrop(e) {
+        e.preventDefault();
+        if (hoveredRow)
+          hoveredRow.classList.remove("ring-1", "ring-emerald-500");
+        hoveredRow = null;
 
-  var target = e.target.closest('.drag-row');
-  if (!target) return;
+        var target = e.target.closest(".drag-row");
+        if (!target) return;
 
-  var dragRow = document.querySelector('.drag-row.opacity-50');
-  document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
-  if (!dragRow || dragRow === target) return;
+        var dragRow = document.querySelector(".drag-row.opacity-50");
+        document
+          .querySelectorAll(".drag-row")
+          .forEach((r) =>
+            r.classList.remove("opacity-50", "ring-1", "ring-emerald-500"),
+          );
+        if (!dragRow || dragRow === target) return;
 
-  var sSi = parseInt(dragRow.dataset.si);
-  var tSi = parseInt(target.dataset.si);
-  if (sSi === tSi) return;
+        var sSi = parseInt(dragRow.dataset.si);
+        var tSi = parseInt(target.dataset.si);
+        if (sSi === tSi) return;
 
-  var schedulesList = JSON.parse(JSON.stringify(settingsData.schedules || []));
-  var moved = schedulesList.splice(sSi, 1)[0];
-  schedulesList.splice(tSi, 0, moved);
-  settingsData = await saveSettings({ schedules: schedulesList });
-  renderSettings();
-  setTimeout(initScheduleDrag, 100);
-}
+        var schedulesList = JSON.parse(
+          JSON.stringify(settingsData.schedules || []),
+        );
+        var moved = schedulesList.splice(sSi, 1)[0];
+        schedulesList.splice(tSi, 0, moved);
+        settingsData = await saveSettings({ schedules: schedulesList });
+        renderSettings();
+        setTimeout(initScheduleDrag, 100);
+      }
 
-function onDragStart(e) {
-  var row = e.currentTarget;
-  row.classList.add('opacity-50', 'ring-1', 'ring-emerald-500');
-  e.dataTransfer.effectAllowed = 'move';
-}
+      function onDragStart(e) {
+        var row = e.currentTarget;
+        row.classList.add("opacity-50", "ring-1", "ring-emerald-500");
+        e.dataTransfer.effectAllowed = "move";
+      }
 
-function onDragEnd(e) {
-  e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
-}
+      function onDragEnd(e) {
+        e.currentTarget.classList.remove(
+          "opacity-50",
+          "ring-1",
+          "ring-emerald-500",
+        );
+      }
 
-async function saveMaxBandwidth(mbps) {
-  const maxBandwidth = Math.max(0, parseFloat(mbps) || 0) * 1024 * 1024;
-  settingsData = await saveSettings({ maxBandwidth });
-}
+      async function saveMaxBandwidth(mbps) {
+        const maxBandwidth = Math.max(0, parseFloat(mbps) || 0) * 1024 * 1024;
+        settingsData = await saveSettings({ maxBandwidth });
+      }
 
-async function saveSettings(partial) {
-  try {
-    const r = await fetch('/api/v1/settings', {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify(partial),
-    });
-    const data = await r.json();
-    return data;
-  } catch { return settingsData; }
-}
+      async function saveSettings(partial) {
+        try {
+          const r = await fetch("/api/v1/settings", {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify(partial),
+          });
+          const data = await r.json();
+          return data;
+        } catch {
+          return settingsData;
+        }
+      }
 
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+      function esc(s) {
+        if (!s) return "";
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
 
-// === Logs ===
-let logsLevel = '';
-let logsAuto = false;
-let logsTimer = null;
+      // === Logs ===
+      let logsLevel = "";
+      let logsAuto = false;
+      let logsTimer = null;
 
-function renderLogsSection() {
-  return `<div class="mt-10 text-white">
+      function renderLogsSection() {
+        return `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="logs.title"></span></h2>
     <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="logs.description"></span></p>
     <div class="mt-4 flex items-center gap-2 flex-wrap">
-      ${['','info','warn','error','debug'].map(l => {
-        const label = l || T('logs.all');
-        const active = logsLevel === l;
-        const colors = { info: 'text-green-400 border-green-700', warn: 'text-yellow-400 border-yellow-700', error: 'text-red-400 border-red-700', debug: 'text-blue-400 border-blue-700' };
-        const cls = !l ? (active ? 'text-white border-gray-400' : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500') : (active ? colors[l] : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500');
-        return `<button onclick="setLogsLevel('${l}')" class="px-2 py-1 text-xs font-medium border-b-2 transition ${cls}">${label}</button>`;
-      }).join('')}
+      ${["", "info", "warn", "error", "debug"]
+        .map((l) => {
+          const label = l || T("logs.all");
+          const active = logsLevel === l;
+          const colors = {
+            info: "text-green-400 border-green-700",
+            warn: "text-yellow-400 border-yellow-700",
+            error: "text-red-400 border-red-700",
+            debug: "text-blue-400 border-blue-700",
+          };
+          const cls = !l
+            ? active
+              ? "text-white border-gray-400"
+              : "text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500"
+            : active
+              ? colors[l]
+              : "text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500";
+          return `<button onclick="setLogsLevel('${l}')" class="px-2 py-1 text-xs font-medium border-b-2 transition ${cls}">${label}</button>`;
+        })
+        .join("")}
       <span class="flex-1"></span>
       <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-        <input type="checkbox" id="logs-auto" ${logsAuto ? 'checked' : ''} onchange="toggleLogsAuto()" class="w-4 h-4 rounded text-green-700">
-        ${T('logs.autoRefresh')}
+        <input type="checkbox" id="logs-auto" ${logsAuto ? "checked" : ""} onchange="toggleLogsAuto()" class="w-4 h-4 rounded text-green-700">
+        ${T("logs.autoRefresh")}
       </label>
     </div>
     <div id="logs-container" class="mt-4 flex-1 min-h-0 rounded-lg border border-gray-700 bg-gray-900 overflow-hidden">
       <div class="text-center py-12 text-gray-500 text-sm"><span data-t="logs.loading"></span></div>
     </div>
   </div>`;
-}
+      }
 
-function setLogsLevel(level) {
-  logsLevel = level;
-  renderSettings();
-}
+      function setLogsLevel(level) {
+        logsLevel = level;
+        renderSettings();
+      }
 
-function toggleLogsAuto() {
-  logsAuto = !logsAuto;
-  if (logsAuto) {
-    logsTimer = setInterval(fetchLogs, 3000);
-  } else {
-    if (logsTimer) { clearInterval(logsTimer); logsTimer = null; }
-  }
-}
+      function toggleLogsAuto() {
+        logsAuto = !logsAuto;
+        if (logsAuto) {
+          logsTimer = setInterval(fetchLogs, 3000);
+        } else {
+          if (logsTimer) {
+            clearInterval(logsTimer);
+            logsTimer = null;
+          }
+        }
+      }
 
-async function fetchLogs() {
-  const container = document.getElementById('logs-container');
-  if (!container) return;
-  try {
-    const params = new URLSearchParams();
-    if (logsLevel) params.set('level', logsLevel);
-    params.set('limit', '200');
-    const r = await fetch('/api/v1/logs?' + params, { headers: authHeaders() });
-    if (!r.ok) { container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">' + T('logs.failedToLoad') + '</div>'; return; }
-    const data = await r.json();
-    const logs = data.logs || [];
-    if (logs.length === 0) {
-      container.innerHTML = '<div class="text-center py-12 text-gray-500 text-sm">' + T('logs.noEntries') + '</div>';
-      return;
-    }
-    const levelColors = { info: 'text-green-400 bg-green-500/10', warn: 'text-yellow-400 bg-yellow-500/10', error: 'text-red-400 bg-red-500/10', debug: 'text-blue-400 bg-blue-500/10' };
-    const levelLabels = { info: 'INFO', warn: 'WARN', error: 'ERROR', debug: 'DEBG' };
-    container.innerHTML = `<div class="overflow-auto h-full font-mono text-xs">${logs.map(e => {
-      const lvl = e.level || 'info';
-      return `<div class="flex items-start gap-3 px-4 py-1.5 border-b border-gray-800 hover:bg-gray-800/50">
-        <span class="text-gray-600 whitespace-nowrap shrink-0">${e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : ''}</span>
-        <span class="inline-flex items-center rounded px-1.5 py-px text-xs font-semibold shrink-0 ${levelColors[lvl] || ''}">${levelLabels[lvl] || lvl}</span>
-        <span class="text-gray-500 shrink-0">[${esc(e.label || '')}]</span>
+      async function fetchLogs() {
+        const container = document.getElementById("logs-container");
+        if (!container) return;
+        try {
+          const params = new URLSearchParams();
+          if (logsLevel) params.set("level", logsLevel);
+          params.set("limit", "200");
+          const r = await fetch("/api/v1/logs?" + params, {
+            headers: authHeaders(),
+          });
+          if (!r.ok) {
+            container.innerHTML =
+              '<div class="text-center py-12 text-red-400 text-sm">' +
+              T("logs.failedToLoad") +
+              "</div>";
+            return;
+          }
+          const data = await r.json();
+          const logs = data.logs || [];
+          if (logs.length === 0) {
+            container.innerHTML =
+              '<div class="text-center py-12 text-gray-500 text-sm">' +
+              T("logs.noEntries") +
+              "</div>";
+            return;
+          }
+          const levelColors = {
+            info: "text-green-400 bg-green-500/10",
+            warn: "text-yellow-400 bg-yellow-500/10",
+            error: "text-red-400 bg-red-500/10",
+            debug: "text-blue-400 bg-blue-500/10",
+          };
+          const levelLabels = {
+            info: "INFO",
+            warn: "WARN",
+            error: "ERROR",
+            debug: "DEBG",
+          };
+          container.innerHTML = `<div class="overflow-auto h-full font-mono text-xs">${logs
+            .map((e) => {
+              const lvl = e.level || "info";
+              return `<div class="flex items-start gap-3 px-4 py-1.5 border-b border-gray-800 hover:bg-gray-800/50">
+        <span class="text-gray-600 whitespace-nowrap shrink-0">${e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : ""}</span>
+        <span class="inline-flex items-center rounded px-1.5 py-px text-xs font-semibold shrink-0 ${levelColors[lvl] || ""}">${levelLabels[lvl] || lvl}</span>
+        <span class="text-gray-500 shrink-0">[${esc(e.label || "")}]</span>
         <span class="text-gray-200 break-all">${esc(e.message)}</span>
       </div>`;
-    }).join('')}</div>`;
-    const scrollEl = container.querySelector('.overflow-auto');
-    if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
-  } catch {
-    container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">' + T('logs.failedToLoad') + '</div>';
-  }
-}
+            })
+            .join("")}</div>`;
+          const scrollEl = container.querySelector(".overflow-auto");
+          if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+        } catch {
+          container.innerHTML =
+            '<div class="text-center py-12 text-red-400 text-sm">' +
+            T("logs.failedToLoad") +
+            "</div>";
+        }
+      }
 
-// === Webhooks ===
-function renderWebhooksSection() {
-  const hooks = settingsData.webhooks || [];
-  let inner = `<div class="mt-10 text-white">
+      // === Webhooks ===
+      function renderWebhooksSection() {
+        const hooks = settingsData.webhooks || [];
+        let inner = `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="webhooks.title"></span></h2>
     <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="webhooks.description"></span></p>`;
 
-  if (hooks.length > 0) {
-    inner += `<ul class="mt-6 space-y-3">`;
-    for (const wh of hooks) {
-      const eventLabels = {
-        'download.requested': T('event.download.requested'),
-        'download.started': T('event.download.started'),
-        'download.complete': T('event.download.complete'),
-        'download.failed': T('event.download.failed'),
-      };
-      const events = (wh.events || []).map(e => eventLabels[e] || e);
-      inner += `<li class="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+        if (hooks.length > 0) {
+          inner += `<ul class="mt-6 space-y-3">`;
+          for (const wh of hooks) {
+            const eventLabels = {
+              "download.requested": T("event.download.requested"),
+              "download.started": T("event.download.started"),
+              "download.complete": T("event.download.complete"),
+              "download.failed": T("event.download.failed"),
+            };
+            const events = (wh.events || []).map((e) => eventLabels[e] || e);
+            inner += `<li class="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0 mr-4">
             <div class="flex items-center gap-2">
               <span class="text-sm text-white font-mono truncate">${esc(wh.url)}</span>
-              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${wh.enabled ? 'bg-green-500/20 text-green-400' : 'bg-gray-600 text-gray-400'}">${wh.enabled ? T('webhooks.active') : T('webhooks.disabled')}</span>
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${wh.enabled ? "bg-green-500/20 text-green-400" : "bg-gray-600 text-gray-400"}">${wh.enabled ? T("webhooks.active") : T("webhooks.disabled")}</span>
             </div>
             <div class="mt-1 flex items-center gap-1 flex-wrap">
-              ${events.map(e => `<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-gray-700 text-gray-300">${e}</span>`).join('')}
-              ${wh.secret ? '<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400">' + T('webhooks.secretSet') + '</span>' : ''}
+              ${events.map((e) => `<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-gray-700 text-gray-300">${e}</span>`).join("")}
+              ${wh.secret ? '<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400">' + T("webhooks.secretSet") + "</span>" : ""}
             </div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <button onclick="testWebhookUrl('${esc(wh.id)}')" class="btn-icon" title="${T('webhooks.test')}">
+            <button onclick="testWebhookUrl('${esc(wh.id)}')" class="btn-icon" title="${T("webhooks.test")}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </button>
-            <button onclick="editWebhook('${esc(wh.id)}')" class="btn-icon" title="${T('webhooks.edit')}">
+            <button onclick="editWebhook('${esc(wh.id)}')" class="btn-icon" title="${T("webhooks.edit")}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
-            <button onclick="deleteWebhook('${esc(wh.id)}')" class="btn-icon-danger" title="${T('webhooks.delete')}">
+            <button onclick="deleteWebhook('${esc(wh.id)}')" class="btn-icon-danger" title="${T("webhooks.delete")}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
         </div>
       </li>`;
-    }
-    inner += `</ul>`;
-  }
+          }
+          inner += `</ul>`;
+        }
 
-  inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary"><span data-t="webhooks.addWebhook"></span></button></div>`;
-  inner += `</div>`;
-  return inner;
-}
+        inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary"><span data-t="webhooks.addWebhook"></span></button></div>`;
+        inner += `</div>`;
+        return inner;
+      }
 
-function showWebhookModal(editId) {
-  const modal = document.getElementById('webhook-modal');
-  const title = modal.querySelector('h3');
-  const editingId = editId || '';
-  modal.dataset.editId = editingId;
+      function showWebhookModal(editId) {
+        const modal = document.getElementById("webhook-modal");
+        const title = modal.querySelector("h3");
+        const editingId = editId || "";
+        modal.dataset.editId = editingId;
 
-  if (editingId) {
-    title.textContent = T('webhooks.editWebhook');
-    const hooks = settingsData.webhooks || [];
-    const wh = hooks.find(h => h.id === editingId);
-    if (wh) {
-      document.getElementById('wh-url').value = wh.url;
-      document.getElementById('wh-secret').value = wh.secret || '';
-      document.getElementById('wh-enabled').checked = wh.enabled;
-      ['download.requested','download.started','download.complete','download.failed'].forEach(e => {
-        const cb = document.getElementById('wh-event-' + e);
-        if (cb) cb.checked = (wh.events || []).includes(e);
-      });
-    }
-  } else {
-    title.textContent = T('webhooks.addWebhook');
-    document.getElementById('wh-url').value = '';
-    document.getElementById('wh-secret').value = '';
-    document.getElementById('wh-enabled').checked = true;
-    document.querySelectorAll('.wh-event-cb').forEach(cb => { cb.checked = false; });
-  }
+        if (editingId) {
+          title.textContent = T("webhooks.editWebhook");
+          const hooks = settingsData.webhooks || [];
+          const wh = hooks.find((h) => h.id === editingId);
+          if (wh) {
+            document.getElementById("wh-url").value = wh.url;
+            document.getElementById("wh-secret").value = wh.secret || "";
+            document.getElementById("wh-enabled").checked = wh.enabled;
+            [
+              "download.requested",
+              "download.started",
+              "download.complete",
+              "download.failed",
+            ].forEach((e) => {
+              const cb = document.getElementById("wh-event-" + e);
+              if (cb) cb.checked = (wh.events || []).includes(e);
+            });
+          }
+        } else {
+          title.textContent = T("webhooks.addWebhook");
+          document.getElementById("wh-url").value = "";
+          document.getElementById("wh-secret").value = "";
+          document.getElementById("wh-enabled").checked = true;
+          document.querySelectorAll(".wh-event-cb").forEach((cb) => {
+            cb.checked = false;
+          });
+        }
 
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-}
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
 
-function hideWebhookModal() {
-  const modal = document.getElementById('webhook-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-}
+      function hideWebhookModal() {
+        const modal = document.getElementById("webhook-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
 
-async function saveWebhook() {
-  const modal = document.getElementById('webhook-modal');
-  const editId = modal.dataset.editId;
-  const url = document.getElementById('wh-url').value.trim();
-  if (!url) return;
-  const secret = document.getElementById('wh-secret').value.trim();
-  const enabled = document.getElementById('wh-enabled').checked;
-  const events = ['download.requested','download.started','download.complete','download.failed'].filter(e => {
-    const cb = document.getElementById('wh-event-' + e);
-    return cb && cb.checked;
-  });
+      async function saveWebhook() {
+        const modal = document.getElementById("webhook-modal");
+        const editId = modal.dataset.editId;
+        const url = document.getElementById("wh-url").value.trim();
+        if (!url) return;
+        const secret = document.getElementById("wh-secret").value.trim();
+        const enabled = document.getElementById("wh-enabled").checked;
+        const events = [
+          "download.requested",
+          "download.started",
+          "download.complete",
+          "download.failed",
+        ].filter((e) => {
+          const cb = document.getElementById("wh-event-" + e);
+          return cb && cb.checked;
+        });
 
-  let hooks = [...(settingsData.webhooks || [])];
-  const entry = { id: editId || crypto.randomUUID(), url, secret, enabled, events };
+        let hooks = [...(settingsData.webhooks || [])];
+        const entry = {
+          id: editId || crypto.randomUUID(),
+          url,
+          secret,
+          enabled,
+          events,
+        };
 
-  if (editId) {
-    hooks = hooks.map(h => h.id === editId ? entry : h);
-  } else {
-    hooks.push(entry);
-  }
+        if (editId) {
+          hooks = hooks.map((h) => (h.id === editId ? entry : h));
+        } else {
+          hooks.push(entry);
+        }
 
-  settingsData = await saveSettings({ webhooks: hooks });
-  hideWebhookModal();
-  renderSettings();
-}
+        settingsData = await saveSettings({ webhooks: hooks });
+        hideWebhookModal();
+        renderSettings();
+      }
 
-function editWebhook(id) { showWebhookModal(id); }
+      function editWebhook(id) {
+        showWebhookModal(id);
+      }
 
-async function deleteWebhook(id) {
-  const hooks = (settingsData.webhooks || []).filter(h => h.id !== id);
-  settingsData = await saveSettings({ webhooks: hooks });
-  renderSettings();
-}
+      async function deleteWebhook(id) {
+        const hooks = (settingsData.webhooks || []).filter((h) => h.id !== id);
+        settingsData = await saveSettings({ webhooks: hooks });
+        renderSettings();
+      }
 
-async function testWebhookUrl(id) {
-  const hooks = settingsData.webhooks || [];
-  const wh = hooks.find(h => h.id === id);
-  if (!wh) return;
-  try {
-    const r = await fetch('/api/v1/webhooks/test', {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ url: wh.url, secret: wh.secret || undefined }),
-    });
-    const data = await r.json();
-    if (r.ok) {
-      alert(T('webhooks.testSuccess'));
-    } else {
-      alert(T('webhooks.testFailed', { error: data.error || 'Unknown error' }));
-    }
-    } catch (e) {
-      alert(T('webhooks.testFailed', { error: e.message || 'Connection error' }));
-    }
-  }
-
-  // === Browse ===
-  function showBrowseModal() {
-    const modal = document.getElementById('browse-modal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
-
-  function hideBrowseModal() {
-    const modal = document.getElementById('browse-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-
-  function openBrowse(inputId) {
-    document.getElementById('browse-target').value = inputId;
-    const inputPath = document.getElementById(inputId)?.value || '/';
-    navigateBrowse(inputPath);
-    showBrowseModal();
-  }
-
-  let browseRetries = 0;
-
-  async function navigateBrowse(path) {
-    document.getElementById('browse-path').textContent = path || '/';
-    const entriesDiv = document.getElementById('browse-entries');
-    entriesDiv.innerHTML = '<div class="text-center py-4 text-gray-500 text-sm">' + T('logs.loading') + '</div>';
-    try {
-      const r = await fetch('/api/v1/browse?path=' + encodeURIComponent(path || '/'), { headers: authHeaders() });
-      if (!r.ok) { throw new Error('request failed'); }
-      const data = await r.json();
-      const entries = data.entries || [];
-      let html = '';
-      const parentPath = path ? path.substring(0, path.lastIndexOf('/')) || '/' : '/';
-      html += '<div class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-700 text-gray-300" onclick="navigateBrowse(\'' + esc(parentPath) + '\')"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg><span class="text-sm">..</span></div>';
-      for (const entry of entries) {
-        if (entry.isDirectory) {
-          const entryPath = path === '/' ? '/' + entry.name : path + '/' + entry.name;
-          html += '<div class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-700 text-gray-200" onclick="navigateBrowse(\'' + esc(entryPath) + '\')"><svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg><span class="text-sm">' + esc(entry.name) + '</span></div>';
+      async function testWebhookUrl(id) {
+        const hooks = settingsData.webhooks || [];
+        const wh = hooks.find((h) => h.id === id);
+        if (!wh) return;
+        try {
+          const r = await fetch("/api/v1/webhooks/test", {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({
+              url: wh.url,
+              secret: wh.secret || undefined,
+            }),
+          });
+          const data = await r.json();
+          if (r.ok) {
+            alert(T("webhooks.testSuccess"));
+          } else {
+            alert(
+              T("webhooks.testFailed", {
+                error: data.error || "Unknown error",
+              }),
+            );
+          }
+        } catch (e) {
+          alert(
+            T("webhooks.testFailed", {
+              error: e.message || "Connection error",
+            }),
+          );
         }
       }
-      browseRetries = 0;
-      entriesDiv.innerHTML = html || '<div class="text-center py-4 text-gray-500 text-sm">' + T('browse.noDirectories') + '</div>';
-    } catch {
-      if (path !== '/' && path !== '' && browseRetries < 3) {
-        browseRetries++;
-        const parent = path.substring(0, path.lastIndexOf('/')) || '/';
-        navigateBrowse(parent);
-        return;
+
+      // === Browse ===
+      function showBrowseModal() {
+        const modal = document.getElementById("browse-modal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
       }
-      browseRetries = 0;
-      entriesDiv.innerHTML = '<div class="text-center py-4 text-red-400 text-sm">' + T('browse.failed') + '</div>';
-    }
-  }
 
-  function selectBrowse() {
-    const targetId = document.getElementById('browse-target').value;
-    const path = document.getElementById('browse-path').textContent;
-    if (targetId && path) {
-      const input = document.getElementById(targetId);
-      if (input) {
-        input.value = path;
-        input.dispatchEvent(new Event('change'));
+      function hideBrowseModal() {
+        const modal = document.getElementById("browse-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
       }
-    }
-    hideBrowseModal();
-  }
 
-  // === Display ===
-  // === Setup Wizard ===
-  let wizardStep = 1;
-  let wizardMasterKey = '';
+      function openBrowse(inputId) {
+        document.getElementById("browse-target").value = inputId;
+        const inputPath = document.getElementById(inputId)?.value || "/";
+        navigateBrowse(inputPath);
+        showBrowseModal();
+      }
 
-  function checkFirstRun() {
-    return !localStorage.getItem('friendarr_key');
-  }
+      let browseRetries = 0;
 
-  function showWizard() {
-    const wizard = document.getElementById('setup-wizard');
-    if (wizard) {
-      wizard.classList.remove('hidden');
-      wizard.classList.add('flex');
-      renderWizardStep();
-    }
-  }
+      async function navigateBrowse(path) {
+        document.getElementById("browse-path").textContent = path || "/";
+        const entriesDiv = document.getElementById("browse-entries");
+        entriesDiv.innerHTML =
+          '<div class="text-center py-4 text-gray-500 text-sm">' +
+          T("logs.loading") +
+          "</div>";
+        try {
+          const r = await fetch(
+            "/api/v1/browse?path=" + encodeURIComponent(path || "/"),
+            { headers: authHeaders() },
+          );
+          if (!r.ok) {
+            throw new Error("request failed");
+          }
+          const data = await r.json();
+          const entries = data.entries || [];
+          let html = "";
+          const parentPath = path
+            ? path.substring(0, path.lastIndexOf("/")) || "/"
+            : "/";
+          html +=
+            '<div class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-700 text-gray-300" onclick="navigateBrowse(\'' +
+            esc(parentPath) +
+            '\')"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg><span class="text-sm">..</span></div>';
+          for (const entry of entries) {
+            if (entry.isDirectory) {
+              const entryPath =
+                path === "/" ? "/" + entry.name : path + "/" + entry.name;
+              html +=
+                '<div class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-700 text-gray-200" onclick="navigateBrowse(\'' +
+                esc(entryPath) +
+                '\')"><svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg><span class="text-sm">' +
+                esc(entry.name) +
+                "</span></div>";
+            }
+          }
+          browseRetries = 0;
+          entriesDiv.innerHTML =
+            html ||
+            '<div class="text-center py-4 text-gray-500 text-sm">' +
+              T("browse.noDirectories") +
+              "</div>";
+        } catch {
+          if (path !== "/" && path !== "" && browseRetries < 3) {
+            browseRetries++;
+            const parent = path.substring(0, path.lastIndexOf("/")) || "/";
+            navigateBrowse(parent);
+            return;
+          }
+          browseRetries = 0;
+          entriesDiv.innerHTML =
+            '<div class="text-center py-4 text-red-400 text-sm">' +
+            T("browse.failed") +
+            "</div>";
+        }
+      }
 
-  function hideWizard() {
-    const wizard = document.getElementById('setup-wizard');
-    if (wizard) {
-      wizard.classList.add('hidden');
-      wizard.classList.remove('flex');
-    }
-  }
+      function selectBrowse() {
+        const targetId = document.getElementById("browse-target").value;
+        const path = document.getElementById("browse-path").textContent;
+        if (targetId && path) {
+          const input = document.getElementById(targetId);
+          if (input) {
+            input.value = path;
+            input.dispatchEvent(new Event("change"));
+          }
+        }
+        hideBrowseModal();
+      }
 
-  function renderWizardStep() {
-    const dots = document.querySelectorAll('#wizard-dots .wizard-dot');
-    dots.forEach((d, i) => {
-      if (i + 1 === wizardStep) d.className = 'wizard-dot w-3 h-3 rounded-full bg-emerald-600';
-      else if (i + 1 < wizardStep) d.className = 'wizard-dot w-3 h-3 rounded-full bg-emerald-600/40';
-      else d.className = 'wizard-dot w-3 h-3 rounded-full bg-gray-600';
-    });
+      // === Display ===
+      // === Setup Wizard ===
+      let wizardStep = 1;
+      let wizardMasterKey = "";
 
-    const body = document.getElementById('wizard-body');
-    const prev = document.getElementById('wizard-prev');
-    const next = document.getElementById('wizard-next');
-    const skip = document.getElementById('wizard-skip');
+      function checkFirstRun() {
+        return !localStorage.getItem("friendarr_key");
+      }
 
-    const defaults = window.__FRIENDARR_DEFAULTS__ || {};
-    prev.style.display = wizardStep === 1 ? 'none' : 'inline-flex';
+      function showWizard() {
+        const wizard = document.getElementById("setup-wizard");
+        if (wizard) {
+          wizard.classList.remove("hidden");
+          wizard.classList.add("flex");
+          renderWizardStep();
+        }
+      }
 
-    if (wizardStep === 2 && !defaults.hasMasterKey) {
-      next.textContent = wizardMasterKey ? T('wizard.step2.activate') : T('wizard.next');
-      next.onclick = wizardMasterKey ? activateKey : null;
-      next.className = wizardMasterKey ? 'btn-primary' : 'btn-primary opacity-50 cursor-not-allowed';
-      prev.style.display = 'none';
-      skip.style.display = 'inline-flex';
-    } else {
-      next.textContent = wizardStep === 3 ? T('wizard.finish') : T('wizard.next');
-      next.onclick = wizardStep === 3 ? wizardNext : wizardNext;
-      next.className = 'btn-primary';
-      skip.style.display = 'inline-flex';
-    }
+      function hideWizard() {
+        const wizard = document.getElementById("setup-wizard");
+        if (wizard) {
+          wizard.classList.add("hidden");
+          wizard.classList.remove("flex");
+        }
+      }
 
-    if (wizardStep === 1) {
-      const languages = window.LANGUAGES || {};
-      const flags = {
-        en: '🇬🇧', es: '🇪🇸', 'es-MX': '🇲🇽', fr: '🇫🇷', de: '🇩🇪', ja: '🇯🇵',
-        'zh-Hans': '🇨🇳', 'zh-Hant': '🇹🇼', 'pt-BR': '🇧🇷', 'pt-PT': '🇵🇹',
-        it: '🇮🇹', nl: '🇳🇱', pl: '🇵🇱', ru: '🇷🇺', sv: '🇸🇪', ko: '🇰🇷',
-        tr: '🇹🇷', vi: '🇻🇳', ar: '🇸🇦', he: '🇮🇱', cs: '🇨🇿', da: '🇩🇰',
-        fi: '🇫🇮', hu: '🇭🇺', ro: '🇷🇴', sk: '🇸🇰', sl: '🇸🇮', uk: '🇺🇦',
-        bg: '🇧🇬', el: '🇬🇷', et: '🇪🇪', hi: '🇮🇳', hr: '🇭🇷', kab: '🇩🇿',
-        lb: '🇱🇺', lt: '🇱🇹', 'nb-NO': '🇳🇴', sq: '🇦🇱', sr: '🇷🇸'
-      };
-      const currentLang = window.getLanguage();
-      const sorted = Object.entries(languages).sort(function(a, b) {
-        if (a[0] === 'en') return -1;
-        if (b[0] === 'en') return 1;
-        return a[1].localeCompare(b[1]);
-      });
-      body.innerHTML = `
+      function renderWizardStep() {
+        const dots = document.querySelectorAll("#wizard-dots .wizard-dot");
+        dots.forEach((d, i) => {
+          if (i + 1 === wizardStep)
+            d.className = "wizard-dot w-3 h-3 rounded-full bg-emerald-600";
+          else if (i + 1 < wizardStep)
+            d.className = "wizard-dot w-3 h-3 rounded-full bg-emerald-600/40";
+          else d.className = "wizard-dot w-3 h-3 rounded-full bg-gray-600";
+        });
+
+        const body = document.getElementById("wizard-body");
+        const prev = document.getElementById("wizard-prev");
+        const next = document.getElementById("wizard-next");
+        const skip = document.getElementById("wizard-skip");
+
+        const defaults = window.__FRIENDARR_DEFAULTS__ || {};
+        prev.style.display = wizardStep === 1 ? "none" : "inline-flex";
+
+        if (wizardStep === 2 && !defaults.hasMasterKey) {
+          next.textContent = wizardMasterKey
+            ? T("wizard.step2.activate")
+            : T("wizard.next");
+          next.onclick = wizardMasterKey ? activateKey : null;
+          next.className = wizardMasterKey
+            ? "btn-primary"
+            : "btn-primary opacity-50 cursor-not-allowed";
+          prev.style.display = "none";
+          skip.style.display = "inline-flex";
+        } else {
+          next.textContent =
+            wizardStep === 3 ? T("wizard.finish") : T("wizard.next");
+          next.onclick = wizardStep === 3 ? wizardNext : wizardNext;
+          next.className = "btn-primary";
+          skip.style.display = "inline-flex";
+        }
+
+        if (wizardStep === 1) {
+          const languages = window.LANGUAGES || {};
+          const flags = {
+            en: "🇬🇧",
+            es: "🇪🇸",
+            "es-MX": "🇲🇽",
+            fr: "🇫🇷",
+            de: "🇩🇪",
+            ja: "🇯🇵",
+            "zh-Hans": "🇨🇳",
+            "zh-Hant": "🇹🇼",
+            "pt-BR": "🇧🇷",
+            "pt-PT": "🇵🇹",
+            it: "🇮🇹",
+            nl: "🇳🇱",
+            pl: "🇵🇱",
+            ru: "🇷🇺",
+            sv: "🇸🇪",
+            ko: "🇰🇷",
+            tr: "🇹🇷",
+            vi: "🇻🇳",
+            ar: "🇸🇦",
+            he: "🇮🇱",
+            cs: "🇨🇿",
+            da: "🇩🇰",
+            fi: "🇫🇮",
+            hu: "🇭🇺",
+            ro: "🇷🇴",
+            sk: "🇸🇰",
+            sl: "🇸🇮",
+            uk: "🇺🇦",
+            bg: "🇧🇬",
+            el: "🇬🇷",
+            et: "🇪🇪",
+            hi: "🇮🇳",
+            hr: "🇭🇷",
+            kab: "🇩🇿",
+            lb: "🇱🇺",
+            lt: "🇱🇹",
+            "nb-NO": "🇳🇴",
+            sq: "🇦🇱",
+            sr: "🇷🇸",
+          };
+          const currentLang = window.getLanguage();
+          const sorted = Object.entries(languages).sort(function (a, b) {
+            if (a[0] === "en") return -1;
+            if (b[0] === "en") return 1;
+            return a[1].localeCompare(b[1]);
+          });
+          body.innerHTML = `
         <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step1.title"></span></h3>
         <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step1.description"></span></p>
         <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step1.detail"></span></p>
         <div class="max-h-72 overflow-y-auto rounded border border-gray-700">
-          ${sorted.map(function(entry) {
-            const code = entry[0], name = entry[1];
-            const selected = currentLang === code;
-            return `<div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${selected ? 'bg-emerald-600/20 border-l-2 border-emerald-600' : 'border-l-2 border-transparent hover:bg-gray-700/50'}" onclick="selectWizardLanguage('${code}', this)" data-lang="${code}">
-              <span class="text-xl leading-none w-7 text-center">${flags[code] || ''}</span>
+          ${sorted
+            .map(function (entry) {
+              const code = entry[0],
+                name = entry[1];
+              const selected = currentLang === code;
+              return `<div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${selected ? "bg-emerald-600/20 border-l-2 border-emerald-600" : "border-l-2 border-transparent hover:bg-gray-700/50"}" onclick="selectWizardLanguage('${code}', this)" data-lang="${code}">
+              <span class="text-xl leading-none w-7 text-center">${flags[code] || ""}</span>
               <span class="text-sm text-white flex-1">${name}</span>
               <span class="text-xs text-gray-500">${code}</span>
             </div>`;
-          }).join('')}
+            })
+            .join("")}
         </div>`;
-    } else if (wizardStep === 2) {
-      const defaults = window.__FRIENDARR_DEFAULTS__ || {};
-      const hasKey = !!defaults.hasMasterKey || !!wizardMasterKey;
-      body.innerHTML = hasKey ? `
+        } else if (wizardStep === 2) {
+          const defaults = window.__FRIENDARR_DEFAULTS__ || {};
+          const hasKey = !!defaults.hasMasterKey || !!wizardMasterKey;
+          body.innerHTML = hasKey
+            ? `
         <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step2.title"></span></h3>
         <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step2.description"></span></p>
         <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step2.detail"></span></p>
@@ -1684,11 +2393,12 @@ async function testWebhookUrl(id) {
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step2.keyLabel"></span></label>
             <div class="form-input-field">
-              <input type="password" id="wizard-key" placeholder="${T('wizard.step2.pasteKey')}" onkeydown="if(event.key==='Enter')wizardNext()">
+              <input type="password" id="wizard-key" placeholder="${T("wizard.step2.pasteKey")}" onkeydown="if(event.key==='Enter')wizardNext()">
             </div>
           </div>
           <div id="wizard-key-error" class="rounded-md border border-red-500 bg-red-500/20 px-3 py-2 text-sm text-red-200" style="display:none"></div>
-        </div>` : `
+        </div>`
+            : `
         <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step2.title"></span></h3>
         <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step2.description"></span></p>
         <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step2.detail"></span></p>
@@ -1709,13 +2419,20 @@ async function testWebhookUrl(id) {
             <p class="text-xs text-gray-500 mt-1"><span data-t="apiKeys.newKeyHint"></span></p>
           </div>
         </div>`;
-    } else if (wizardStep === 3) {
-      const defaults = window.__FRIENDARR_DEFAULTS__ || { incompletePath: '/downloads/incomplete', completedPath: '/downloads/complete' };
-      const incompletePath = localStorage.getItem('friendarr_incomplete') || defaults.incompletePath;
-      const completedPath = localStorage.getItem('friendarr_completed') || defaults.completedPath;
-      const moviePath = localStorage.getItem('friendarr_movie') || '';
-      const tvPath = localStorage.getItem('friendarr_tv') || '';
-      body.innerHTML = `
+        } else if (wizardStep === 3) {
+          const defaults = window.__FRIENDARR_DEFAULTS__ || {
+            incompletePath: "/downloads/incomplete",
+            completedPath: "/downloads/complete",
+          };
+          const incompletePath =
+            localStorage.getItem("friendarr_incomplete") ||
+            defaults.incompletePath;
+          const completedPath =
+            localStorage.getItem("friendarr_completed") ||
+            defaults.completedPath;
+          const moviePath = localStorage.getItem("friendarr_movie") || "";
+          const tvPath = localStorage.getItem("friendarr_tv") || "";
+          body.innerHTML = `
         <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step3.title"></span></h3>
         <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step3.description"></span></p>
         <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step3.detail"></span></p>
@@ -1724,7 +2441,7 @@ async function testWebhookUrl(id) {
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step3.incomplete"></span></label>
             <div class="form-input-field">
               <input type="text" id="wiz-incomplete" value="${esc(incompletePath)}">
-              <button onclick="openBrowse('wiz-incomplete')" class="input-action" title="${T('paths.browse')}">
+              <button onclick="openBrowse('wiz-incomplete')" class="input-action" title="${T("paths.browse")}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
               </button>
             </div>
@@ -1734,7 +2451,7 @@ async function testWebhookUrl(id) {
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step3.completed"></span></label>
             <div class="form-input-field">
               <input type="text" id="wiz-completed" value="${esc(completedPath)}">
-              <button onclick="openBrowse('wiz-completed')" class="input-action" title="${T('paths.browse')}">
+              <button onclick="openBrowse('wiz-completed')" class="input-action" title="${T("paths.browse")}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
               </button>
             </div>
@@ -1743,8 +2460,8 @@ async function testWebhookUrl(id) {
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="paths.movieDir"></span></label>
             <div class="form-input-field">
-              <input type="text" id="wiz-movie" value="${esc(moviePath)}" placeholder="${esc(completedPath + '/movies')}">
-              <button onclick="openBrowse('wiz-movie')" class="input-action" title="${T('paths.browse')}">
+              <input type="text" id="wiz-movie" value="${esc(moviePath)}" placeholder="${esc(completedPath + "/movies")}">
+              <button onclick="openBrowse('wiz-movie')" class="input-action" title="${T("paths.browse")}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
               </button>
             </div>
@@ -1753,215 +2470,277 @@ async function testWebhookUrl(id) {
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="paths.tvDir"></span></label>
             <div class="form-input-field">
-              <input type="text" id="wiz-tv" value="${esc(tvPath)}" placeholder="${esc(completedPath + '/tv')}">
-              <button onclick="openBrowse('wiz-tv')" class="input-action" title="${T('paths.browse')}">
+              <input type="text" id="wiz-tv" value="${esc(tvPath)}" placeholder="${esc(completedPath + "/tv")}">
+              <button onclick="openBrowse('wiz-tv')" class="input-action" title="${T("paths.browse")}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
               </button>
             </div>
             <p class="mt-1 text-xs text-gray-500"><span data-t="paths.tvDirHint"></span></p>
           </div>
         </div>`;
-    }
-    translateStatic();
-  }
+        }
+        translateStatic();
+      }
 
-  async function wizardNext() {
-    if (wizardStep === 2) {
-      const keyEl = document.getElementById('wizard-key');
-      const key = keyEl ? keyEl.value.trim() : '';
-      if (!key) return;
-      wizardMasterKey = key;
+      async function wizardNext() {
+        if (wizardStep === 2) {
+          const keyEl = document.getElementById("wizard-key");
+          const key = keyEl ? keyEl.value.trim() : "";
+          if (!key) return;
+          wizardMasterKey = key;
 
-      const defaults = window.__FRIENDARR_DEFAULTS__ || {};
-      if (defaults.hasMasterKey || key) {
-        const prevKey = apiKey;
-        apiKey = key;
-        try {
-          const r = await fetch('/api/v1/settings', { headers: authHeaders() });
-          if (r.ok) {
-            const errEl = document.getElementById('wizard-key-error');
-            if (errEl) errEl.style.display = 'none';
-            wizardStep++;
-            renderWizardStep();
+          const defaults = window.__FRIENDARR_DEFAULTS__ || {};
+          if (defaults.hasMasterKey || key) {
+            const prevKey = apiKey;
+            apiKey = key;
+            try {
+              const r = await fetch("/api/v1/settings", {
+                headers: authHeaders(),
+              });
+              if (r.ok) {
+                const errEl = document.getElementById("wizard-key-error");
+                if (errEl) errEl.style.display = "none";
+                wizardStep++;
+                renderWizardStep();
+                return;
+              }
+            } catch (e) {}
+            apiKey = prevKey;
+            wizardMasterKey = "";
+            const errEl = document.getElementById("wizard-key-error");
+            if (errEl) {
+              errEl.textContent = T("wizard.step2.authFailed");
+              errEl.style.display = "block";
+            }
             return;
           }
-        } catch(e) {}
-        apiKey = prevKey;
-        wizardMasterKey = '';
-        const errEl = document.getElementById('wizard-key-error');
-        if (errEl) { errEl.textContent = T('wizard.step2.authFailed'); errEl.style.display = 'block'; }
-        return;
-      }
-      wizardStep++;
-      renderWizardStep();
-      return;
-    }
-    if (wizardStep === 3) {
-      const incomplete = document.getElementById('wiz-incomplete');
-      const completed = document.getElementById('wiz-completed');
-      const movie = document.getElementById('wiz-movie');
-      const tv = document.getElementById('wiz-tv');
-      if (incomplete) localStorage.setItem('friendarr_incomplete', incomplete.value.trim() || '/downloads/incomplete');
-      if (completed) localStorage.setItem('friendarr_completed', completed.value.trim() || '/downloads/complete');
-      if (movie) localStorage.setItem('friendarr_movie', movie.value.trim() || '');
-      if (tv) localStorage.setItem('friendarr_tv', tv.value.trim() || '');
-      finishWizard();
-      return;
-    }
-    wizardStep++;
-    renderWizardStep();
-  }
-
-  function wizardPrev() {
-    if (wizardStep > 1) {
-      wizardStep--;
-      renderWizardStep();
-    }
-  }
-
-  function generateWizardKey() {
-    const arr = new Uint8Array(24);
-    crypto.getRandomValues(arr);
-    const key = 'sk-' + Array.from(arr, b => b.toString(16).padStart(2,'0')).join('');
-    wizardMasterKey = key;
-    showWizardKeyResult(key);
-    const next = document.getElementById('wizard-next');
-    if (next) {
-      next.textContent = T('wizard.step2.activate');
-      next.onclick = activateKey;
-      next.className = 'btn-primary';
-    }
-  }
-
-  async function activateKey() {
-    if (!wizardMasterKey) return;
-    localStorage.setItem('friendarr_key', wizardMasterKey);
-    const next = document.getElementById('wizard-next');
-    if (next) {
-      next.textContent = T('wizard.step2.activating');
-      next.className = 'btn-primary opacity-50 cursor-not-allowed';
-      next.onclick = null;
-    }
-    try {
-      const r = await fetch('/api/v1/bootstrap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: wizardMasterKey })
-      });
-      if (r.ok) {
-        apiKey = wizardMasterKey;
-        finishWizard();
-        return;
-      }
-    } catch(e) {}
-    if (next) {
-      next.textContent = T('wizard.step2.activate');
-      next.onclick = activateKey;
-      next.className = 'btn-primary';
-    }
-  }
-
-  function showWizardKeyResult(key) {
-    const result = document.getElementById('wizard-key-result');
-    const text = document.getElementById('wizard-key-result-text');
-    if (result && text) {
-      result.style.display = 'block';
-      text.textContent = key;
-    }
-  }
-
-  function copyWizardKey() {
-    const text = document.getElementById('wizard-key-result-text');
-    if (text && text.textContent) copyToClipboard(text.textContent);
-  }
-
-  function wizardKeyInput() {
-    const el = document.getElementById('wizard-key');
-    if (el && el.value.trim()) {
-      wizardMasterKey = el.value.trim();
-      showWizardKeyResult(wizardMasterKey);
-    } else {
-      wizardMasterKey = '';
-      const result = document.getElementById('wizard-key-result');
-      if (result) result.style.display = 'none';
-    }
-  }
-
-  function selectWizardLanguage(code, el) {
-    window.setLanguage(code);
-    translateStatic();
-    document.querySelectorAll('#wizard-body [data-lang]').forEach(d => {
-      d.className = d.className.replace(/bg-emerald-600\/20\s+|\bborder-emerald-600\b/g, '');
-      if (!d.className.includes('border-l-2 border-transparent hover:bg-gray-700/50')) {
-        d.className = 'flex items-center gap-3 px-4 py-2.5 cursor-pointer transition border-l-2 border-transparent hover:bg-gray-700/50';
-      }
-    });
-    el.className = 'flex items-center gap-3 px-4 py-2.5 cursor-pointer transition bg-emerald-600/20 border-l-2 border-emerald-600';
-  }
-
-  async function finishWizard() {
-    if (wizardMasterKey) {
-      localStorage.setItem('friendarr_key', wizardMasterKey);
-      apiKey = wizardMasterKey;
-    }
-
-    var authOk = false;
-    if (apiKey) {
-      try {
-        const r = await fetch('/api/v1/settings', { headers: authHeaders() });
-        authOk = r.ok;
-      } catch(e) {}
-    }
-
-    hideWizard();
-
-    if (authOk) {
-      try {
-        var settings = {};
-        var incomplete = localStorage.getItem('friendarr_incomplete');
-        var completed = localStorage.getItem('friendarr_completed');
-        var movie = localStorage.getItem('friendarr_movie');
-        var tv = localStorage.getItem('friendarr_tv');
-        if (incomplete) settings.incompletePath = incomplete;
-        if (completed) settings.completedPath = completed;
-        if (movie) settings.moviePath = movie;
-        if (tv) settings.tvPath = tv;
-        if (Object.keys(settings).length > 0) {
-          await fetch('/api/v1/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(settings) });
+          wizardStep++;
+          renderWizardStep();
+          return;
         }
-      } catch(e) {}
-      updateAuthUI(true);
-      refreshSidebar();
-      if (currentView === 'queue') { renderQueue(); startQueuePolling(); }
-      else { renderSettings(); }
-    } else {
-      apiKey = '';
-      localStorage.removeItem('friendarr_key');
-      updateAuthUI(false);
-      showView(currentView);
-    }
-  }
-</script>
+        if (wizardStep === 3) {
+          const incomplete = document.getElementById("wiz-incomplete");
+          const completed = document.getElementById("wiz-completed");
+          const movie = document.getElementById("wiz-movie");
+          const tv = document.getElementById("wiz-tv");
+          if (incomplete)
+            localStorage.setItem(
+              "friendarr_incomplete",
+              incomplete.value.trim() || "/downloads/incomplete",
+            );
+          if (completed)
+            localStorage.setItem(
+              "friendarr_completed",
+              completed.value.trim() || "/downloads/complete",
+            );
+          if (movie)
+            localStorage.setItem("friendarr_movie", movie.value.trim() || "");
+          if (tv) localStorage.setItem("friendarr_tv", tv.value.trim() || "");
+          finishWizard();
+          return;
+        }
+        wizardStep++;
+        renderWizardStep();
+      }
 
-<!-- Setup Wizard -->
-<div id="setup-wizard" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
-  <div class="relative w-full max-w-2xl rounded-lg bg-gray-800 p-8 shadow-xl ring-1 ring-gray-700">
-    <div class="text-center mb-6">
-      <span class="text-3xl font-bold" style="font-family:'Silkscreen',monospace;background:linear-gradient(135deg,#0d9488,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Friendarr</span>
-    </div>
-    <div class="flex items-center justify-center space-x-3 mb-8" id="wizard-dots">
-      <div class="wizard-dot w-3 h-3 rounded-full bg-emerald-600"></div>
-      <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
-      <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
-    </div>
-    <div id="wizard-body"></div>
-    <div class="flex justify-between mt-8 border-t border-gray-700 pt-5">
-      <button id="wizard-prev" onclick="wizardPrev()" class="btn-ghost" style="display:none"><span data-t="wizard.back"></span></button>
-      <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost"><span data-t="wizard.skip"></span></button>
-      <button id="wizard-next" onclick="wizardNext()" class="btn-primary"><span data-t="wizard.next"></span></button>
-    </div>
-  </div>
-</div>
+      function wizardPrev() {
+        if (wizardStep > 1) {
+          wizardStep--;
+          renderWizardStep();
+        }
+      }
 
-</body>
+      function generateWizardKey() {
+        const arr = new Uint8Array(24);
+        crypto.getRandomValues(arr);
+        const key =
+          "sk-" +
+          Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("");
+        wizardMasterKey = key;
+        showWizardKeyResult(key);
+        const next = document.getElementById("wizard-next");
+        if (next) {
+          next.textContent = T("wizard.step2.activate");
+          next.onclick = activateKey;
+          next.className = "btn-primary";
+        }
+      }
+
+      async function activateKey() {
+        if (!wizardMasterKey) return;
+        localStorage.setItem("friendarr_key", wizardMasterKey);
+        const next = document.getElementById("wizard-next");
+        if (next) {
+          next.textContent = T("wizard.step2.activating");
+          next.className = "btn-primary opacity-50 cursor-not-allowed";
+          next.onclick = null;
+        }
+        try {
+          const r = await fetch("/api/v1/bootstrap", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: wizardMasterKey }),
+          });
+          if (r.ok) {
+            apiKey = wizardMasterKey;
+            finishWizard();
+            return;
+          }
+        } catch (e) {}
+        if (next) {
+          next.textContent = T("wizard.step2.activate");
+          next.onclick = activateKey;
+          next.className = "btn-primary";
+        }
+      }
+
+      function showWizardKeyResult(key) {
+        const result = document.getElementById("wizard-key-result");
+        const text = document.getElementById("wizard-key-result-text");
+        if (result && text) {
+          result.style.display = "block";
+          text.textContent = key;
+        }
+      }
+
+      function copyWizardKey() {
+        const text = document.getElementById("wizard-key-result-text");
+        if (text && text.textContent) copyToClipboard(text.textContent);
+      }
+
+      function wizardKeyInput() {
+        const el = document.getElementById("wizard-key");
+        if (el && el.value.trim()) {
+          wizardMasterKey = el.value.trim();
+          showWizardKeyResult(wizardMasterKey);
+        } else {
+          wizardMasterKey = "";
+          const result = document.getElementById("wizard-key-result");
+          if (result) result.style.display = "none";
+        }
+      }
+
+      function selectWizardLanguage(code, el) {
+        window.setLanguage(code);
+        translateStatic();
+        document.querySelectorAll("#wizard-body [data-lang]").forEach((d) => {
+          d.className = d.className.replace(
+            /bg-emerald-600\/20\s+|\bborder-emerald-600\b/g,
+            "",
+          );
+          if (
+            !d.className.includes(
+              "border-l-2 border-transparent hover:bg-gray-700/50",
+            )
+          ) {
+            d.className =
+              "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition border-l-2 border-transparent hover:bg-gray-700/50";
+          }
+        });
+        el.className =
+          "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition bg-emerald-600/20 border-l-2 border-emerald-600";
+      }
+
+      async function finishWizard() {
+        if (wizardMasterKey) {
+          localStorage.setItem("friendarr_key", wizardMasterKey);
+          apiKey = wizardMasterKey;
+        }
+
+        var authOk = false;
+        if (apiKey) {
+          try {
+            const r = await fetch("/api/v1/settings", {
+              headers: authHeaders(),
+            });
+            authOk = r.ok;
+          } catch (e) {}
+        }
+
+        hideWizard();
+
+        if (authOk) {
+          try {
+            var settings = {};
+            var incomplete = localStorage.getItem("friendarr_incomplete");
+            var completed = localStorage.getItem("friendarr_completed");
+            var movie = localStorage.getItem("friendarr_movie");
+            var tv = localStorage.getItem("friendarr_tv");
+            if (incomplete) settings.incompletePath = incomplete;
+            if (completed) settings.completedPath = completed;
+            if (movie) settings.moviePath = movie;
+            if (tv) settings.tvPath = tv;
+            if (Object.keys(settings).length > 0) {
+              await fetch("/api/v1/settings", {
+                method: "PUT",
+                headers: authHeaders(),
+                body: JSON.stringify(settings),
+              });
+            }
+          } catch (e) {}
+          updateAuthUI(true);
+          refreshSidebar();
+          if (currentView === "queue") {
+            renderQueue();
+            startQueuePolling();
+          } else {
+            renderSettings();
+          }
+        } else {
+          apiKey = "";
+          localStorage.removeItem("friendarr_key");
+          updateAuthUI(false);
+          showView(currentView);
+        }
+      }
+    </script>
+
+    <!-- Setup Wizard -->
+    <div
+      id="setup-wizard"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70"
+    >
+      <div
+        class="relative w-full max-w-2xl rounded-lg bg-gray-800 p-8 shadow-xl ring-1 ring-gray-700"
+      >
+        <div class="text-center mb-6">
+          <span
+            class="text-3xl font-bold"
+            style="
+              font-family: &quot;Silkscreen&quot;, monospace;
+              background: linear-gradient(135deg, #0d9488, #059669);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+            >Friendarr</span
+          >
+        </div>
+        <div
+          class="flex items-center justify-center space-x-3 mb-8"
+          id="wizard-dots"
+        >
+          <div class="wizard-dot w-3 h-3 rounded-full bg-emerald-600"></div>
+          <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
+          <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
+        </div>
+        <div id="wizard-body"></div>
+        <div class="flex justify-between mt-8 border-t border-gray-700 pt-5">
+          <button
+            id="wizard-prev"
+            onclick="wizardPrev()"
+            class="btn-ghost"
+            style="display: none"
+          >
+            <span data-t="wizard.back"></span>
+          </button>
+          <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost">
+            <span data-t="wizard.skip"></span>
+          </button>
+          <button id="wizard-next" onclick="wizardNext()" class="btn-primary">
+            <span data-t="wizard.next"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

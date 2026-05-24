@@ -12,26 +12,26 @@ Authorization: Bearer <api-key>
 
 ### Two Levels of Access
 
-| Level | Key | Access |
-|---|---|---|
-| **API key** | Master key or generated API key | Download endpoints, status tracking |
-| **Master key** | The `API_KEY` env var | Everything above + queue management, settings, API key CRUD, logs, webhooks |
+| Level          | Key                             | Access                                                                      |
+| -------------- | ------------------------------- | --------------------------------------------------------------------------- |
+| **API key**    | Master key or generated API key | Download endpoints, status tracking                                         |
+| **Master key** | The `API_KEY` env var           | Everything above + queue management, settings, API key CRUD, logs, webhooks |
 
 The master API key also works as a regular API key for download endpoints.
 
 ### Response Format
 
-| Status | Meaning |
-|---|---|
-| `200` | Success |
-| `201` | Created (API keys) |
-| `202` | Accepted (download queued) |
-| `204` | No content (deleted) |
-| `400` | Bad request — missing or invalid body |
-| `401` | Missing or malformed `Authorization` header |
-| `403` | Invalid API key or insufficient permissions |
-| `404` | Resource not found |
-| `502` | Upstream error (webhook test failure) |
+| Status | Meaning                                     |
+| ------ | ------------------------------------------- |
+| `200`  | Success                                     |
+| `201`  | Created (API keys)                          |
+| `202`  | Accepted (download queued)                  |
+| `204`  | No content (deleted)                        |
+| `400`  | Bad request — missing or invalid body       |
+| `401`  | Missing or malformed `Authorization` header |
+| `403`  | Invalid API key or insufficient permissions |
+| `404`  | Resource not found                          |
+| `502`  | Upstream error (webhook test failure)       |
 
 Error responses have the shape:
 

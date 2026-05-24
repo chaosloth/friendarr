@@ -8,20 +8,20 @@ Includes a web UI at `/` (Seerr-styled) for managing the queue, API keys, source
 
 ## Key Commands
 
-| Command | What it does |
-|---|---|
-| `pnpm install` | Install dependencies |
-| `pnpm build` | Compile TypeScript to `dist/` and copy `src/ui/` to `dist/ui/` |
-| `pnpm start` | Run the compiled service (`node dist/index.js`) |
-| `pnpm dev` | Build, then watch mode: `tsc --watch` + `node --watch dist/index.js` |
-| `pnpm typecheck` | Type-check without emitting (`tsc --noEmit`) |
-| `pnpm lint` | ESLint on `src/` |
-| `pnpm format` | Prettier format |
-| `pnpm docker:build` | Build production Docker image |
-| `pnpm docker:tag` | Tag image for push (`DOCKER_REPO` env, default `conno/friendarr`) |
-| `pnpm docker:push` | Push tagged image to Docker Hub |
-| `pnpm docker:release` | Build + tag + push in one command |
-| `docker compose up -d` | Start dev stack with hot-reload |
+| Command                | What it does                                                         |
+| ---------------------- | -------------------------------------------------------------------- |
+| `pnpm install`         | Install dependencies                                                 |
+| `pnpm build`           | Compile TypeScript to `dist/` and copy `src/ui/` to `dist/ui/`       |
+| `pnpm start`           | Run the compiled service (`node dist/index.js`)                      |
+| `pnpm dev`             | Build, then watch mode: `tsc --watch` + `node --watch dist/index.js` |
+| `pnpm typecheck`       | Type-check without emitting (`tsc --noEmit`)                         |
+| `pnpm lint`            | ESLint on `src/`                                                     |
+| `pnpm format`          | Prettier format                                                      |
+| `pnpm docker:build`    | Build production Docker image                                        |
+| `pnpm docker:tag`      | Tag image for push (`DOCKER_REPO` env, default `conno/friendarr`)    |
+| `pnpm docker:push`     | Push tagged image to Docker Hub                                      |
+| `pnpm docker:release`  | Build + tag + push in one command                                    |
+| `docker compose up -d` | Start dev stack with hot-reload                                      |
 
 ## Gotchas
 
@@ -56,6 +56,7 @@ src/
 ## Web UI
 
 Served at `/`. Authenticate with the master API key to access:
+
 - **Queue** — view all jobs with status badges, progress bars; pause/resume/cancel individual jobs; pause/resume all; clear finished
 - **Settings** — manage API keys, source endpoints, concurrency limits, bandwidth limits, and download schedules with multiple time windows per day
 
@@ -63,23 +64,23 @@ All UI-reachable API endpoints require the master API key (`Bearer` token).
 
 ## API Endpoints
 
-| Method | Path | Auth | Purpose |
-|--------|------|------|---------|
-| `POST` | `/api/v1/download` | Bearer API key | Queue a download |
-| `GET` | `/api/v1/status/:downloadId` | Bearer API key | Track download progress |
-| `GET` | `/api/v1/queue` | Bearer master key | List all jobs + global paused state |
-| `POST` | `/api/v1/queue/:id/pause` | Bearer master key | Pause a single job |
-| `POST` | `/api/v1/queue/:id/resume` | Bearer master key | Resume a paused job |
-| `DELETE` | `/api/v1/queue/:id` | Bearer master key | Cancel a job |
-| `DELETE` | `/api/v1/queue` | Bearer master key | Clear all completed/failed jobs |
-| `POST` | `/api/v1/queue/pause-all` | Bearer master key | Globally pause queue processing |
-| `POST` | `/api/v1/queue/resume-all` | Bearer master key | Globally resume queue processing |
-| `GET` | `/api/v1/settings` | Bearer master key | Get runtime settings |
-| `PUT` | `/api/v1/settings` | Bearer master key | Update runtime settings |
-| `POST` | `/api/v1/api-keys` | Bearer master key | Create API key |
-| `GET` | `/api/v1/api-keys` | Bearer master key | List API keys |
-| `DELETE` | `/api/v1/api-keys/:key` | Bearer master key | Revoke API key |
-| `GET` | `/api/v1/health` | None | Health check + active downloads |
+| Method   | Path                         | Auth              | Purpose                             |
+| -------- | ---------------------------- | ----------------- | ----------------------------------- |
+| `POST`   | `/api/v1/download`           | Bearer API key    | Queue a download                    |
+| `GET`    | `/api/v1/status/:downloadId` | Bearer API key    | Track download progress             |
+| `GET`    | `/api/v1/queue`              | Bearer master key | List all jobs + global paused state |
+| `POST`   | `/api/v1/queue/:id/pause`    | Bearer master key | Pause a single job                  |
+| `POST`   | `/api/v1/queue/:id/resume`   | Bearer master key | Resume a paused job                 |
+| `DELETE` | `/api/v1/queue/:id`          | Bearer master key | Cancel a job                        |
+| `DELETE` | `/api/v1/queue`              | Bearer master key | Clear all completed/failed jobs     |
+| `POST`   | `/api/v1/queue/pause-all`    | Bearer master key | Globally pause queue processing     |
+| `POST`   | `/api/v1/queue/resume-all`   | Bearer master key | Globally resume queue processing    |
+| `GET`    | `/api/v1/settings`           | Bearer master key | Get runtime settings                |
+| `PUT`    | `/api/v1/settings`           | Bearer master key | Update runtime settings             |
+| `POST`   | `/api/v1/api-keys`           | Bearer master key | Create API key                      |
+| `GET`    | `/api/v1/api-keys`           | Bearer master key | List API keys                       |
+| `DELETE` | `/api/v1/api-keys/:key`      | Bearer master key | Revoke API key                      |
+| `GET`    | `/api/v1/health`             | None              | Health check + active downloads     |
 
 A root-level `GET /health` endpoint (no auth, no active-download count) also exists in `src/index.ts`.
 
@@ -114,21 +115,21 @@ Sent by Seerr's `POST /request/:id/send-to-remote`:
 
 ## Environment Variables
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `PORT` | `5056` | Listen port |
-| `API_KEY` | — | Master API key for managing API keys (also works as a regular API key) |
-| `INCOMPLETE_PATH` | `/downloads/incomplete` | Directory for in-progress downloads |
-| `COMPLETED_PATH` | `/downloads/complete` | Root directory for completed media (movies/tv beneath) |
-| `MAX_CONCURRENT_DOWNLOADS` | `2` | Initial max parallel downloads (overridable at runtime via settings) |
+| Variable                   | Default                 | Purpose                                                                |
+| -------------------------- | ----------------------- | ---------------------------------------------------------------------- |
+| `PORT`                     | `5056`                  | Listen port                                                            |
+| `API_KEY`                  | —                       | Master API key for managing API keys (also works as a regular API key) |
+| `INCOMPLETE_PATH`          | `/downloads/incomplete` | Directory for in-progress downloads                                    |
+| `COMPLETED_PATH`           | `/downloads/complete`   | Root directory for completed media (movies/tv beneath)                 |
+| `MAX_CONCURRENT_DOWNLOADS` | `2`                     | Initial max parallel downloads (overridable at runtime via settings)   |
 
 ## Source-Specific Auth
 
-| Source | Auth Method |
-|---|---|
-| Seerr | `X-Api-Key` header |
-| Plex | `X-Plex-Token` header |
-| Emby | `MediaBrowser` auth header with `Token` |
+| Source   | Auth Method                             |
+| -------- | --------------------------------------- |
+| Seerr    | `X-Api-Key` header                      |
+| Plex     | `X-Plex-Token` header                   |
+| Emby     | `MediaBrowser` auth header with `Token` |
 | Jellyfin | `MediaBrowser` auth header with `Token` |
 
 ## File Placement Convention
@@ -152,11 +153,11 @@ Sent by Seerr's `POST /request/:id/send-to-remote`:
 
 ## Docker
 
-| File | Purpose |
-|---|---|
-| `Dockerfile` | Multi-stage Alpine production build (TypeScript compile, minimal runtime) |
-| `Dockerfile.local` | Dev image with hot-reload via `pnpm dev` |
-| `docker-compose.yaml` | Dev stack (source mount, port 5056) |
+| File                  | Purpose                                                                   |
+| --------------------- | ------------------------------------------------------------------------- |
+| `Dockerfile`          | Multi-stage Alpine production build (TypeScript compile, minimal runtime) |
+| `Dockerfile.local`    | Dev image with hot-reload via `pnpm dev`                                  |
+| `docker-compose.yaml` | Dev stack (source mount, port 5056)                                       |
 
 ### Docker Hub
 
@@ -164,10 +165,10 @@ The project pushes to `conno/friendarr` on Docker Hub. The `DOCKER_REPO` env var
 
 ### GitHub Actions
 
-| Workflow | Trigger | What it does |
-|---|---|---|
-| `.github/workflows/ci.yml` | PRs, push to `develop` | Lint, typecheck, build. Pushes `:develop` tag on develop push. |
-| `.github/workflows/release.yml` | Tag push `v*` | Multi-arch build + push `:version`, `:latest` to Docker Hub |
+| Workflow                        | Trigger                | What it does                                                   |
+| ------------------------------- | ---------------------- | -------------------------------------------------------------- |
+| `.github/workflows/ci.yml`      | PRs, push to `develop` | Lint, typecheck, build. Pushes `:develop` tag on develop push. |
+| `.github/workflows/release.yml` | Tag push `v*`          | Multi-arch build + push `:version`, `:latest` to Docker Hub    |
 
 Both require `DOCKER_USERNAME` and `DOCKER_TOKEN` GitHub secrets.
 

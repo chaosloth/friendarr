@@ -4,7 +4,7 @@ name: Friendarr Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: read

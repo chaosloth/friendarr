@@ -22,10 +22,10 @@ On tag push, the workflow:
 
 The release workflow requires these secrets configured in **Repo → Settings → Secrets and variables → Actions**:
 
-| Secret | Purpose |
-|---|---|
-| `DOCKER_USERNAME` | Docker Hub username |
-| `DOCKER_TOKEN` | Docker Hub access token (generate at https://hub.docker.com/settings/security) |
+| Secret            | Purpose                                                                        |
+| ----------------- | ------------------------------------------------------------------------------ |
+| `DOCKER_USERNAME` | Docker Hub username                                                            |
+| `DOCKER_TOKEN`    | Docker Hub access token (generate at https://hub.docker.com/settings/security) |
 
 ### Local auth (for `gh release create`)
 
@@ -136,10 +136,10 @@ gh run watch <run-id>
 
 ### What the workflow looks like
 
-| Job | Runners | What it does |
-|---|---|---|
-| `build` (matrix) | `ubuntu-24.04` + `ubuntu-24.04-arm` | Builds Docker image per arch, populates GitHub Actions cache |
-| `publish` | `ubuntu-24.04` | Logs into Docker Hub, builds multi-arch manifest from cache, pushes all tags |
+| Job              | Runners                             | What it does                                                                 |
+| ---------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| `build` (matrix) | `ubuntu-24.04` + `ubuntu-24.04-arm` | Builds Docker image per arch, populates GitHub Actions cache                 |
+| `publish`        | `ubuntu-24.04`                      | Logs into Docker Hub, builds multi-arch manifest from cache, pushes all tags |
 
 Total run time: ~5-8 minutes (mostly waiting for `pnpm install` on ARM).
 
@@ -225,11 +225,11 @@ Look for `linux/amd64` and `linux/arm64` entries in the manifest. If only one ar
 
 For a stable tag `v0.2.0`, the following tags are pushed:
 
-| Tag | Example | Notes |
-|---|---|---|
-| Exact version | `conno/friendarr:v0.2.0` | Always pushed |
-| Minor version | `conno/friendarr:v0.2` | Always pushed |
-| Major version | `conno/friendarr:v0` | Always pushed |
+| Tag           | Example                  | Notes                                  |
+| ------------- | ------------------------ | -------------------------------------- |
+| Exact version | `conno/friendarr:v0.2.0` | Always pushed                          |
+| Minor version | `conno/friendarr:v0.2`   | Always pushed                          |
+| Major version | `conno/friendarr:v0`     | Always pushed                          |
 | Latest stable | `conno/friendarr:latest` | Only for stable (non-pre-release) tags |
 
 ## Manual Release (without GitHub Actions)

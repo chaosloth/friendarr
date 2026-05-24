@@ -1,34 +1,34 @@
-import { Router } from 'express';
-import fs from 'fs/promises';
-import { readFileSync, writeFileSync } from 'fs';
-import { statfs } from 'fs';
-import path from 'path';
+import { Router } from "express";
+import fs from "fs/promises";
+import { readFileSync, writeFileSync } from "fs";
+import { statfs } from "fs";
+import path from "path";
 import {
   authenticateApiKey,
   authenticateMasterKey,
   createApiKey,
   deleteApiKey,
   listApiKeys,
-} from '../auth';
-import { downloadQueue } from '../lib/queue';
-import { testWebhook } from '../lib/webhooks';
-import { getLogs, logger } from '../logger';
-import { getSettings, updateSettings } from '../settings';
-import { config } from '../config';
+} from "../auth";
+import { downloadQueue } from "../lib/queue";
+import { testWebhook } from "../lib/webhooks";
+import { getLogs, logger } from "../logger";
+import { getSettings, updateSettings } from "../settings";
+import { config } from "../config";
 
 const router: Router = Router();
 
-router.post('/download', authenticateApiKey, (req, res) => {
+router.post("/download", authenticateApiKey, (req, res) => {
   const body = req.body;
 
   if (!body.source?.type || !body.source?.url) {
-    res.status(400).json({ error: 'source.type and source.url are required' });
+    res.status(400).json({ error: "source.type and source.url are required" });
     return;
   }
 
   if (!body.destination?.mediaType || !body.destination?.tmdbId) {
     res.status(400).json({
-      error: 'destination.mediaType and destination.tmdbId are required',
+      error: "destination.mediaType and destination.tmdbId are required",
     });
     return;
   }
@@ -36,8 +36,8 @@ router.post('/download', authenticateApiKey, (req, res) => {
   const job = downloadQueue.enqueue(body);
 
   logger.debug(
-    `Download request: ${body.source.type} → ${body.destination.title || 'unknown'} (tmdb:${body.destination.tmdbId})`,
-    'API'
+    `Download request: ${body.source.type} → ${body.destination.title || "unknown"} (tmdb:${body.destination.tmdbId})`,
+    "API",
   );
 
   res.status(202).json({
@@ -49,201 +49,202 @@ router.post('/download', authenticateApiKey, (req, res) => {
   });
 });
 
-router.get('/status/:downloadId', authenticateApiKey, (req, res) => {
+router.get("/status/:downloadId", authenticateApiKey, (req, res) => {
   const job = downloadQueue.getStatus(req.params.downloadId);
 
   if (!job) {
-    res.status(404).json({ error: 'Download not found' });
+    res.status(404).json({ error: "Download not found" });
     return;
   }
 
   res.status(200).json(job);
 });
 
-router.post('/api-keys', authenticateMasterKey, (req, res) => {
+router.post("/api-keys", authenticateMasterKey, (req, res) => {
   const { label } = req.body;
 
   if (!label) {
-    res.status(400).json({ error: 'label is required' });
+    res.status(400).json({ error: "label is required" });
     return;
   }
 
   const apiKey = createApiKey(label);
-  logger.info(`API key created: ${label}`, 'API');
+  logger.info(`API key created: ${label}`, "API");
   res.status(201).json({ apiKey: apiKey.key });
 });
 
-router.get('/api-keys', authenticateMasterKey, (_req, res) => {
+router.get("/api-keys", authenticateMasterKey, (_req, res) => {
   const keys = listApiKeys();
   res.status(200).json({ keys });
 });
 
-router.delete('/api-keys/:key', authenticateMasterKey, (req, res) => {
+router.delete("/api-keys/:key", authenticateMasterKey, (req, res) => {
   const deleted = deleteApiKey(req.params.key);
 
   if (!deleted) {
-    res.status(404).json({ error: 'API key not found' });
+    res.status(404).json({ error: "API key not found" });
     return;
   }
 
-  logger.info(`API key revoked`, 'API');
+  logger.info(`API key revoked`, "API");
   res.status(204).send();
 });
 
-router.get('/queue', authenticateMasterKey, (_req, res) => {
+router.get("/queue", authenticateMasterKey, (_req, res) => {
   const jobs = downloadQueue.listJobs();
   res.status(200).json({ jobs, globalPaused: downloadQueue.isGlobalPaused() });
 });
 
-router.post('/queue/:id/pause', authenticateMasterKey, (req, res) => {
+router.post("/queue/:id/pause", authenticateMasterKey, (req, res) => {
   const ok = downloadQueue.pauseJob(req.params.id);
   if (!ok) {
-    res.status(404).json({ error: 'Job not found' });
+    res.status(404).json({ error: "Job not found" });
     return;
   }
-  res.status(200).json({ status: 'paused' });
+  res.status(200).json({ status: "paused" });
 });
 
-router.post('/queue/:id/resume', authenticateMasterKey, (req, res) => {
+router.post("/queue/:id/resume", authenticateMasterKey, (req, res) => {
   const ok = downloadQueue.resumeJob(req.params.id);
   if (!ok) {
-    res.status(404).json({ error: 'Job not found' });
+    res.status(404).json({ error: "Job not found" });
     return;
   }
-  res.status(200).json({ status: 'resumed' });
+  res.status(200).json({ status: "resumed" });
 });
 
-router.delete('/queue/:id', authenticateMasterKey, (req, res) => {
+router.delete("/queue/:id", authenticateMasterKey, (req, res) => {
   const ok = downloadQueue.cancelJob(req.params.id);
   if (!ok) {
-    res.status(404).json({ error: 'Job not found' });
+    res.status(404).json({ error: "Job not found" });
     return;
   }
-  res.status(200).json({ status: 'cancelled' });
+  res.status(200).json({ status: "cancelled" });
 });
 
-router.post('/queue/:id/retry', authenticateMasterKey, (req, res) => {
+router.post("/queue/:id/retry", authenticateMasterKey, (req, res) => {
   const ok = downloadQueue.retryJob(req.params.id);
   if (!ok) {
-    res.status(404).json({ error: 'Job not found or not failed' });
+    res.status(404).json({ error: "Job not found or not failed" });
     return;
   }
-  res.status(200).json({ status: 'queued' });
+  res.status(200).json({ status: "queued" });
 });
 
-router.delete('/queue', authenticateMasterKey, (_req, res) => {
+router.delete("/queue", authenticateMasterKey, (_req, res) => {
   const count = downloadQueue.clearCompleted();
-  logger.info(`Cleared ${count} completed/failed jobs`, 'Queue');
+  logger.info(`Cleared ${count} completed/failed jobs`, "Queue");
   res.status(200).json({ cleared: count });
 });
 
-router.post('/queue/pause-all', authenticateMasterKey, (_req, res) => {
+router.post("/queue/pause-all", authenticateMasterKey, (_req, res) => {
   downloadQueue.setGlobalPaused(true);
-  logger.info('Queue globally paused', 'Queue');
+  logger.info("Queue globally paused", "Queue");
   res.status(200).json({ globalPaused: true });
 });
 
-router.post('/queue/resume-all', authenticateMasterKey, (_req, res) => {
+router.post("/queue/resume-all", authenticateMasterKey, (_req, res) => {
   downloadQueue.setGlobalPaused(false);
-  logger.info('Queue globally resumed', 'Queue');
+  logger.info("Queue globally resumed", "Queue");
   res.status(200).json({ globalPaused: false });
 });
 
-router.get('/settings', authenticateMasterKey, (_req, res) => {
+router.get("/settings", authenticateMasterKey, (_req, res) => {
   res.status(200).json(getSettings());
 });
 
-router.put('/settings', authenticateMasterKey, (req, res) => {
+router.put("/settings", authenticateMasterKey, (req, res) => {
   const updated = updateSettings(req.body);
-  const changed = Object.keys(req.body).filter((k) => req.body[k] !== undefined);
-  const scheduleChanged = changed.includes('schedules');
-  const logLevelChanged = changed.includes('logLevel');
+  const changed = Object.keys(req.body).filter(
+    (k) => req.body[k] !== undefined,
+  );
+  const scheduleChanged = changed.includes("schedules");
+  const logLevelChanged = changed.includes("logLevel");
 
   if (scheduleChanged) {
     const schedules = updated.schedules;
     if (schedules.length === 0) {
-      logger.info('Schedules cleared — downloads unrestricted', 'Settings');
+      logger.info("Schedules cleared — downloads unrestricted", "Settings");
     } else {
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const parts = schedules.map((s) => {
-        const days = s.days.map((d) => dayNames[d]).join(',');
+        const days = s.days.map((d) => dayNames[d]).join(",");
         const wins = s.windows
           .map((w) => {
             const bw =
               w.bandwidth > 0
                 ? `${(w.bandwidth / 1048576).toFixed(1)}MB/s`
-                : 'unlimited';
+                : "unlimited";
             return `${w.start}-${w.end}(${bw})`;
           })
-          .join(' ');
+          .join(" ");
         return `[${days}] ${wins}`;
       });
       const fb =
         updated.maxBandwidth > 0
           ? `fallback=${(updated.maxBandwidth / 1048576).toFixed(1)}MB/s`
-          : 'unrestricted';
-      logger.info(`Schedules: ${parts.join(' | ')} | ${fb}`, 'Settings');
+          : "unrestricted";
+      logger.info(`Schedules: ${parts.join(" | ")} | ${fb}`, "Settings");
     }
   } else {
     logger.info(
-      `Settings updated: ${changed.join(', ') || 'no fields'}`,
-      'Settings'
+      `Settings updated: ${changed.join(", ") || "no fields"}`,
+      "Settings",
     );
   }
 
   if (logLevelChanged) {
-    logger.info(`Log level changed to ${updated.logLevel}`, 'Settings');
+    logger.info(`Log level changed to ${updated.logLevel}`, "Settings");
   }
 
-  logger.debug(
-    `Settings detail: ${JSON.stringify(req.body)}`,
-    'Settings'
-  );
+  logger.debug(`Settings detail: ${JSON.stringify(req.body)}`, "Settings");
   downloadQueue.triggerProcess();
   res.status(200).json(updated);
 });
 
-router.get('/health', (_req, res) => {
+router.get("/health", (_req, res) => {
   res.status(200).json({
-    status: 'ok',
+    status: "ok",
     activeDownloads: downloadQueue.getActiveCount(),
   });
 });
 
-router.get('/verify', authenticateApiKey, (_req, res) => {
-  res.status(200).json({ status: 'ok' });
+router.get("/verify", authenticateApiKey, (_req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
-router.get('/logs', authenticateMasterKey, (req, res) => {
+router.get("/logs", authenticateMasterKey, (req, res) => {
   const level = req.query.level as string | undefined;
-  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+  const limit = req.query.limit
+    ? parseInt(req.query.limit as string, 10)
+    : undefined;
   res.status(200).json({ logs: getLogs(level, limit) });
 });
 
-router.post('/webhooks/test', authenticateMasterKey, async (req, res) => {
+router.post("/webhooks/test", authenticateMasterKey, async (req, res) => {
   const { url, secret } = req.body;
   if (!url) {
-    res.status(400).json({ error: 'url is required' });
+    res.status(400).json({ error: "url is required" });
     return;
   }
   try {
-    logger.debug(`Webhook test: ${url}`, 'Webhooks');
+    logger.debug(`Webhook test: ${url}`, "Webhooks");
     await testWebhook(url, secret);
-    logger.info(`Webhook test to ${url} succeeded`, 'Webhooks');
-    res.status(200).json({ status: 'ok' });
+    logger.info(`Webhook test to ${url} succeeded`, "Webhooks");
+    res.status(200).json({ status: "ok" });
   } catch (e) {
     res.status(502).json({
-      status: 'failed',
+      status: "failed",
       error: (e as Error).message,
     });
   }
 });
 
-router.get('/browse', authenticateMasterKey, async (req, res) => {
-  const dirPath = (req.query.path as string) || '/';
+router.get("/browse", authenticateMasterKey, async (req, res) => {
+  const dirPath = (req.query.path as string) || "/";
   try {
     const resolved = path.resolve(dirPath);
-    logger.debug(`Directory browsed: ${resolved}`, 'API');
+    logger.debug(`Directory browsed: ${resolved}`, "API");
     const entries = await fs.readdir(resolved, { withFileTypes: true });
     const listing = entries
       .filter((e) => e.isDirectory())
@@ -263,11 +264,11 @@ router.get('/browse', authenticateMasterKey, async (req, res) => {
   }
 });
 
-router.get('/disk', authenticateMasterKey, (_req, res) => {
+router.get("/disk", authenticateMasterKey, (_req, res) => {
   const settings = getSettings();
   const dirs = [
-    { key: 'incomplete', p: settings.incompletePath },
-    { key: 'completed', p: settings.completedPath },
+    { key: "incomplete", p: settings.incompletePath },
+    { key: "completed", p: settings.completedPath },
   ];
   const result: Record<string, { available: number; total: number }> = {};
   let pending = dirs.length;
@@ -292,26 +293,29 @@ router.get('/disk', authenticateMasterKey, (_req, res) => {
   }
 });
 
-router.post('/bootstrap', (req, res) => {
+router.post("/bootstrap", (req, res) => {
   if (config.masterKey) {
-    res.status(403).json({ error: 'Master key already configured' });
+    res.status(403).json({ error: "Master key already configured" });
     return;
   }
   const { key } = req.body;
-  if (!key || typeof key !== 'string') {
-    res.status(400).json({ error: 'key is required' });
+  if (!key || typeof key !== "string") {
+    res.status(400).json({ error: "key is required" });
     return;
   }
   config.masterKey = key;
-  res.json({ message: 'Master key activated' });
+  res.json({ message: "Master key activated" });
   try {
-    const envPath = path.resolve(process.cwd(), '.env');
-    let env = readFileSync(envPath, 'utf-8');
+    const envPath = path.resolve(process.cwd(), ".env");
+    let env = readFileSync(envPath, "utf-8");
     env = env.replace(/^API_KEY=.*/m, `API_KEY=${key}`);
-    writeFileSync(envPath, env, 'utf-8');
-    logger.info('Master key persisted to .env', 'Bootstrap');
+    writeFileSync(envPath, env, "utf-8");
+    logger.info("Master key persisted to .env", "Bootstrap");
   } catch {
-    logger.info('Master key activated (could not persist .env — may be read-only)', 'Bootstrap');
+    logger.info(
+      "Master key activated (could not persist .env — may be read-only)",
+      "Bootstrap",
+    );
   }
 });
 
