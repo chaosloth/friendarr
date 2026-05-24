@@ -844,7 +844,7 @@ async function createApiKey() {
     generatedApiKey = '';
     resultDiv.style.display = 'block';
     resultDiv.className = 'rounded-md border border-red-500 bg-red-500/20 px-3 py-2';
-    resultText.textContent = (e as Error).message || T('apiKeys.unknownError');
+    resultText.textContent = (e && e.message) ? e.message : T('apiKeys.unknownError');
     resultText.className = 'text-sm text-red-200';
   }
 }
