@@ -922,15 +922,12 @@ function renderSchedulesSection() {
       const bwMB = w.bandwidth ? (w.bandwidth / (1024*1024)).toFixed(1) + ' MB/s' : 'Unlimited';
       const canMoveUp = wi > 0;
       const canMoveDown = wi < s.windows.length - 1;
-      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3">
-        <span class="flex flex-col shrink-0 select-none text-xs leading-none gap-0.5">
-          <span onclick="reorderWindow(${si},${wi},-1)" class="cursor-pointer text-gray-400 hover:text-white">&#9650;</span>
-          <span class="text-gray-600">&#8942;</span>
-          <span onclick="reorderWindow(${si},${wi},1)" class="cursor-pointer text-gray-400 hover:text-white">&#9660;</span>
-        </span>
+      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3" data-si="${si}" data-wi="${wi}">
+        <span class="shrink-0 cursor-grab text-gray-500 hover:text-gray-300 select-none text-lg leading-none px-0.5" onmousedown="startRowDrag(event,${si},${wi})">&#8942;</span>
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
-        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5" size="3"
-          class="w-10 bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-1"
+        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
+          class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
+          style="width:4.5ch"
           onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
         <span class="text-xs text-gray-400 shrink-0">MB/s</span>
         <button onclick="deleteScheduleWindow(${si}, ${wi})" class="text-gray-400 hover:text-red-400 shrink-0 p-1" title="Delete">
@@ -950,8 +947,9 @@ function renderSchedulesSection() {
     <div class="mt-6 border-t border-gray-700 pt-4">
       <label class="text-sm text-gray-400">Default bandwidth (when no schedules are set):</label>
       <div class="flex items-center gap-2 mt-1">
-        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5" size="3"
-          class="w-10 bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-1"
+        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5"
+          class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
+          style="width:4.5ch"
           onchange="saveMaxBandwidth(this.value)">
         <span class="text-xs text-gray-400">MB/s (0 = unlimited)</span>
       </div>
@@ -1072,14 +1070,66 @@ async function deleteScheduleWindow(si, wi) {
   setTimeout(initScheduleDrag, 100);
 }
 
-async function reorderWindow(si, wi, direction) {
+let dragRowSi = -1;
+let dragRowWi = -1;
+let dragStartY = 0;
+
+function startRowDrag(e, si, wi) {
+  dragRowSi = si;
+  dragRowWi = wi;
+  dragStartY = e.clientY;
+  const row = e.target.closest('[data-si]');
+  if (row) row.classList.add('ring-2', 'ring-emerald-500', 'opacity-50');
+  document.addEventListener('mousemove', onRowDragMove);
+  document.addEventListener('mouseup', onRowDragUp);
+  e.preventDefault();
+}
+
+function onRowDragMove(e) {
+  // find which row the cursor is over
+  const rows = Array.from(document.querySelectorAll('[data-si]'));
+  let targetIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    const rect = rows[i].getBoundingClientRect();
+    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      targetIdx = i;
+      break;
+    }
+  }
+  // show drop indicator
+  rows.forEach(r => r.style.borderTop = '');
+  if (targetIdx >= 0 && rows[targetIdx]) {
+    rows[targetIdx].style.borderTop = '2px solid #10b981';
+  }
+}
+
+async function onRowDragUp(e) {
+  document.removeEventListener('mousemove', onRowDragMove);
+  document.removeEventListener('mouseup', onRowDragUp);
+  document.querySelectorAll('[data-si]').forEach(r => {
+    r.classList.remove('ring-2', 'ring-emerald-500', 'opacity-50');
+    r.style.borderTop = '';
+  });
+  if (dragRowSi < 0) return;
+
+  const rows = Array.from(document.querySelectorAll('[data-si]'));
+  let targetIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    const rect = rows[i].getBoundingClientRect();
+    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      targetIdx = i;
+      break;
+    }
+  }
+  if (targetIdx < 0 || targetIdx === dragRowWi) { dragRowSi = -1; return; }
+
   const schedules = [...(settingsData.schedules || [])];
-  const w = schedules[si]?.windows;
-  if (!w) return;
-  const newIdx = wi + direction;
-  if (newIdx < 0 || newIdx >= w.length) return;
-  [w[wi], w[newIdx]] = [w[newIdx], w[wi]];
+  const w = schedules[dragRowSi]?.windows;
+  if (!w) { dragRowSi = -1; return; }
+  const moved = w.splice(dragRowWi, 1)[0];
+  w.splice(targetIdx, 0, moved);
   settingsData = await saveSettings({ schedules });
+  dragRowSi = -1;
   renderSettings();
   setTimeout(initScheduleDrag, 100);
 }
