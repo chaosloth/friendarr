@@ -150,15 +150,15 @@
       <nav class="mt-8 flex-1 space-y-1 px-4" id="nav">
         <a href="#" data-view="queue" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400">
           <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-          ${T('nav.queue')}
+          <span class="nav-label">Queue</span>
         </a>
         <a href="#" data-view="settings" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white">
           <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          ${T('nav.settings')}
+          <span class="nav-label">Settings</span>
         </a>
       </nav>
       <div class="px-4 py-3 border-t border-gray-700 mt-auto text-center" id="auth-status">
-        <div class="text-xs text-gray-500">${T('auth.notAuthenticated')}</div>
+        <div class="text-xs text-gray-500"><span data-t="auth.notAuthenticated"></span></div>
       </div>
     </div>
   </aside>
@@ -166,10 +166,10 @@
   <!-- Main Content -->
   <main class="flex-1 ml-64 relative flex flex-col min-h-0">
     <header class="sticky top-0 z-10 flex items-center justify-between h-16 px-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur flex-shrink-0">
-      <h2 class="text-xl font-bold text-gray-100" id="page-title">${T('page.queue')}</h2>
+      <h2 class="text-xl font-bold text-gray-100" id="page-title"><span data-t="page.queue"></span></h2>
       <button onclick="showAuthModal()" class="btn-ghost btn-sm" id="auth-btn">
         <svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-        ${T('auth.authenticate')}
+        <span data-t="auth.authenticate"></span>
       </button>
     </header>
 
@@ -181,17 +181,17 @@
 <!-- Auth Modal -->
 <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4">${T('auth.modalTitle')}</h3>
-    <p class="text-sm text-gray-400 mb-4">${T('auth.modalDescription')}</p>
+    <h3 class="text-brand text-xl font-bold mb-4"><span data-t="auth.modalTitle"></span></h3>
+    <p class="text-sm text-gray-400 mb-4"><span data-t="auth.modalDescription"></span></p>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('auth.masterApiKey')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="auth.masterApiKey"></span></label>
         <div class="form-input-field"><input type="password" id="auth-key-input" placeholder="sk-..."></div>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-4">
-      <button onclick="hideAuthModal()" class="btn-ghost">${T('common.cancel')}</button>
-      <button onclick="authenticate()" class="btn-primary">${T('auth.connect')}</button>
+      <button onclick="hideAuthModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
+      <button onclick="authenticate()" class="btn-primary"><span data-t="auth.connect"></span></button>
     </div>
     <div id="auth-error" class="mt-3 text-sm text-red-500 hidden"></div>
   </div>
@@ -200,14 +200,14 @@
 <!-- Endpoint Modal -->
 <div id="ep-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4" id="ep-modal-title">${T('endpoints.addSourceEndpoint')}</h3>
+    <h3 class="text-brand text-xl font-bold mb-4" id="ep-modal-title"><span data-t="endpoints.addSourceEndpoint"></span></h3>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.label')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.label"></span></label>
         <div class="form-input-field"><input type="text" id="ep-label" placeholder="My Servers"></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.type')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.type"></span></label>
         <div class="form-input-field"><select id="ep-type">
           <option value="plex">Plex</option>
           <option value="emby">Emby</option>
@@ -215,11 +215,11 @@
         </select></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.url')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.url"></span></label>
         <div class="form-input-field"><input type="text" id="ep-url" placeholder="https://server.example.com"></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.authToken')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.authToken"></span></label>
         <div class="form-input-field">
           <input type="password" id="ep-token" class="input-leading" placeholder="API key or token">
           <button onclick="toggleTokenVisibility()" class="input-action" title="Toggle visibility">
@@ -229,8 +229,8 @@
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideEndpointModal()" class="btn-ghost">${T('common.cancel')}</button>
-      <button onclick="saveEndpoint()" class="btn-primary">${T('common.save')}</button>
+      <button onclick="hideEndpointModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
+      <button onclick="saveEndpoint()" class="btn-primary"><span data-t="common.save"></span></button>
     </div>
   </div>
 </div>
@@ -238,25 +238,25 @@
 <!-- API Key Modal -->
 <div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4">${T('apiKeys.newKey')}</h3>
+    <h3 class="text-brand text-xl font-bold mb-4"><span data-t="apiKeys.newKey"></span></h3>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('apiKeys.label')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="apiKeys.label"></span></label>
         <div class="form-input-field"><input type="text" id="new-key-label" placeholder="e.g. Seerr instance"></div>
       </div>
       <div id="key-result" class="hidden rounded-md border border-emerald-500 bg-gray-800 px-3 py-2">
         <div class="flex items-center gap-2">
           <span class="text-sm text-emerald-300 font-mono truncate flex-1" id="key-result-text"></span>
-          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="${T('apiKeys.copyToClipboard')}">
+          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="<span data-t="apiKeys.copyToClipboard"></span>">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </button>
         </div>
-        <p class="text-xs text-gray-500 mt-1">${T('apiKeys.newKeyHint')}</p>
+        <p class="text-xs text-gray-500 mt-1"><span data-t="apiKeys.newKeyHint"></span></p>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideKeyModal()" class="btn-ghost">${T('apiKeys.close')}</button>
-      <button onclick="createApiKey()" class="btn-primary">${T('apiKeys.createKey')}</button>
+      <button onclick="hideKeyModal()" class="btn-ghost"><span data-t="apiKeys.close"></span></button>
+      <button onclick="createApiKey()" class="btn-primary"><span data-t="apiKeys.createKey"></span></button>
     </div>
   </div>
 </div>
@@ -264,36 +264,36 @@
 <!-- Webhook Modal -->
 <div id="webhook-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4" id="wh-modal-title">${T('webhooks.addWebhook')}</h3>
+    <h3 class="text-brand text-xl font-bold mb-4" id="wh-modal-title"><span data-t="webhooks.addWebhook"></span></h3>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('webhooks.url')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="webhooks.url"></span></label>
         <div class="form-input-field"><input type="text" id="wh-url" placeholder="https://hooks.example.com/endpoint"></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">${T('webhooks.secret')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="webhooks.secret"></span></label>
         <div class="form-input-field"><input type="password" id="wh-secret" placeholder="Shared secret for HMAC signature"></div>
-        <p class="mt-1 text-xs text-gray-500">${T('webhooks.secretHint')}</p>
+        <p class="mt-1 text-xs text-gray-500"><span data-t="webhooks.secretHint"></span></p>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-2">${T('webhooks.events')}</label>
+        <label class="block text-sm font-medium text-gray-400 mb-2"><span data-t="webhooks.events"></span></label>
         <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.requested" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.requested')}</label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.started" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.started')}</label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.complete" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.complete')}</label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.failed" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.failed')}</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.requested" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.requested"></span></label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.started" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.started"></span></label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.complete" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.complete"></span></label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.failed" class="wh-event-cb w-4 h-4 rounded text-green-700"> <span data-t="event.download.failed"></span></label>
         </div>
       </div>
       <div>
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="wh-enabled" checked class="w-5 h-5 rounded text-green-700">
-          <span class="text-sm text-white">${T('webhooks.enabled')}</span>
+          <span class="text-sm text-white"><span data-t="webhooks.enabled"></span></span>
         </label>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideWebhookModal()" class="btn-ghost">${T('common.cancel')}</button>
-      <button onclick="saveWebhook()" class="btn-primary">${T('common.save')}</button>
+      <button onclick="hideWebhookModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
+      <button onclick="saveWebhook()" class="btn-primary"><span data-t="common.save"></span></button>
     </div>
   </div>
 </div>
@@ -301,15 +301,15 @@
 <!-- Browse Modal -->
 <div id="browse-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-2" id="browse-title">${T('browse.title')}</h3>
+    <h3 class="text-brand text-xl font-bold mb-2" id="browse-title"><span data-t="browse.title"></span></h3>
     <p class="text-sm text-gray-400 mb-3 font-mono" id="browse-path">/</p>
     <div id="browse-entries" class="max-h-64 overflow-y-auto space-y-0.5 mb-4 rounded border border-gray-700 bg-gray-900 p-1">
-      <div class="text-center py-4 text-gray-500 text-sm">${T('logs.loading')}</div>
+      <div class="text-center py-4 text-gray-500 text-sm"><span data-t="logs.loading"></span></div>
     </div>
     <input type="hidden" id="browse-target">
     <div class="flex justify-end gap-2 border-t border-gray-700 pt-4">
-      <button onclick="hideBrowseModal()" class="btn-ghost">${T('common.cancel')}</button>
-      <button onclick="selectBrowse()" class="btn-primary">${T('browse.select')}</button>
+      <button onclick="hideBrowseModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
+      <button onclick="selectBrowse()" class="btn-primary"><span data-t="browse.select"></span></button>
     </div>
   </div>
 </div>
@@ -324,6 +324,7 @@ let activeSettingsTab = 'endpoints';
 
 // === Init ===
 document.addEventListener('DOMContentLoaded', () => {
+  translateStatic();
   if (!localStorage.getItem('friendarr_key')) {
     setTimeout(showWizard, 500);
     setupNav();
@@ -334,8 +335,21 @@ document.addEventListener('DOMContentLoaded', () => {
   showView(currentView);
 });
 
+// === Translation ===
+function translateStatic() {
+  document.querySelectorAll('[data-t]').forEach(el => {
+    el.textContent = T(el.getAttribute('data-t'));
+  });
+}
+
 // === Navigation ===
 function setupNav() {
+  document.querySelectorAll('.nav-label').forEach(span => {
+    const link = span.closest('.nav-link');
+    if (!link) return;
+    const view = link.dataset.view;
+    span.textContent = view === 'queue' ? T('nav.queue') : T('nav.settings');
+  });
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -481,29 +495,29 @@ async function renderQueue() {
 
     // Stats bar
     html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued} ${T('queue.stats.queued')}</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading} ${T('queue.stats.downloading')}</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete} ${T('queue.stats.complete')}</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed} ${T('queue.stats.failed')}</span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued} <span data-t="queue.stats.queued"></span></span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading} <span data-t="queue.stats.downloading"></span></span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete} <span data-t="queue.stats.complete"></span></span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed} <span data-t="queue.stats.failed"></span></span>`;
     html += `<span class="flex-1"></span>`;
     if (globalPaused) {
-      html += `<button onclick="resumeAll()" class="btn-primary btn-sm">${T('queue.resumeAll')}</button>`;
+      html += `<button onclick="resumeAll()" class="btn-primary btn-sm"><span data-t="queue.resumeAll"></span></button>`;
     } else {
-      html += `<button onclick="pauseAll()" class="btn-ghost btn-sm">${T('queue.pauseAll')}</button>`;
+      html += `<button onclick="pauseAll()" class="btn-ghost btn-sm"><span data-t="queue.pauseAll"></span></button>`;
     }
-    html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm">${T('queue.clearFinished')}</button>`;
+    html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm"><span data-t="queue.clearFinished"></span></button>`;
     html += `</div>`;
 
     if (globalPaused) {
-      html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200">${T('queue.globallyPaused')}</div>`;
+      html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200"><span data-t="queue.globallyPaused"></span></div>`;
     }
 
     // Table
     if (jobs.length === 0) {
-      html += `<div class="text-gray-400 text-sm py-8 text-center flex-1">${T('queue.noDownloads')}</div>`;
+      html += `<div class="text-gray-400 text-sm py-8 text-center flex-1"><span data-t="queue.noDownloads"></span></div>`;
     } else {
       html += `<div class="flex-1 min-h-0 overflow-auto rounded-lg ring-1 ring-gray-700"><table class="min-w-full"><thead>`;
-      html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.title')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.type')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.status')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.size')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.created')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.actions')}</th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
+      html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.title"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.type"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.status"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.size"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.created"></span></th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><span data-t="queue.column.actions"></span></th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
       for (const job of jobs) {
         const progress = job.totalBytes ? Math.round((job.bytesDownloaded / job.totalBytes) * 100) : 0;
         html += `<tr>`;
@@ -514,8 +528,8 @@ async function renderQueue() {
         html += `<td class="px-4 py-3 text-sm text-gray-400">${formatDate(job.createdAt)}</td>`;
         html += `<td class="px-4 py-3">`;
         if (job.status === 'queued' || job.status === 'downloading') {
-          html += `<button onclick="cancelJob('${job.id}')" class="btn-danger btn-xs mr-1">${T('queue.cancel')}</button>`;
-          html += `<button onclick="pauseJob('${job.id}')" class="btn-ghost btn-xs">${T('queue.pause')}</button>`;
+          html += `<button onclick="cancelJob('${job.id}')" class="btn-danger btn-xs mr-1"><span data-t="queue.cancel"></span></button>`;
+          html += `<button onclick="pauseJob('${job.id}')" class="btn-ghost btn-xs"><span data-t="queue.pause"></span></button>`;
         }
         html += `</td>`;
         html += `</tr>`;
@@ -524,6 +538,7 @@ async function renderQueue() {
     }
 
     document.getElementById('content').innerHTML = html;
+    translateStatic();
   } catch {
     document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('queue.failedToLoad') + '</div>';
   }
@@ -606,6 +621,7 @@ async function renderSettings() {
   if (activeSettingsTab === 'logs') {
     await fetchLogs();
   }
+  translateStatic();
 }
 
 function switchSettingsTab(tabId) {
@@ -618,10 +634,10 @@ function renderLimitsSection() {
   const logLevelOptions = ['debug', 'info', 'warn', 'error'];
   const logLevelLabels = { debug: 'Debug', info: 'Info', warn: 'Warn', error: 'Error' };
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('limits.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('limits.description')}</p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="limits.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="limits.description"></span></p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('limits.maxConcurrent')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="limits.maxConcurrent"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="number" id="s-max-concurrent" value="${settingsData.maxConcurrentDownloads}" min="1" max="50" class="w-24" onchange="saveLimits()">
@@ -629,35 +645,35 @@ function renderLimitsSection() {
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('limits.maxBandwidth')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="limits.maxBandwidth"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="number" id="s-max-bandwidth" value="${settingsData.maxBandwidth}" min="0" class="w-48" onchange="saveLimits()">
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('limits.bandwidthHint')}</p>
+        <p class="mt-1 text-xs text-gray-500"><span data-t="limits.bandwidthHint"></span></p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-1">${T('limits.testMode')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-1"><span data-t="limits.testMode"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="s-test-mode" ${settingsData.testMode ? 'checked' : ''} onchange="saveTestMode()" class="w-5 h-5 rounded text-green-700">
           <div>
-            <span class="text-sm text-white">${T('limits.testModeEnabled')}</span>
-            <p class="text-xs text-gray-500">${T('limits.testModeDescription')}</p>
+            <span class="text-sm text-white"><span data-t="limits.testModeEnabled"></span></span>
+            <p class="text-xs text-gray-500"><span data-t="limits.testModeDescription"></span></p>
           </div>
         </label>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('limits.logLevel')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="limits.logLevel"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <select id="s-log-level" onchange="saveLogLevel()">
             ${logLevelOptions.map(l => `<option value="${l}" ${logLevel === l ? 'selected' : ''}>${logLevelLabels[l]}</option>`).join('')}
           </select>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('limits.logLevelDescription')}</p>
+        <p class="mt-1 text-xs text-gray-500"><span data-t="limits.logLevelDescription"></span></p>
       </div>
     </div>
   </div>`;
@@ -701,10 +717,10 @@ async function saveTestMode() {
 function renderPathsSection() {
   const completedPath = settingsData.completedPath || '/downloads/complete';
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('paths.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('paths.description')}</p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="paths.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="paths.description"></span></p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.incomplete')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="paths.incomplete"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-incomplete-path" value="${esc(settingsData.incompletePath)}" onchange="savePaths()">
@@ -712,11 +728,11 @@ function renderPathsSection() {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('paths.incompleteHint')}</p>
+        <p class="mt-1 text-xs text-gray-500"><span data-t="paths.incompleteHint"></span></p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.completed')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="paths.completed"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-completed-path" value="${esc(settingsData.completedPath)}" onchange="savePaths()">
@@ -724,11 +740,11 @@ function renderPathsSection() {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('paths.completedHint')}</p>
+        <p class="mt-1 text-xs text-gray-500"><span data-t="paths.completedHint"></span></p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.movieDir')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="paths.movieDir"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-movie-path" value="${esc(settingsData.moviePath || completedPath + '/movies')}" onchange="savePaths()">
@@ -736,11 +752,11 @@ function renderPathsSection() {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('paths.movieDirHint', { completedPath: esc(completedPath) })}</p>
+        <p class="mt-1 text-xs text-gray-500">${T('paths.movieDirHint')}</p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.tvDir')}</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="paths.tvDir"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-tv-path" value="${esc(settingsData.tvPath || completedPath + '/tv')}" onchange="savePaths()">
@@ -748,7 +764,7 @@ function renderPathsSection() {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">${T('paths.tvDirHint', { completedPath: esc(completedPath) })}</p>
+        <p class="mt-1 text-xs text-gray-500">${T('paths.tvDirHint')}</p>
       </div>
     </div>
   </div>`;
@@ -770,8 +786,8 @@ async function savePaths() {
 
 async function renderApiKeysSection() {
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('apiKeys.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('apiKeys.description')}</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="apiKeys.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="apiKeys.description"></span></p>`;
   try {
     const r = await fetch('/api/v1/api-keys', { headers: authHeaders() });
     const data = await r.json();
@@ -800,12 +816,12 @@ async function renderApiKeysSection() {
       }
       inner += `</div>`;
     } else {
-      inner += `<div class="mt-6 text-sm text-gray-500">${T('apiKeys.noKeys')}</div>`;
+      inner += `<div class="mt-6 text-sm text-gray-500"><span data-t="apiKeys.noKeys"></span></div>`;
     }
   } catch (e) {
     console.error('Failed to load API keys', e);
   }
-  inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary">${T('apiKeys.newKey')}</button></div>`;
+  inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary"><span data-t="apiKeys.newKey"></span></button></div>`;
   inner += `</div>`;
   return inner;
 }
@@ -885,8 +901,8 @@ function renderSourceEndpointsSection() {
   const eps = settingsData.sourceEndpoints || [];
   const typeLabels = { seerr: T('source.seerr'), plex: T('source.plex'), emby: T('source.emby'), jellyfin: T('source.jellyfin') };
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('endpoints.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('endpoints.description')}</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="endpoints.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="endpoints.description"></span></p>`;
   if (eps.length > 0) {
     inner += `<ul class="space-y-4 mb-4">`;
     for (const ep of eps) {
@@ -912,7 +928,7 @@ function renderSourceEndpointsSection() {
     }
     inner += `</ul>`;
   }
-  inner += `<div class="mt-6"><button onclick="showEndpointModal()" class="btn-primary">${T('endpoints.addEndpoint')}</button></div>`;
+  inner += `<div class="mt-6"><button onclick="showEndpointModal()" class="btn-primary"><span data-t="endpoints.addEndpoint"></span></button></div>`;
   inner += `</div>`;
   return inner;
 }
@@ -994,31 +1010,31 @@ function renderSchedulesSection() {
   const schedules = settingsData.schedules || [];
   const dayNames = [T('schedules.sun'), T('schedules.mon'), T('schedules.tue'), T('schedules.wed'), T('schedules.thu'), T('schedules.fri'), T('schedules.sat')];
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('schedules.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('schedules.description')}</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="schedules.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="schedules.description"></span></p>`;
   if (schedules.length > 0) {
     inner += `<div class="mt-6 space-y-3">`;
     schedules.forEach((s, i) => {
       const dayStr = s.days.map(d => dayNames[d]).join(', ');
       const winStr = s.windows.map(w => `${w.start} &ndash; ${w.end}`).join(', ');
-      inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs">${T('schedules.remove')}</button></div>`;
+      inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs"><span data-t="schedules.remove"></span></button></div>`;
     });
     inner += `</div>`;
   }
   inner += `<div class="border-t border-gray-700 pt-6 mt-6">
     <div class="mb-3">
-      <p class="text-sm font-medium text-gray-300 mb-2">${T('schedules.addSchedule')}</p>
+      <p class="text-sm font-medium text-gray-300 mb-2"><span data-t="schedules.addSchedule"></span></p>
       <div class="flex flex-wrap gap-2" id="sched-days">
         ${dayNames.map((d, i) => `<label class="flex items-center gap-1 text-xs text-gray-400"><input type="checkbox" value="${i}" class="sched-day w-4 h-4">${d}</label>`).join('')}
       </div>
     </div>
     <div class="flex gap-3 items-end mb-3">
-      <div><label class="block text-xs text-gray-400 mb-1">${T('schedules.start')}</label><input type="text" id="sched-start" placeholder="HH:MM" class="w-24"></div>
-      <div><label class="block text-xs text-gray-400 mb-1">${T('schedules.end')}</label><input type="text" id="sched-end" placeholder="HH:MM" class="w-24"></div>
-      <button onclick="addScheduleWindow()" class="btn-ghost btn-sm">${T('schedules.addWindow')}</button>
+      <div><label class="block text-xs text-gray-400 mb-1"><span data-t="schedules.start"></span></label><input type="text" id="sched-start" placeholder="HH:MM" class="w-24"></div>
+      <div><label class="block text-xs text-gray-400 mb-1"><span data-t="schedules.end"></span></label><input type="text" id="sched-end" placeholder="HH:MM" class="w-24"></div>
+      <button onclick="addScheduleWindow()" class="btn-ghost btn-sm"><span data-t="schedules.addWindow"></span></button>
     </div>
     <div id="sched-windows" class="mb-3 space-y-1"></div>
-    <button onclick="saveSchedule()" class="btn-primary">${T('schedules.saveSchedule')}</button>
+    <button onclick="saveSchedule()" class="btn-primary"><span data-t="schedules.saveSchedule"></span></button>
   </div>`;
   inner += `</div>`;
   return inner;
@@ -1085,8 +1101,8 @@ let logsTimer = null;
 
 function renderLogsSection() {
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('logs.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('logs.description')}</p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="logs.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="logs.description"></span></p>
     <div class="mt-4 flex items-center gap-2 flex-wrap">
       ${['','info','warn','error','debug'].map(l => {
         const label = l || T('logs.all');
@@ -1102,7 +1118,7 @@ function renderLogsSection() {
       </label>
     </div>
     <div id="logs-container" class="mt-4 rounded-lg border border-gray-700 bg-gray-900 overflow-hidden">
-      <div class="text-center py-12 text-gray-500 text-sm">${T('logs.loading')}</div>
+      <div class="text-center py-12 text-gray-500 text-sm"><span data-t="logs.loading"></span></div>
     </div>
   </div>`;
 }
@@ -1156,8 +1172,8 @@ async function fetchLogs() {
 function renderWebhooksSection() {
   const hooks = settingsData.webhooks || [];
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('webhooks.title')}</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('webhooks.description')}</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="webhooks.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="webhooks.description"></span></p>`;
 
   if (hooks.length > 0) {
     inner += `<ul class="mt-6 space-y-3">`;
@@ -1198,7 +1214,7 @@ function renderWebhooksSection() {
     inner += `</ul>`;
   }
 
-  inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary">${T('webhooks.addWebhook')}</button></div>`;
+  inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary"><span data-t="webhooks.addWebhook"></span></button></div>`;
   inner += `</div>`;
   return inner;
 }
@@ -1356,10 +1372,10 @@ async function testWebhookUrl(id) {
     const currentLang = window.currentLanguage || (localStorage.getItem('friendarr_language') || 'en');
     const languages = window.LANGUAGES || { en: 'English', es: 'Spanish', fr: 'French', de: 'German', ja: 'Japanese', zh: 'Chinese', pt: 'Portuguese' };
     return `<div class="mt-10 text-white">
-      <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('display.title')}</h2>
-      <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('display.languageDescription')}</p>
+      <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="display.title"></span></h2>
+      <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="display.languageDescription"></span></p>
       <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-        <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('display.language')}</label>
+        <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="display.language"></span></label>
         <div class="mt-2 sm:col-span-2 sm:mt-0">
           <div class="form-input-field">
             <select id="s-language" onchange="changeLanguage()">
@@ -1375,6 +1391,7 @@ async function testWebhookUrl(id) {
     const lang = document.getElementById('s-language').value;
     localStorage.setItem('friendarr_language', lang);
     window.setLanguage(lang);
+    translateStatic();
     renderSettings();
   }
 
@@ -1423,8 +1440,8 @@ async function testWebhookUrl(id) {
       const languages = window.LANGUAGES || { en: 'English', es: 'Spanish', fr: 'French', de: 'German', ja: 'Japanese', zh: 'Chinese', pt: 'Portuguese' };
       const currentLang = localStorage.getItem('friendarr_language') || 'en';
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step1.title')}</h3>
-        <p class="text-sm text-gray-400 mb-6">${T('wizard.step1.description')}</p>
+        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step1.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step1.description"></span></p>
         <div class="grid grid-cols-2 gap-3">
           ${Object.entries(languages).map(([code, name]) => {
             const selected = currentLang === code;
@@ -1436,62 +1453,62 @@ async function testWebhookUrl(id) {
         </div>`;
     } else if (wizardStep === 2) {
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step2.title')}</h3>
-        <p class="text-sm text-gray-400 mb-6">${T('wizard.step2.description')}</p>
+        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step2.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step2.description"></span></p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step2.keyLabel')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step2.keyLabel"></span></label>
             <div class="form-input-field"><input type="password" id="wizard-key" placeholder="sk-... or a memorable passphrase"></div>
-            <p class="mt-1 text-xs text-gray-500">${T('wizard.step2.keyHint')}</p>
+            <p class="mt-1 text-xs text-gray-500"><span data-t="wizard.step2.keyHint"></span></p>
           </div>
         </div>`;
     } else if (wizardStep === 3) {
       const incompletePath = localStorage.getItem('friendarr_incomplete') || '/downloads/incomplete';
       const completedPath = localStorage.getItem('friendarr_completed') || '/downloads/complete';
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step3.title')}</h3>
-        <p class="text-sm text-gray-400 mb-6">${T('wizard.step3.description')}</p>
+        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step3.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step3.description"></span></p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step3.incomplete')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step3.incomplete"></span></label>
             <div class="form-input-field">
               <input type="text" id="wiz-incomplete" value="${esc(incompletePath)}">
               <button onclick="openBrowse('wiz-incomplete')" class="input-action" title="${T('paths.browse')}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
               </button>
             </div>
-            <p class="mt-1 text-xs text-gray-500">${T('wizard.step3.incompleteHint')}</p>
+            <p class="mt-1 text-xs text-gray-500"><span data-t="wizard.step3.incompleteHint"></span></p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step3.completed')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step3.completed"></span></label>
             <div class="form-input-field">
               <input type="text" id="wiz-completed" value="${esc(completedPath)}">
               <button onclick="openBrowse('wiz-completed')" class="input-action" title="${T('paths.browse')}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
               </button>
             </div>
-            <p class="mt-1 text-xs text-gray-500">${T('wizard.step3.completedHint')}</p>
+            <p class="mt-1 text-xs text-gray-500"><span data-t="wizard.step3.completedHint"></span></p>
           </div>
         </div>`;
     } else if (wizardStep === 4) {
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step4.title')}</h3>
-        <p class="text-sm text-gray-400 mb-6">${T('wizard.step4.description')}</p>
+        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step4.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step4.description"></span></p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.label')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.label"></span></label>
             <div class="form-input-field"><input type="text" id="wiz-ep-label" placeholder="My Server"></div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.type')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.type"></span></label>
             <div class="form-input-field"><select id="wiz-ep-type"><option value="plex">Plex</option><option value="emby">Emby</option><option value="jellyfin">Jellyfin</option></select></div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.url')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.url"></span></label>
             <div class="form-input-field"><input type="text" id="wiz-ep-url" placeholder="https://server.example.com"></div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.token')}</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.token"></span></label>
             <div class="form-input-field"><input type="password" id="wiz-ep-token" placeholder="API key or token"></div>
           </div>
         </div>`;
@@ -1528,6 +1545,7 @@ async function testWebhookUrl(id) {
   function selectWizardLanguage(code, el) {
     localStorage.setItem('friendarr_language', code);
     window.setLanguage(code);
+    translateStatic();
     document.querySelectorAll('[data-lang]').forEach(d => {
       d.className = 'rounded-lg border-2 p-4 cursor-pointer transition border-gray-700 hover:border-gray-500 bg-gray-800/50';
       const check = d.querySelector('.text-xs.text-emerald-400');
@@ -1586,9 +1604,9 @@ async function testWebhookUrl(id) {
     </div>
     <div id="wizard-body"></div>
     <div class="flex justify-between mt-8 border-t border-gray-700 pt-5">
-      <button id="wizard-prev" onclick="wizardPrev()" class="btn-ghost" style="display:none">${T('wizard.back')}</button>
-      <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost">${T('wizard.skip')}</button>
-      <button id="wizard-next" onclick="wizardNext()" class="btn-primary">${T('wizard.next')}</button>
+      <button id="wizard-prev" onclick="wizardPrev()" class="btn-ghost" style="display:none"><span data-t="wizard.back"></span></button>
+      <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost"><span data-t="wizard.skip"></span></button>
+      <button id="wizard-next" onclick="wizardNext()" class="btn-primary"><span data-t="wizard.next"></span></button>
     </div>
   </div>
 </div>
