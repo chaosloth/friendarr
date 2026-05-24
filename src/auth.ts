@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import crypto from 'crypto';
 import { config } from './config';
 import type { ApiKey } from './types';
+import { logger } from './logger';
 
 const apiKeys = new Map<string, Omit<ApiKey, 'key'>>();
 
@@ -44,10 +45,12 @@ export function authenticateApiKey(
   const token = authHeader.slice(7);
 
   if (!isValidApiKey(token)) {
+    logger.debug('Auth failed: invalid API key', 'Auth');
     res.status(403).json({ error: 'Invalid API key' });
     return;
   }
 
+  logger.debug('Authenticated via API key', 'Auth');
   next();
 }
 
@@ -66,9 +69,11 @@ export function authenticateMasterKey(
   const token = authHeader.slice(7);
 
   if (token !== config.masterKey) {
+    logger.warn('Master key auth failed', 'Auth');
     res.status(403).json({ error: 'Invalid master key' });
     return;
   }
 
+  logger.debug('Authenticated via master key', 'Auth');
   next();
 }

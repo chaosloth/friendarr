@@ -51,10 +51,12 @@ export async function fireWebhooks(
     }
 
     try {
+      logger.debug(`Webhook ${event} → ${webhook.url}`, 'Webhooks');
       await axios.post(webhook.url, body, {
         headers,
         timeout: 5000,
       });
+      logger.debug(`Webhook ${event} delivered to ${webhook.url}`, 'Webhooks');
     } catch (e) {
       logger.warn(
         `Webhook delivery failed to ${webhook.url}: ${(e as Error).message}`,

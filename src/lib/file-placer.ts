@@ -3,6 +3,7 @@ import { createWriteStream } from 'fs';
 import path from 'path';
 import { config } from '../config';
 import { getSettings } from '../settings';
+import { logger } from '../logger';
 
 export function sanitizeFilename(name: string): string {
   return name
@@ -70,6 +71,7 @@ export async function writeFile(
   data: Buffer | NodeJS.ReadableStream
 ): Promise<void> {
   await ensureDir(path.dirname(filePath));
+  logger.debug(`Writing file: ${filePath}`, 'FilePlacer');
 
   if (Buffer.isBuffer(data)) {
     await fs.writeFile(filePath, data);
@@ -91,6 +93,7 @@ export async function linkFile(
   await ensureDir(path.dirname(destPath));
   try {
     await fs.link(sourcePath, destPath);
+    logger.debug(`Hard-linked: ${sourcePath} → ${destPath}`, 'FilePlacer');
   } catch (e: unknown) {
     if (
       typeof e === 'object' &&
@@ -98,6 +101,7 @@ export async function linkFile(
       'code' in e &&
       (e as NodeJS.ErrnoException).code === 'EXDEV'
     ) {
+      logger.debug('Hard link failed (cross-device), copying instead', 'FilePlacer');
       await fs.copyFile(sourcePath, destPath);
     } else {
       throw e;
@@ -108,7 +112,7 @@ export async function linkFile(
 export async function removeTemp(filePath: string): Promise<void> {
   try {
     await fs.unlink(filePath);
-  } catch {
-    // best-effort cleanup, ignore failures
+  } catch (e) {
+    logger.debug(`Failed to remove temp file: ${filePath}`, 'FilePlacer');
   }
 }

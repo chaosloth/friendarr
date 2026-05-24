@@ -10,7 +10,7 @@ import {
 } from '../auth';
 import { downloadQueue } from '../lib/queue';
 import { testWebhook } from '../lib/webhooks';
-import { getLogs } from '../logger';
+import { getLogs, logger } from '../logger';
 import { getSettings, updateSettings } from '../settings';
 
 const router: Router = Router();
@@ -31,6 +31,11 @@ router.post('/download', authenticateApiKey, (req, res) => {
   }
 
   const job = downloadQueue.enqueue(body);
+
+  logger.debug(
+    `Download request: ${body.source.type} → ${body.destination.title || 'unknown'} (tmdb:${body.destination.tmdbId})`,
+    'API'
+  );
 
   res.status(202).json({
     id: job.id,
@@ -61,6 +66,7 @@ router.post('/api-keys', authenticateMasterKey, (req, res) => {
   }
 
   const apiKey = createApiKey(label);
+  logger.info(`API key created: ${label}`, 'API');
   res.status(201).json({ apiKey: apiKey.key });
 });
 
@@ -77,6 +83,7 @@ router.delete('/api-keys/:key', authenticateMasterKey, (req, res) => {
     return;
   }
 
+  logger.info(`API key revoked`, 'API');
   res.status(204).send();
 });
 
@@ -114,16 +121,19 @@ router.delete('/queue/:id', authenticateMasterKey, (req, res) => {
 
 router.delete('/queue', authenticateMasterKey, (_req, res) => {
   const count = downloadQueue.clearCompleted();
+  logger.info(`Cleared ${count} completed/failed jobs`, 'Queue');
   res.status(200).json({ cleared: count });
 });
 
 router.post('/queue/pause-all', authenticateMasterKey, (_req, res) => {
   downloadQueue.setGlobalPaused(true);
+  logger.info('Queue globally paused', 'Queue');
   res.status(200).json({ globalPaused: true });
 });
 
 router.post('/queue/resume-all', authenticateMasterKey, (_req, res) => {
   downloadQueue.setGlobalPaused(false);
+  logger.info('Queue globally resumed', 'Queue');
   res.status(200).json({ globalPaused: false });
 });
 
@@ -133,6 +143,36 @@ router.get('/settings', authenticateMasterKey, (_req, res) => {
 
 router.put('/settings', authenticateMasterKey, (req, res) => {
   const updated = updateSettings(req.body);
+  const changed = Object.keys(req.body).filter((k) => req.body[k] !== undefined);
+  const scheduleChanged = changed.includes('schedules');
+  const logLevelChanged = changed.includes('logLevel');
+
+  logger.info(
+    `Settings updated: ${changed.join(', ') || 'no fields'}`,
+    'Settings'
+  );
+
+  if (scheduleChanged) {
+    const schedules = updated.schedules;
+    const totalWindows = schedules.reduce((sum, s) => sum + s.windows.length, 0);
+    if (schedules.length === 0) {
+      logger.info('Schedule removed: downloads now unrestricted', 'Settings');
+    } else {
+      logger.info(
+        `Schedule updated: ${schedules.length} day(s), ${totalWindows} window(s)`,
+        'Settings'
+      );
+    }
+  }
+
+  if (logLevelChanged) {
+    logger.info(`Log level changed to ${updated.logLevel}`, 'Settings');
+  }
+
+  logger.debug(
+    `Settings detail: ${JSON.stringify(req.body)}`,
+    'Settings'
+  );
   downloadQueue.triggerProcess();
   res.status(200).json(updated);
 });
@@ -161,7 +201,9 @@ router.post('/webhooks/test', authenticateMasterKey, async (req, res) => {
     return;
   }
   try {
+    logger.debug(`Webhook test: ${url}`, 'Webhooks');
     await testWebhook(url, secret);
+    logger.info(`Webhook test to ${url} succeeded`, 'Webhooks');
     res.status(200).json({ status: 'ok' });
   } catch (e) {
     res.status(502).json({
@@ -175,6 +217,7 @@ router.get('/browse', authenticateMasterKey, async (req, res) => {
   const dirPath = (req.query.path as string) || '/';
   try {
     const resolved = path.resolve(dirPath);
+    logger.debug(`Directory browsed: ${resolved}`, 'API');
     const entries = await fs.readdir(resolved, { withFileTypes: true });
     const listing = entries
       .filter((e) => e.isDirectory())

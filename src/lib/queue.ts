@@ -24,6 +24,7 @@ class DownloadQueue {
   private pausedJobIds = new Set<string>();
   private globalPaused = false;
   private cancelTokens = new Map<string, AbortController>();
+  private lastScheduleLog = 0;
 
   public enqueue(request: DownloadRequest): DownloadJob {
     const job: DownloadJob = {
@@ -45,6 +46,17 @@ class DownloadQueue {
 
     const settings = getSettings();
     void fireWebhooks('download.requested', job, settings.webhooks);
+
+    if (
+      !isInScheduleWindow(settings.schedules) &&
+      settings.schedules.length > 0
+    ) {
+      const now = Date.now();
+      if (now - this.lastScheduleLog > 60000) {
+        this.lastScheduleLog = now;
+        logger.info('Download deferred (schedule): jobs queued outside active window', 'Queue');
+      }
+    }
 
     this.processQueue();
     return job;
@@ -123,6 +135,10 @@ class DownloadQueue {
 
   public setGlobalPaused(paused: boolean): void {
     this.globalPaused = paused;
+    logger.info(
+      paused ? 'Queue globally paused' : 'Queue globally resumed',
+      'Queue'
+    );
     if (!paused) {
       this.processQueue();
     }
@@ -136,7 +152,17 @@ class DownloadQueue {
     const settings = getSettings();
 
     if (!isInScheduleWindow(settings.schedules)) {
+      const now = Date.now();
+      if (now - this.lastScheduleLog > 60000) {
+        this.lastScheduleLog = now;
+        logger.debug('Queue idle: outside schedule window', 'Queue');
+      }
       return;
+    }
+
+    if (this.lastScheduleLog > 0) {
+      this.lastScheduleLog = 0;
+      logger.info('Queue active: entered schedule window', 'Queue');
     }
 
     while (
@@ -284,6 +310,7 @@ class DownloadQueue {
     } finally {
       if (tempPath) {
         await removeTemp(tempPath);
+        logger.debug(`Temp file removed: ${tempPath}`, 'Queue');
       }
       this.cancelTokens.delete(id);
     }
