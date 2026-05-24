@@ -167,7 +167,7 @@ A `success: false` response indicates the webhook URL could not be reached or re
 - **Path:** `/api/v1/bootstrap`
 - **Auth:** None
 
-Sets the master API key when no key is configured. This endpoint is only available during initial setup when the `API_KEY` environment variable is not set. It is called by the setup wizard to persist the generated key to the `.env` file.
+Sets the master API key when no key is configured. This endpoint is only available during initial setup when the `API_KEY` environment variable is not set. Called by the setup wizard to persist the key to `config/master-key.json` in the data directory.
 
 ### Request
 

@@ -1,5 +1,6 @@
 import { config } from "./config";
 import { getSettings } from "./settings";
+import { appendLogLine, readLogTail } from "./storage";
 
 export interface LogEntry {
   timestamp: string;
@@ -21,6 +22,18 @@ function shouldLog(level: string): boolean {
 }
 
 const logBuffer: LogEntry[] = [];
+
+(function loadLogBuffer(): void {
+  const lines = readLogTail(config.logBufferSize);
+  for (const line of lines) {
+    try {
+      const entry: LogEntry = JSON.parse(line);
+      logBuffer.push(entry);
+    } catch {
+      // skip malformed lines
+    }
+  }
+})();
 
 function addToBuffer(entry: LogEntry): void {
   logBuffer.push(entry);
@@ -70,45 +83,53 @@ export const logger = {
   info(message: string, label?: string): void {
     if (!shouldLog("info")) return;
     const labelStr = label ?? "Server";
-    addToBuffer({
+    const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level: "info",
       label: labelStr,
       message,
-    });
+    };
+    addToBuffer(entry);
+    appendLogLine(JSON.stringify(entry));
     console.log(format("info", colors.green, message, labelStr));
   },
   warn(message: string, label?: string): void {
     if (!shouldLog("warn")) return;
     const labelStr = label ?? "Server";
-    addToBuffer({
+    const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level: "warn",
       label: labelStr,
       message,
-    });
+    };
+    addToBuffer(entry);
+    appendLogLine(JSON.stringify(entry));
     console.warn(format("warn", colors.yellow, message, labelStr));
   },
   error(message: string, label?: string): void {
     if (!shouldLog("error")) return;
     const labelStr = label ?? "Server";
-    addToBuffer({
+    const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level: "error",
       label: labelStr,
       message,
-    });
+    };
+    addToBuffer(entry);
+    appendLogLine(JSON.stringify(entry));
     console.error(format("error", colors.red, message, labelStr));
   },
   debug(message: string, label?: string): void {
     if (!shouldLog("debug")) return;
     const labelStr = label ?? "Server";
-    addToBuffer({
+    const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level: "debug",
       label: labelStr,
       message,
-    });
+    };
+    addToBuffer(entry);
+    appendLogLine(JSON.stringify(entry));
     console.debug(format("debug", colors.blue, message, labelStr));
   },
 };

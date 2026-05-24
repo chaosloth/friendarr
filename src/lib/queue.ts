@@ -3,6 +3,7 @@ import { Transform } from "stream";
 import { v4 as uuidv4 } from "uuid";
 import type { DownloadJob, DownloadRequest } from "../types";
 import { logger } from "../logger";
+import { loadJSON, saveJSON } from "../storage";
 import { downloadFromEmbyJellyfin } from "../sources/emby-jellyfin";
 import { downloadFromPlex } from "../sources/plex";
 import {
@@ -63,6 +64,39 @@ class DownloadQueue {
   private cancelTokens = new Map<string, AbortController>();
   private lastScheduleLog = 0;
 
+  constructor() {
+    const saved = loadJSON<{
+      jobs: DownloadJob[];
+      queue: string[];
+      pausedJobIds: string[];
+      globalPaused: boolean;
+    } | null>("queue.json", null);
+    if (saved) {
+      this.globalPaused = saved.globalPaused ?? false;
+      for (const id of saved.pausedJobIds ?? []) {
+        this.pausedJobIds.add(id);
+      }
+      for (const job of saved.jobs ?? []) {
+        if (job.status === "downloading") job.status = "queued";
+        if (job.status === "queued" || job.status === "failed") {
+          this.jobs.set(job.id, job);
+        }
+      }
+      if (!this.globalPaused) {
+        this.queue = saved.queue ?? [];
+      }
+    }
+  }
+
+  private persistQueue(): void {
+    saveJSON("queue.json", {
+      jobs: Array.from(this.jobs.values()),
+      queue: this.queue,
+      pausedJobIds: Array.from(this.pausedJobIds),
+      globalPaused: this.globalPaused,
+    });
+  }
+
   public enqueue(request: DownloadRequest): DownloadJob {
     const job: DownloadJob = {
       id: uuidv4(),
@@ -99,6 +133,7 @@ class DownloadQueue {
     }
 
     this.processQueue();
+    this.persistQueue();
     return job;
   }
 
@@ -126,6 +161,7 @@ class DownloadQueue {
       job.status = "queued";
     }
     logger.info(`Paused: ${job.request.destination.title}`, "Queue");
+    this.persistQueue();
     return true;
   }
 
@@ -138,6 +174,7 @@ class DownloadQueue {
       this.queue.push(id);
     }
     logger.info(`Resumed: ${job.request.destination.title}`, "Queue");
+    this.persistQueue();
     this.processQueue();
     return true;
   }
@@ -156,6 +193,7 @@ class DownloadQueue {
     job.status = "failed";
     job.error = "Cancelled by user";
     logger.info(`Cancelled: ${job.request.destination.title}`, "Queue");
+    this.persistQueue();
     return true;
   }
 
@@ -169,6 +207,7 @@ class DownloadQueue {
     job.outputPath = undefined;
     this.queue.push(job.id);
     logger.info(`Retrying: ${job.request.destination.title}`, "Queue");
+    this.persistQueue();
     this.processQueue();
     return true;
   }
@@ -184,6 +223,7 @@ class DownloadQueue {
         count++;
       }
     }
+    this.persistQueue();
     return count;
   }
 
@@ -193,6 +233,7 @@ class DownloadQueue {
       paused ? "Queue globally paused" : "Queue globally resumed",
       "Queue",
     );
+    this.persistQueue();
     if (!paused) {
       this.processQueue();
     }
@@ -296,6 +337,7 @@ class DownloadQueue {
         job.bytesDownloaded = 0;
         logger.info(`Test mode complete: ${fakePath}`, "Queue");
         void fireWebhooks("download.complete", job, settings.webhooks);
+        this.persistQueue();
         return;
       }
 
@@ -367,6 +409,7 @@ class DownloadQueue {
 
       logger.info(`Download complete: ${finalPath}`, "Queue");
       void fireWebhooks("download.complete", job, settings.webhooks);
+      this.persistQueue();
     } catch (e) {
       if ((e as Error).name === "AbortError") return;
       job.status = "failed";
@@ -377,6 +420,7 @@ class DownloadQueue {
         "Queue",
       );
       void fireWebhooks("download.failed", job, settings.webhooks);
+      this.persistQueue();
     } finally {
       if (tempPath) {
         await removeTemp(tempPath);

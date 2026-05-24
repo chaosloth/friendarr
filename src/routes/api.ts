@@ -1,6 +1,5 @@
 import { Router } from "express";
 import fs from "fs/promises";
-import { readFileSync, writeFileSync } from "fs";
 import { statfs } from "fs";
 import path from "path";
 import {
@@ -15,6 +14,7 @@ import { testWebhook } from "../lib/webhooks";
 import { getLogs, logger } from "../logger";
 import { getSettings, updateSettings } from "../settings";
 import { config } from "../config";
+import { saveJSON } from "../storage";
 
 const router: Router = Router();
 
@@ -306,14 +306,11 @@ router.post("/bootstrap", (req, res) => {
   config.masterKey = key;
   res.json({ message: "Master key activated" });
   try {
-    const envPath = path.resolve(process.cwd(), ".env");
-    let env = readFileSync(envPath, "utf-8");
-    env = env.replace(/^API_KEY=.*/m, `API_KEY=${key}`);
-    writeFileSync(envPath, env, "utf-8");
-    logger.info("Master key persisted to .env", "Bootstrap");
+    saveJSON("master-key.json", { masterKey: key });
+    logger.info("Master key persisted to config/master-key.json", "Bootstrap");
   } catch {
     logger.info(
-      "Master key activated (could not persist .env — may be read-only)",
+      "Master key activated (could not persist — config dir may be read-only)",
       "Bootstrap",
     );
   }

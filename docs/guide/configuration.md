@@ -2,6 +2,8 @@
 
 All settings can be changed at runtime via the web UI (Settings tab) or the `PUT /api/v1/settings` endpoint.
 
+**Settings are persisted** to `config/settings.json` in the data directory. They survive container rebuilds, image pulls, and process restarts. Map the config directory as a volume (`-v ./config:/app/config`) to retain all state (settings, API keys, logs, queue) across Docker lifecycles.
+
 ## Settings Reference
 
 | Field                    | Type         | Default               | Description                                  |

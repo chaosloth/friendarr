@@ -1,4 +1,5 @@
 import { config } from "./config";
+import { loadJSON, saveJSON } from "./storage";
 import type { Webhook } from "./types";
 
 export interface ScheduleWindow {
@@ -25,7 +26,7 @@ export interface AppSettings {
   logLevel: "debug" | "info" | "warn" | "error";
 }
 
-const settings: AppSettings = {
+const defaults: AppSettings = {
   maxConcurrentDownloads: config.maxConcurrentDownloads,
   maxBandwidth: 0,
   schedules: [],
@@ -37,6 +38,13 @@ const settings: AppSettings = {
   testMode: false,
   logLevel: config.debug ? "debug" : "info",
 };
+
+function loadSettings(): AppSettings {
+  const saved = loadJSON<Partial<AppSettings>>("settings.json", {});
+  return { ...defaults, ...saved };
+}
+
+const settings: AppSettings = loadSettings();
 
 export function getSettings(): AppSettings {
   return settings;
@@ -73,6 +81,7 @@ export function updateSettings(partial: Partial<AppSettings>): AppSettings {
   if (partial.tvPath !== undefined) {
     settings.tvPath = partial.tvPath;
   }
+  saveJSON("settings.json", settings);
   return settings;
 }
 

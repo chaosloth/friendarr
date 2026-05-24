@@ -101,6 +101,8 @@ pnpm start
 
 Open **http://localhost:5056** and enter your master API key.
 
+All application state (settings, API keys, logs, queue) is persisted to the `config/` directory. Map it as a volume to retain data across Docker rebuilds.
+
 ## Documentation
 
 Full documentation with configuration, API reference, file placement, and source setup: **[chaosloth.github.io/friendarr](https://chaosloth.github.io/friendarr/)**
