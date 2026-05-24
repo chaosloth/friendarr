@@ -1087,13 +1087,17 @@ function startRowDrag(e, si, wi) {
 
 function onRowDragMove(e) {
   const rows = Array.from(document.querySelectorAll('[data-si]'));
-  rows.forEach(r => r.style.borderTop = '');
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  const target = el?.closest('[data-si]');
-  if (target && target.dataset.si !== undefined) {
-    const overSi = parseInt(target.dataset.si);
-    if (overSi === dragRowSi) {
-      target.style.borderTop = '2px solid #10b981';
+  rows.forEach(r => r.style.borderBottom = '');
+  for (const row of rows) {
+    const rSi = parseInt(row.dataset.si);
+    const rWi = parseInt(row.dataset.wi);
+    if (rSi === dragRowSi && rWi === dragRowWi) continue;
+    const rect = row.getBoundingClientRect();
+    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      if (rSi === dragRowSi) {
+        row.style.borderBottom = '2px solid #10b981';
+      }
+      break;
     }
   }
 }
@@ -1103,23 +1107,31 @@ async function onRowDragUp(e) {
   document.removeEventListener('mouseup', onRowDragUp);
   document.querySelectorAll('[data-si]').forEach(r => {
     r.classList.remove('ring-2', 'ring-emerald-500', 'opacity-50');
-    r.style.borderTop = '';
+    r.style.borderBottom = '';
   });
   if (dragRowSi < 0) return;
 
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  const target = el?.closest('[data-si]');
-  if (!target) { dragRowSi = -1; return; }
-  const targetSi = parseInt(target.dataset.si);
-  const targetWi = parseInt(target.dataset.wi);
-  if (targetSi !== dragRowSi) { dragRowSi = -1; return; }
+  const rows = Array.from(document.querySelectorAll('[data-si]'));
+  let targetSi = -1;
+  let targetWi = -1;
+  for (const row of rows) {
+    const rSi = parseInt(row.dataset.si);
+    const rWi = parseInt(row.dataset.wi);
+    if (rSi === dragRowSi && rWi === dragRowWi) continue;
+    const rect = row.getBoundingClientRect();
+    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      targetSi = rSi;
+      targetWi = rWi;
+      break;
+    }
+  }
+  if (targetSi < 0 || targetSi !== dragRowSi) { dragRowSi = -1; return; }
 
   const schedules = [...(settingsData.schedules || [])];
   const w = schedules[dragRowSi]?.windows;
   if (!w) { dragRowSi = -1; return; }
   const moved = w.splice(dragRowWi, 1)[0];
-  let insertAt = targetWi;
-  if (dragRowWi < targetWi) insertAt--;
+  const insertAt = targetWi > dragRowWi ? targetWi - 1 : targetWi;
   w.splice(insertAt, 0, moved);
   settingsData = await saveSettings({ schedules });
   dragRowSi = -1;
