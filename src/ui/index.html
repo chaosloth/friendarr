@@ -130,8 +130,6 @@
       background-clip: text;
     }
     .text-xxs { font-size: 0.6rem; line-height: 0.75rem; }
-    .drag-row { transition: opacity 150ms ease; }
-    .drag-row:active { cursor: grabbing; }
     svg.icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
     svg.icon-sm { width: 1rem; height: 1rem; flex-shrink: 0; }
   </style>
@@ -921,13 +919,12 @@ function renderSchedulesSection() {
   schedules.forEach((s, si) => {
     s.windows.forEach((w, wi) => {
       const dayStr = s.days.map(d => dayNames[d]).join(', ');
-      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3 drag-row" draggable="true" data-si="${si}" data-wi="${wi}"
-        ondragstart="event.dataTransfer.setData('text/plain','${si},${wi}');event.dataTransfer.effectAllowed='move';this.classList.add('opacity-50')"
-        ondragend="this.classList.remove('opacity-50')"
-        ondragover="event.dataTransfer.dropEffect='move';event.preventDefault();this.classList.add('ring-1','ring-emerald-500')"
-        ondragleave="this.classList.remove('ring-1','ring-emerald-500')"
-        ondrop="event.preventDefault();event.stopPropagation();this.classList.remove('ring-1','ring-emerald-500');doDrop(event,${si},${wi})">
-        <span class="shrink-0 cursor-grab text-gray-500 select-none text-lg leading-none px-0.5">&#8942;</span>
+      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3" data-si="${si}" data-wi="${wi}">
+        <span class="shrink-0 select-none text-gray-600 text-lg leading-none px-0.5">&#8942;</span>
+        <span class="shrink-0 flex flex-col -space-y-1">
+          <span onclick="shiftWindow(${si},${wi},-1)" class="cursor-pointer text-gray-500 hover:text-white text-xs leading-none ${wi === 0 ? 'invisible' : ''}">&#9650;</span>
+          <span onclick="shiftWindow(${si},${wi},1)" class="cursor-pointer text-gray-500 hover:text-white text-xs leading-none ${wi === s.windows.length-1 ? 'invisible' : ''}">&#9660;</span>
+        </span>
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
         <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
           class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
@@ -1074,19 +1071,13 @@ async function deleteScheduleWindow(si, wi) {
   setTimeout(initScheduleDrag, 100);
 }
 
-async function doDrop(e, tSi, tWi) {
-  const data = e.dataTransfer.getData('text/plain');
-  if (!data) return;
-  const [si, wi] = data.split(',').map(Number);
-
-  if (si !== tSi || wi === tWi) return;
-
+async function shiftWindow(si, wi, direction) {
   const schedules = [...(settingsData.schedules || [])];
   const w = schedules[si]?.windows;
   if (!w) return;
-  const moved = w.splice(wi, 1)[0];
-  const insertAt = tWi > wi ? tWi - 1 : tWi;
-  w.splice(insertAt, 0, moved);
+  const newIdx = wi + direction;
+  if (newIdx < 0 || newIdx >= w.length) return;
+  [w[wi], w[newIdx]] = [w[newIdx], w[wi]];
   settingsData = await saveSettings({ schedules });
   renderSettings();
   setTimeout(initScheduleDrag, 100);
