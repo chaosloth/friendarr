@@ -914,17 +914,13 @@ function renderSchedulesSection() {
       </div>
     </div>
 
-    <div class="mt-6 space-y-3">`;
+    <div class="mt-6 space-y-3" ondragover="event.preventDefault()" ondrop="event.preventDefault()">`;
 
   schedules.forEach((s, si) => {
     s.windows.forEach((w, wi) => {
       const dayStr = s.days.map(d => dayNames[d]).join(', ');
-      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3" data-si="${si}" data-wi="${wi}">
-        <span class="shrink-0 select-none text-gray-600 text-lg leading-none px-0.5">&#8942;</span>
-        <span class="shrink-0 flex flex-col -space-y-1">
-          <span onclick="shiftWindow(${si},${wi},-1)" class="cursor-pointer text-gray-500 hover:text-white text-xs leading-none ${wi === 0 ? 'invisible' : ''}">&#9650;</span>
-          <span onclick="shiftWindow(${si},${wi},1)" class="cursor-pointer text-gray-500 hover:text-white text-xs leading-none ${wi === s.windows.length-1 ? 'invisible' : ''}">&#9660;</span>
-        </span>
+      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3 drag-row" draggable="true" data-si="${si}" data-wi="${wi}">
+        <span class="shrink-0 cursor-grab select-none text-gray-500 text-lg leading-none px-0.5">&#8942;</span>
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
         <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
           class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
@@ -969,6 +965,15 @@ let dragStart = { day: -1, hour: -1 };
 let dragEnd = { day: -1, hour: -1 };
 
 function initScheduleDrag() {
+  document.querySelectorAll('.drag-row').forEach(row => {
+    row.addEventListener('dragstart', onDragStart);
+    row.addEventListener('dragover', onDragOver);
+    row.addEventListener('dragleave', onDragLeave);
+    row.addEventListener('drop', onDrop);
+    row.addEventListener('dragend', onDragEnd);
+  });
+
+  // Grid drag (separate from row reorder)
   document.querySelectorAll('.schedule-cell').forEach(cell => {
     cell.addEventListener('mousedown', (e) => {
       isDragging = true;
@@ -1071,13 +1076,48 @@ async function deleteScheduleWindow(si, wi) {
   setTimeout(initScheduleDrag, 100);
 }
 
-async function shiftWindow(si, wi, direction) {
+function onDragStart(e) {
+  const row = e.currentTarget;
+  row.classList.add('opacity-50', 'ring-1', 'ring-emerald-500');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('ring-1', 'ring-emerald-500');
+}
+
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('ring-1', 'ring-emerald-500');
+}
+
+function onDragEnd(e) {
+  e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
+}
+
+async function onDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const target = e.currentTarget;
+  target.classList.remove('ring-1', 'ring-emerald-500');
+  document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
+
+  const dragRow = document.querySelector('.drag-row.opacity-50');
+  if (!dragRow || dragRow === target) return;
+
+  const sSi = parseInt(dragRow.dataset.si);
+  const sWi = parseInt(dragRow.dataset.wi);
+  const tSi = parseInt(target.dataset.si);
+  const tWi = parseInt(target.dataset.wi);
+  if (sSi !== tSi || sWi === tWi) return;
+
   const schedules = [...(settingsData.schedules || [])];
-  const w = schedules[si]?.windows;
+  const w = schedules[sSi]?.windows;
   if (!w) return;
-  const newIdx = wi + direction;
-  if (newIdx < 0 || newIdx >= w.length) return;
-  [w[wi], w[newIdx]] = [w[newIdx], w[wi]];
+  const moved = w.splice(sWi, 1)[0];
+  const insertAt = tWi > sWi ? tWi - 1 : tWi;
+  w.splice(insertAt, 0, moved);
   settingsData = await saveSettings({ schedules });
   renderSettings();
   setTimeout(initScheduleDrag, 100);

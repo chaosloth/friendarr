@@ -56,26 +56,28 @@ async function main() {
   }
   console.log('Navigated to Schedules');
 
-  // 3. Click the down arrow on first row twice to move it to position 2
+  // 3. Drag first row to below third row
   const rows = page.locator('[data-si][data-wi]');
   const rowCount = await rows.count();
   console.log(`Found ${rowCount} rows`);
-  if (rowCount < 3) {
-    console.log('Not enough rows');
-    const content = await page.locator('#content').innerHTML();
-    console.log('Page content excerpt:', content.substring(0, 500));
-    await browser.close();
-    process.exit(1);
-  }
+  if (rowCount < 3) { console.log('Not enough rows'); await browser.close(); process.exit(1); }
 
-  // Click down arrow on row 0: shiftWindow(0, 0, 1)
-  const firstDown = rows.nth(0).locator('span[onclick*="shiftWindow(0,0,1)"]');
-  console.log('Clicking down arrow on row 0 twice...');
-  await firstDown.click();
-  await page.waitForTimeout(800);
-  // Now row at wi=0 should be at wi=1, click down on wi=1 (was wi=0)
-  await page.locator('span[onclick*="shiftWindow(0,1,1)"]').click();
-  await page.waitForTimeout(800);
+  const first = rows.nth(0);
+  const third = rows.nth(2);
+  const thirdBox = await third.boundingBox();
+  if (!thirdBox) { console.log('No bounding box'); await browser.close(); process.exit(1); }
+
+  await first.evaluate(el => el.scrollIntoView());
+  await third.evaluate(el => el.scrollIntoView());
+  await page.waitForTimeout(500);
+
+  await page.mouse.move(thirdBox.x + 30, thirdBox.y + thirdBox.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(500);
+  await page.mouse.move(thirdBox.x + 30, thirdBox.y + thirdBox.height / 2);
+  await page.waitForTimeout(500);
+  await page.mouse.up();
+  await page.waitForTimeout(1000);
 
   // 4. Verify order changed via API
   const res = await axios.get(`${BASE}/api/v1/settings`, auth);
