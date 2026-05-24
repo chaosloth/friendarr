@@ -63,7 +63,7 @@ graph LR
 
 ```bash
 # Clone and install
-git clone https://github.com/conno/friendarr.git
+git clone https://github.com/chaosloth/friendarr.git
 cd friendarr
 pnpm install
 

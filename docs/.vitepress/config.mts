@@ -1,6 +1,8 @@
 import { defineConfig } from "vitepress";
+import { withMermaid } from "vitepress-plugin-mermaid";
 
-export default defineConfig({
+export default withMermaid(
+  defineConfig({
   base: "/friendarr/",
   title: "Friendarr",
   description: "Standalone downloading service for Friend Libraries",
@@ -69,4 +71,5 @@ export default defineConfig({
   },
 
   ignoreDeadLinks: [/^http:\/\/localhost/],
-});
+  }),
+);
