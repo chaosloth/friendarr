@@ -880,20 +880,28 @@ function renderSchedulesSection() {
     <p class="mt-1 max-w-4xl text-sm text-gray-400">Click and drag on the grid to set download windows. Set bandwidth to 0 for unlimited.</p>
 
     <div class="mt-4 overflow-x-auto">
-      <div class="inline-grid grid-cols-[60px_repeat(24,minmax(24px,1fr))] gap-px bg-gray-600 rounded-lg overflow-hidden p-px">
+      <div class="inline-grid grid-cols-[60px_repeat(24,minmax(24px,1fr))] gap-px bg-gray-600 p-px">
         <div class="bg-gray-900 p-1"></div>
         ${Array.from({length:24}, (_,h) => `<div class="bg-gray-900 p-1 text-center text-xxs text-gray-500">${h}</div>`).join('')}
 
         ${dayNames.map((day, d) => {
           const cells = Array.from({length:24}, (_, h) => {
-            const window = schedules.find(s => s.days.includes(d))?.windows?.find(w => {
-              const start = parseInt(w.start);
-              const end = parseInt(w.end);
-              return h >= start && h < end;
-            });
-            const bw = window?.bandwidth ?? 0;
+            let bestWindow = null;
+            for (const s of schedules) {
+              if (!s.days.includes(d)) continue;
+              for (const w of s.windows) {
+                const start = parseInt(w.start);
+                const end = parseInt(w.end);
+                if (h >= start && h < end) {
+                  bestWindow = w;
+                  break;
+                }
+              }
+              if (bestWindow) break;
+            }
+            const bw = bestWindow?.bandwidth ?? 0;
             let color = 'bg-gray-800';
-            if (window) {
+            if (bestWindow) {
               if (bw <= 0) color = 'bg-emerald-600';
               else if (bw <= 10*1024*1024) color = 'bg-teal-600';
               else if (bw <= 50*1024*1024) color = 'bg-blue-600';
@@ -912,13 +920,19 @@ function renderSchedulesSection() {
     s.windows.forEach((w, wi) => {
       const dayStr = s.days.map(d => dayNames[d]).join(', ');
       const bwMB = w.bandwidth ? (w.bandwidth / (1024*1024)).toFixed(1) + ' MB/s' : 'Unlimited';
-      inner += `<div class="flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
-        <span class="text-sm text-white flex-1">${dayStr} — ${w.start}:00 to ${w.end}:00</span>
+      const canMoveUp = wi > 0;
+      const canMoveDown = wi < s.windows.length - 1;
+      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
+        <div class="flex flex-col shrink-0">
+          ${canMoveUp ? `<button onclick="moveWindowUp(${si}, ${wi})" class="text-gray-500 hover:text-white leading-none text-xs">&blacktriangle;</button>` : `<span class="text-gray-700 leading-none text-xs">&blacktriangle;</span>`}
+          ${canMoveDown ? `<button onclick="moveWindowDown(${si}, ${wi})" class="text-gray-500 hover:text-white leading-none text-xs">&blacktriangledown;</button>` : `<span class="text-gray-700 leading-none text-xs">&blacktriangledown;</span>`}
+        </div>
+        <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
         <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
-          class="w-24 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
+          class="w-20 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
           onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
-        <span class="text-xs text-gray-400">MB/s</span>
-        <button onclick="deleteScheduleWindow(${si}, ${wi})" class="btn-danger btn-xs">Delete</button>
+        <span class="text-xs text-gray-400 shrink-0">MB/s</span>
+        <button onclick="deleteScheduleWindow(${si}, ${wi})" class="btn-danger btn-xs">Del</button>
       </div>`;
     });
   });
@@ -1050,6 +1064,27 @@ async function deleteScheduleWindow(si, wi) {
       schedules.splice(si, 1);
     }
   }
+  settingsData = await saveSettings({ schedules });
+  renderSettings();
+  setTimeout(initScheduleDrag, 100);
+}
+
+async function moveWindowUp(si, wi) {
+  if (wi <= 0) return;
+  const schedules = [...(settingsData.schedules || [])];
+  const w = schedules[si]?.windows;
+  if (!w) return;
+  [w[wi - 1], w[wi]] = [w[wi], w[wi - 1]];
+  settingsData = await saveSettings({ schedules });
+  renderSettings();
+  setTimeout(initScheduleDrag, 100);
+}
+
+async function moveWindowDown(si, wi) {
+  const schedules = [...(settingsData.schedules || [])];
+  const w = schedules[si]?.windows;
+  if (!w || wi >= w.length - 1) return;
+  [w[wi], w[wi + 1]] = [w[wi + 1], w[wi]];
   settingsData = await saveSettings({ schedules });
   renderSettings();
   setTimeout(initScheduleDrag, 100);
