@@ -4,6 +4,7 @@ import type { Webhook } from './types';
 export interface ScheduleWindow {
   start: string;
   end: string;
+  bandwidth: number;
 }
 
 export interface Schedule {
@@ -99,4 +100,32 @@ export function isInScheduleWindow(schedules: Schedule[]): boolean {
   }
 
   return false;
+}
+
+export function getActiveScheduleWindow(
+  schedules: Schedule[]
+): ScheduleWindow | null {
+  if (schedules.length === 0) return null;
+
+  const now = new Date();
+  const day = now.getDay();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  for (const schedule of schedules) {
+    if (!schedule.days.includes(day)) continue;
+    for (const window of schedule.windows) {
+      const [startH, startM] = window.start.split(':').map(Number);
+      const [endH, endM] = window.end.split(':').map(Number);
+      const start = startH * 60 + startM;
+      const end = endH * 60 + endM;
+
+      if (end > start) {
+        if (currentMinutes >= start && currentMinutes < end) return window;
+      } else {
+        if (currentMinutes >= start || currentMinutes < end) return window;
+      }
+    }
+  }
+
+  return null;
 }

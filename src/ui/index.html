@@ -129,6 +129,7 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+    .text-xxs { font-size: 0.6rem; line-height: 0.75rem; }
     svg.icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
     svg.icon-sm { width: 1rem; height: 1rem; flex-shrink: 0; }
   </style>
@@ -585,6 +586,9 @@ async function renderSettings() {
     await fetchLogs();
   }
   translateStatic();
+  if (activeSettingsTab === 'schedules') {
+    setTimeout(initScheduleDrag, 100);
+  }
 }
 
 function switchSettingsTab(tabId) {
@@ -605,15 +609,6 @@ function renderLimitsSection() {
         <div class="form-input-field">
           <input type="number" id="s-max-concurrent" value="${settingsData.maxConcurrentDownloads}" min="1" max="50" class="w-24" onchange="saveLimits()">
         </div>
-      </div>
-    </div>
-    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="limits.maxBandwidth"></span></label>
-      <div class="mt-2 sm:col-span-2 sm:mt-0">
-        <div class="form-input-field">
-          <input type="number" id="s-max-bandwidth" value="${settingsData.maxBandwidth}" min="0" class="w-48" onchange="saveLimits()">
-        </div>
-        <p class="mt-1 text-xs text-gray-500"><span data-t="limits.bandwidthHint"></span></p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
@@ -644,13 +639,12 @@ function renderLimitsSection() {
 
 async function saveLimits() {
   const maxConcurrentDownloads = parseInt(document.getElementById('s-max-concurrent').value) || 2;
-  const maxBandwidth = parseInt(document.getElementById('s-max-bandwidth').value) || 0;
   const logLevel = document.getElementById('s-log-level')?.value || 'info';
   try {
     await fetch('/api/v1/settings', {
       method: 'PUT',
       headers: authHeaders(),
-      body: JSON.stringify({ maxConcurrentDownloads, maxBandwidth, logLevel }),
+      body: JSON.stringify({ maxConcurrentDownloads, logLevel }),
     });
   } catch {}
 }
@@ -875,73 +869,178 @@ async function copyToClipboard(text) {
 
 function renderSchedulesSection() {
   const schedules = settingsData.schedules || [];
-  const dayNames = [T('schedules.sun'), T('schedules.mon'), T('schedules.tue'), T('schedules.wed'), T('schedules.thu'), T('schedules.fri'), T('schedules.sat')];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="schedules.title"></span></h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="schedules.description"></span></p>`;
-  if (schedules.length > 0) {
-    inner += `<div class="mt-6 space-y-3">`;
-    schedules.forEach((s, i) => {
-      const dayStr = s.days.map(d => dayNames[d]).join(', ');
-      const winStr = s.windows.map(w => `${w.start} &ndash; ${w.end}`).join(', ');
-      inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs"><span data-t="schedules.remove"></span></button></div>`;
-    });
-    inner += `</div>`;
-  }
-  inner += `<div class="border-t border-gray-700 pt-6 mt-6">
-    <div class="mb-3">
-      <p class="text-sm font-medium text-gray-300 mb-2"><span data-t="schedules.addSchedule"></span></p>
-      <div class="flex flex-wrap gap-2" id="sched-days">
-        ${dayNames.map((d, i) => `<label class="flex items-center gap-1 text-xs text-gray-400"><input type="checkbox" value="${i}" class="sched-day w-4 h-4">${d}</label>`).join('')}
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">Schedules</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Click and drag on the grid to set download windows. Set bandwidth to 0 for unlimited.</p>
+
+    <div class="mt-4 overflow-x-auto">
+      <div class="inline-grid grid-cols-[60px_repeat(24,minmax(24px,1fr))] gap-px bg-gray-600 rounded-lg p-px">
+        <div class="bg-gray-900 p-1"></div>
+        ${Array.from({length:24}, (_,h) => `<div class="bg-gray-900 p-1 text-center text-xxs text-gray-500">${h}</div>`).join('')}
+
+        ${dayNames.map((day, d) => {
+          const cells = Array.from({length:24}, (_, h) => {
+            const window = schedules.find(s => s.days.includes(d))?.windows?.find(w => {
+              const start = parseInt(w.start);
+              const end = parseInt(w.end);
+              return h >= start && h < end;
+            });
+            const bw = window?.bandwidth ?? 0;
+            let color = 'bg-gray-800';
+            if (window) {
+              if (bw <= 0) color = 'bg-emerald-600';
+              else if (bw <= 10*1024*1024) color = 'bg-teal-600';
+              else if (bw <= 50*1024*1024) color = 'bg-blue-600';
+              else color = 'bg-indigo-600';
+            }
+            return `<div class="${color} p-1 cursor-pointer hover:opacity-80 schedule-cell" data-day="${d}" data-hour="${h}"></div>`;
+          }).join('');
+          return `<div class="bg-gray-900 p-1 text-xxs text-gray-400 flex items-center justify-end pr-1">${day}</div>${cells}`;
+        }).join('')}
       </div>
     </div>
-    <div class="flex gap-3 items-end mb-3">
-      <div><label class="block text-xs text-gray-400 mb-1"><span data-t="schedules.start"></span></label><input type="text" id="sched-start" placeholder="HH:MM" class="w-24"></div>
-      <div><label class="block text-xs text-gray-400 mb-1"><span data-t="schedules.end"></span></label><input type="text" id="sched-end" placeholder="HH:MM" class="w-24"></div>
-      <button onclick="addScheduleWindow()" class="btn-ghost btn-sm"><span data-t="schedules.addWindow"></span></button>
+
+    <div class="mt-6 space-y-3">`;
+
+  schedules.forEach((s, si) => {
+    s.windows.forEach((w, wi) => {
+      const dayStr = s.days.map(d => dayNames[d]).join(', ');
+      const bwMB = w.bandwidth ? (w.bandwidth / (1024*1024)).toFixed(1) + ' MB/s' : 'Unlimited';
+      inner += `<div class="flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
+        <span class="text-sm text-white flex-1">${dayStr} — ${w.start}:00 to ${w.end}:00</span>
+        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
+          class="w-24 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
+          onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
+        <span class="text-xs text-gray-400">MB/s</span>
+        <button onclick="deleteScheduleWindow(${si}, ${wi})" class="btn-danger btn-xs">Delete</button>
+      </div>`;
+    });
+  });
+
+  if (!schedules.length || schedules.every(s => !s.windows.length)) {
+    inner += `<p class="text-sm text-gray-500">No download windows configured. Choose a day and hour above, then drag to create a window.</p>`;
+  }
+
+  inner += `</div>
+
+    <div class="mt-6 border-t border-gray-700 pt-4">
+      <label class="text-sm text-gray-400">When no window is active:</label>
+      <div class="flex items-center gap-2 mt-1">
+        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5"
+          class="w-24 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
+          onchange="saveMaxBandwidth(this.value)">
+        <span class="text-xs text-gray-400">MB/s (0 = unlimited)</span>
+      </div>
     </div>
-    <div id="sched-windows" class="mb-3 space-y-1"></div>
-    <button onclick="saveSchedule()" class="btn-primary"><span data-t="schedules.saveSchedule"></span></button>
   </div>`;
-  inner += `</div>`;
   return inner;
 }
 
-const pendingWindows = [];
+let isDragging = false;
+let dragStart = { day: -1, hour: -1 };
+let dragEnd = { day: -1, hour: -1 };
 
-function addScheduleWindow() {
-  const start = document.getElementById('sched-start').value.trim();
-  const end = document.getElementById('sched-end').value.trim();
-  if (!start || !end) return;
-  pendingWindows.push({ start, end });
-  document.getElementById('sched-start').value = '';
-  document.getElementById('sched-end').value = '';
-  renderPendingWindows();
+function initScheduleDrag() {
+  document.querySelectorAll('.schedule-cell').forEach(cell => {
+    cell.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      const d = parseInt(cell.dataset.day);
+      const h = parseInt(cell.dataset.hour);
+      dragStart = { day: d, hour: h };
+      dragEnd = { day: d, hour: h };
+      updateDragHighlight();
+      e.preventDefault();
+    });
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const cell = document.elementFromPoint(e.clientX, e.clientY);
+    if (!cell || !cell.classList.contains('schedule-cell')) return;
+    dragEnd.day = parseInt(cell.dataset.day);
+    dragEnd.hour = parseInt(cell.dataset.hour);
+    updateDragHighlight();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    createWindowFromDrag();
+    clearDragHighlight();
+  });
 }
 
-function renderPendingWindows() {
-  const el = document.getElementById('sched-windows');
-  el.innerHTML = pendingWindows.map((w, i) =>
-    `<div class="flex items-center justify-between rounded bg-gray-700 px-3 py-1 text-xs text-white">${w.start} &ndash; ${w.end} <button onclick="removePendingWindow(${i})" class="text-red-400 hover:text-red-300 ml-2">&times;</button></div>`
-  ).join('');
+function updateDragHighlight() {
+  const minDay = Math.min(dragStart.day, dragEnd.day);
+  const maxDay = Math.max(dragStart.day, dragEnd.day);
+  const minHour = Math.min(dragStart.hour, dragEnd.hour);
+  const maxHour = Math.max(dragStart.hour, dragEnd.hour);
+
+  document.querySelectorAll('.schedule-cell').forEach(cell => {
+    const d = parseInt(cell.dataset.day);
+    const h = parseInt(cell.dataset.hour);
+    if (d >= minDay && d <= maxDay && h >= minHour && h <= maxHour) {
+      cell.classList.add('ring-2', 'ring-white', 'ring-inset');
+    } else {
+      cell.classList.remove('ring-2', 'ring-white', 'ring-inset');
+    }
+  });
 }
 
-function removePendingWindow(i) { pendingWindows.splice(i, 1); renderPendingWindows(); }
+function clearDragHighlight() {
+  document.querySelectorAll('.schedule-cell').forEach(cell => {
+    cell.classList.remove('ring-2', 'ring-white', 'ring-inset');
+  });
+}
 
-async function saveSchedule() {
-  const days = Array.from(document.querySelectorAll('.sched-day:checked')).map(cb => parseInt(cb.value));
-  if (days.length === 0 || pendingWindows.length === 0) return;
+async function createWindowFromDrag() {
+  const minDay = Math.min(dragStart.day, dragEnd.day);
+  const maxDay = Math.max(dragStart.day, dragEnd.day);
+  const minHour = Math.min(dragStart.hour, dragEnd.hour);
+  const maxHour = Math.max(dragStart.hour, dragEnd.hour) + 1;
+
+  const days = [];
+  for (let d = minDay; d <= maxDay; d++) days.push(d);
+
   const schedules = [...(settingsData.schedules || [])];
-  schedules.push({ days, windows: [...pendingWindows] });
-  pendingWindows.length = 0;
+  schedules.push({
+    days,
+    windows: [{ start: String(minHour).padStart(2,'0') + ':00', end: String(maxHour).padStart(2,'0') + ':00', bandwidth: 0 }]
+  });
   settingsData = await saveSettings({ schedules });
   renderSettings();
+  setTimeout(initScheduleDrag, 100);
 }
 
-async function deleteSchedule(i) {
-  const schedules = (settingsData.schedules || []).filter((_, idx) => idx !== i);
+async function updateWindowBandwidth(si, wi, mbps) {
+  const bw = Math.max(0, parseFloat(mbps) || 0) * 1024 * 1024;
+  const schedules = [...(settingsData.schedules || [])];
+  if (schedules[si]?.windows[wi]) {
+    schedules[si].windows[wi].bandwidth = bw;
+  }
   settingsData = await saveSettings({ schedules });
   renderSettings();
+  setTimeout(initScheduleDrag, 100);
+}
+
+async function deleteScheduleWindow(si, wi) {
+  const schedules = [...(settingsData.schedules || [])];
+  if (schedules[si]) {
+    schedules[si].windows.splice(wi, 1);
+    if (schedules[si].windows.length === 0) {
+      schedules.splice(si, 1);
+    }
+  }
+  settingsData = await saveSettings({ schedules });
+  renderSettings();
+  setTimeout(initScheduleDrag, 100);
+}
+
+async function saveMaxBandwidth(mbps) {
+  const maxBandwidth = Math.max(0, parseFloat(mbps) || 0) * 1024 * 1024;
+  settingsData = await saveSettings({ maxBandwidth });
 }
 
 async function saveSettings(partial) {

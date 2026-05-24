@@ -1,4 +1,5 @@
 import path from 'path';
+import { Transform } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import type { DownloadJob, DownloadRequest } from '../types';
 import { logger } from '../logger';
@@ -12,10 +13,46 @@ import {
   writeFile,
 } from './file-placer';
 import {
+  getActiveScheduleWindow,
   getSettings,
   isInScheduleWindow,
 } from '../settings';
 import { fireWebhooks } from './webhooks';
+
+function createThrottle(bytesPerSec: number): Transform {
+  let tokens = bytesPerSec;
+  let lastRefill = Date.now();
+
+  return new Transform({
+    transform(chunk: Buffer, _encoding, callback) {
+      const refillTokens = () => {
+        const now = Date.now();
+        const elapsed = (now - lastRefill) / 1000;
+        tokens = Math.min(bytesPerSec, tokens + bytesPerSec * elapsed);
+        lastRefill = now;
+      };
+
+      const send = () => {
+        refillTokens();
+        if (tokens >= chunk.length) {
+          tokens -= chunk.length;
+          this.push(chunk);
+          callback();
+        } else if (tokens > 0) {
+          const partial = chunk.subarray(0, Math.floor(tokens));
+          const remaining = chunk.subarray(Math.floor(tokens));
+          tokens = 0;
+          this.push(partial);
+          chunk = remaining;
+          setTimeout(send, 100);
+        } else {
+          setTimeout(send, 100);
+        }
+      };
+      send();
+    },
+  });
+}
 
 class DownloadQueue {
   private jobs = new Map<string, DownloadJob>();
@@ -260,9 +297,25 @@ class DownloadQueue {
 
       job.totalBytes = contentLength;
 
+      let throttledStream: NodeJS.ReadableStream = stream;
+
+      const activeWindow = getActiveScheduleWindow(settings.schedules);
+      const bandwidthLimit = activeWindow?.bandwidth ?? settings.maxBandwidth;
+      if (bandwidthLimit > 0) {
+        const mbps = (bandwidthLimit / (1024 * 1024)).toFixed(1);
+        const source = activeWindow?.bandwidth
+          ? 'schedule window'
+          : 'global limit';
+        logger.info(
+          `Throttling to ${mbps} MB/s (${source})`,
+          'Queue'
+        );
+        throttledStream = stream.pipe(createThrottle(bandwidthLimit)) as unknown as NodeJS.ReadableStream;
+      }
+
       tempPath = path.join(settings.incompletePath, `${job.id}-${fileName}`);
 
-      await writeFile(tempPath, stream);
+      await writeFile(tempPath, throttledStream);
 
       if (cancelController.signal.aborted) return;
 
