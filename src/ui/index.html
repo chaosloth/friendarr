@@ -1086,20 +1086,15 @@ function startRowDrag(e, si, wi) {
 }
 
 function onRowDragMove(e) {
-  // find which row the cursor is over
   const rows = Array.from(document.querySelectorAll('[data-si]'));
-  let targetIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    const rect = rows[i].getBoundingClientRect();
-    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-      targetIdx = i;
-      break;
-    }
-  }
-  // show drop indicator
   rows.forEach(r => r.style.borderTop = '');
-  if (targetIdx >= 0 && rows[targetIdx]) {
-    rows[targetIdx].style.borderTop = '2px solid #10b981';
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el?.closest('[data-si]');
+  if (target && target.dataset.si !== undefined) {
+    const overSi = parseInt(target.dataset.si);
+    if (overSi === dragRowSi) {
+      target.style.borderTop = '2px solid #10b981';
+    }
   }
 }
 
@@ -1112,22 +1107,20 @@ async function onRowDragUp(e) {
   });
   if (dragRowSi < 0) return;
 
-  const rows = Array.from(document.querySelectorAll('[data-si]'));
-  let targetIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    const rect = rows[i].getBoundingClientRect();
-    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-      targetIdx = i;
-      break;
-    }
-  }
-  if (targetIdx < 0 || targetIdx === dragRowWi) { dragRowSi = -1; return; }
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el?.closest('[data-si]');
+  if (!target) { dragRowSi = -1; return; }
+  const targetSi = parseInt(target.dataset.si);
+  const targetWi = parseInt(target.dataset.wi);
+  if (targetSi !== dragRowSi) { dragRowSi = -1; return; }
 
   const schedules = [...(settingsData.schedules || [])];
   const w = schedules[dragRowSi]?.windows;
   if (!w) { dragRowSi = -1; return; }
   const moved = w.splice(dragRowWi, 1)[0];
-  w.splice(targetIdx, 0, moved);
+  let insertAt = targetWi;
+  if (dragRowWi < targetWi) insertAt--;
+  w.splice(insertAt, 0, moved);
   settingsData = await saveSettings({ schedules });
   dragRowSi = -1;
   renderSettings();
