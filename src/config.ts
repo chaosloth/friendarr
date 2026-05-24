@@ -17,6 +17,9 @@ function readCommitTag(): { version: string; commitTag: string } {
 }
 
 const commitInfo = readCommitTag();
+if (commitInfo.version.startsWith("v")) {
+  commitInfo.version = commitInfo.version.slice(1);
+}
 
 export const config = {
   version: commitInfo.version,
