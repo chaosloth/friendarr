@@ -326,6 +326,22 @@ function translateStatic() {
   });
 }
 
+function retranslateUI() {
+  translateStatic();
+  setupNav();
+  var titleEl = document.getElementById('page-title');
+  if (titleEl) {
+    titleEl.textContent = currentView === 'queue' ? T('page.queue') : T('page.settings');
+  }
+  if (currentView === 'queue') {
+    renderQueue();
+  } else if (currentView === 'settings') {
+    renderSettings();
+  }
+}
+
+window.addEventListener('translationsloaded', retranslateUI);
+
 // === Navigation ===
 function setupNav() {
   document.querySelectorAll('.nav-label').forEach(span => {
