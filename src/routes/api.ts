@@ -222,23 +222,28 @@ router.get("/logs", authenticateMasterKey, (req, res) => {
 });
 
 router.post("/webhooks/test", authenticateMasterKey, async (req, res) => {
-  const { url, secret } = req.body;
-  if (!url) {
-    res.status(400).json({ error: "url is required" });
-    return;
-  }
-  try {
-    logger.debug(`Webhook test: ${url}`, "Webhooks");
-    await testWebhook(url, secret);
-    logger.info(`Webhook test to ${url} succeeded`, "Webhooks");
-    res.status(200).json({ status: "ok" });
-  } catch (e) {
-    res.status(502).json({
-      status: "failed",
-      error: (e as Error).message,
-    });
-  }
-});
+    const { url, secret } = req.body;
+    if (!url) {
+      res.status(400).json({ error: "url is required" });
+      return;
+    }
+    try {
+      logger.info(`Webhook test → ${url}`, "Webhooks");
+      const result = await testWebhook(url, secret);
+      logger.info(
+        `Webhook test succeeded: HTTP ${result.statusCode}`,
+        "Webhooks",
+      );
+      res.status(200).json({ status: "ok", statusCode: result.statusCode });
+    } catch (e) {
+      const errMsg = (e as Error).message;
+      logger.warn(`Webhook test failed: ${url} — ${errMsg}`, "Webhooks");
+      res.status(502).json({
+        status: "failed",
+        error: errMsg,
+      });
+    }
+  });
 
 router.get("/browse", authenticateMasterKey, async (req, res) => {
   const dirPath = (req.query.path as string) || "/";

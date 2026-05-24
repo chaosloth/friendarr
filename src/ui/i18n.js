@@ -203,6 +203,7 @@
     "webhooks.secretSet": "Secret is set",
     "webhooks.test": "Test",
     "webhooks.testSuccess": "Webhook test was successful.",
+    "webhooks.testFailed": "Webhook test failed: {error}",
     "webhooks.title": "Webhooks",
     "webhooks.url": "URL",
     "wizard.back": "Back",
