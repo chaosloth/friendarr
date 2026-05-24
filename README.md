@@ -79,12 +79,15 @@ sequenceDiagram
 docker pull conno/friendarr:latest
 docker run -d \
   -p 5056:5056 \
-  -e API_KEY=your-master-key-here \
-  -e COMPLETED_PATH=/downloads/complete \
-  -e INCOMPLETE_PATH=/downloads/incomplete \
   -v /path/to/your/downloads:/downloads:rw \
   -v ./config:/app/config \
   conno/friendarr:latest
+```
+
+On first launch, the **setup wizard** creates your master API key and persists it to the `config/` directory. To pre-configure a key instead, add:
+
+```bash
+  -e API_KEY=your-master-key-here \
 ```
 
 ### Manual
@@ -94,14 +97,14 @@ git clone https://github.com/chaosloth/friendarr.git
 cd friendarr
 pnpm install
 cp .env.example .env
-# edit .env with your API_KEY
+# edit .env with your settings (API_KEY optional — the wizard can create one)
 pnpm build
 pnpm start
 ```
 
 Open **http://localhost:5056** and enter your master API key.
 
-All application state (settings, API keys, logs, queue) is persisted to the `config/` directory. Map it as a volume to retain data across Docker rebuilds.
+**Persistence**: All state — master API key, API keys, settings, schedules, webhooks, the download queue, and logs — are persisted to the `config/` directory. Mount it as a Docker volume to retain everything across image pulls and container rebuilds.
 
 ## Documentation
 

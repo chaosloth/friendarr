@@ -153,3 +153,11 @@ jobs:
             type=gha,scope=linux/arm64
           cache-to: type=gha,mode=max
           provenance: false
+
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          repository: conno/friendarr
+          readme-filepath: ./README.md

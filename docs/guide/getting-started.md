@@ -14,31 +14,36 @@ docker pull conno/friendarr:latest
 
 docker run -d \
   -p 5056:5056 \
-  -e API_KEY=your-master-key-here \
-  -e COMPLETED_PATH=/downloads/complete \
-  -e INCOMPLETE_PATH=/downloads/incomplete \
   -v /path/to/your/downloads:/downloads:rw \
   -v ./config:/app/config \
   conno/friendarr:latest
 ```
 
-::: tip Persist data between rebuilds
-Map the `config/` directory (`-v ./config:/app/config`) to persist API keys and settings across container rebuilds and image pulls. This is where Friendarr stores `api-keys.json`.
+On first launch, the **setup wizard** walks you through creating a master API key — it's persisted to `config/master-key.json`. To pre-configure a key, add:
+
+```bash
+  -e API_KEY=your-master-key-here \
+```
+
+::: tip All state persists in `config/`
+The `config/` directory stores the master key, API keys, settings, schedules, webhooks, download queue, and logs. Mount it as a volume to retain everything across image pulls and container rebuilds.
 :::
 
 ### Docker Compose
 
+Create a `docker-compose.yaml`:
+
 ```yaml
-# docker-compose.yaml
 services:
   friendarr:
     image: conno/friendarr:latest
     ports:
       - "5056:5056"
     environment:
-      - API_KEY=your-master-key-here
-      - COMPLETED_PATH=/downloads/complete
+      # API_KEY is optional — the setup wizard can create one on first launch
+      # - API_KEY=your-master-key-here
       - INCOMPLETE_PATH=/downloads/incomplete
+      - COMPLETED_PATH=/downloads/complete
     volumes:
       - /path/to/your/downloads:/downloads:rw
       - ./config:/app/config
@@ -71,7 +76,7 @@ Copy `.env.example` to `.env` and set the required values:
 | Variable | Default | Required | Purpose |
 |---|---|---|---|
 | `PORT` | `5056` | No | Listen port |
-| `API_KEY` | — | **Yes** | Master API key for managing API keys and accessing the UI |
+| `API_KEY` | — | No | Master API key (use the setup wizard, or pre-configure here) |
 | `INCOMPLETE_PATH` | `/downloads/incomplete` | No | Directory for in-progress downloads |
 | `COMPLETED_PATH` | `/downloads/complete` | No | Root directory for completed media (movies/tv beneath) |
 | `MOVIE_PATH` | `""` | No | Custom movie directory (falls back to `COMPLETED_PATH/movies`) |
@@ -79,7 +84,7 @@ Copy `.env.example` to `.env` and set the required values:
 | `MAX_CONCURRENT_DOWNLOADS` | `2` | No | Max parallel downloads (overridable at runtime) |
 | `DEBUG` | `false` | No | Enable debug-level logging |
 | `LOG_BUFFER_SIZE` | `500` | No | Number of log entries kept in memory |
-| `DATA_DIR` | `./config` | No | Path for persistent data (API keys) |
+| `DATA_DIR` | `./config` | No | Path for persistent data (keys, settings, queue, logs) |
 
 ### About the API_KEY
 
@@ -113,7 +118,7 @@ When no `API_KEY` is configured, Friendarr shows a setup wizard on first launch:
 2. **API Key** — generate a secure key with a label, or paste an existing one
 3. **Paths** — configure download directory locations
 
-The wizard persists the key to your `.env` file so it survives restarts.
+The wizard persists the key to `config/master-key.json` in the data directory — it survives container rebuilds when the `config/` directory is volume-mapped.
 
 ## Integration with Seerr
 

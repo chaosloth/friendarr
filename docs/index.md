@@ -85,9 +85,6 @@ Open **http://localhost:5056** and enter your master API key to access the dashb
 ```bash
 docker run -d \
   -p 5056:5056 \
-  -e API_KEY=your-master-key \
-  -e COMPLETED_PATH=/downloads/complete \
-  -e INCOMPLETE_PATH=/downloads/incomplete \
   -v /path/to/downloads:/downloads:rw \
   -v ./config:/app/config \
   conno/friendarr:latest
