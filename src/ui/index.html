@@ -967,11 +967,14 @@ let dragEnd = { day: -1, hour: -1 };
 function initScheduleDrag() {
   document.querySelectorAll('.drag-row').forEach(row => {
     row.addEventListener('dragstart', onDragStart);
-    row.addEventListener('dragover', onDragOver);
-    row.addEventListener('dragleave', onDragLeave);
-    row.addEventListener('drop', onDrop);
     row.addEventListener('dragend', onDragEnd);
   });
+
+  // Document-level dragover/drop — catches events on child elements too
+  document.removeEventListener('dragover', onDocDragOver);
+  document.removeEventListener('drop', onDocDrop);
+  document.addEventListener('dragover', onDocDragOver);
+  document.addEventListener('drop', onDocDrop);
 
   // Grid drag (separate from row reorder)
   document.querySelectorAll('.schedule-cell').forEach(cell => {
@@ -1076,93 +1079,95 @@ async function deleteScheduleWindow(si, wi) {
   setTimeout(initScheduleDrag, 100);
 }
 
+let hoveredRow = null;
+
+function onDocDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  var row = e.target.closest('.drag-row');
+  if (row !== hoveredRow) {
+    if (hoveredRow) hoveredRow.classList.remove('ring-1', 'ring-emerald-500');
+    hoveredRow = row;
+    if (hoveredRow) hoveredRow.classList.add('ring-1', 'ring-emerald-500');
+  }
+}
+
+async function onDocDrop(e) {
+  e.preventDefault();
+  if (hoveredRow) hoveredRow.classList.remove('ring-1', 'ring-emerald-500');
+  hoveredRow = null;
+
+  var target = e.target.closest('.drag-row');
+  if (!target) return;
+
+  var dragRow = document.querySelector('.drag-row.opacity-50');
+  document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
+  if (!dragRow || dragRow === target) return;
+
+  var sSi = parseInt(dragRow.dataset.si);
+  var tSi = parseInt(target.dataset.si);
+  if (sSi === tSi) return;
+
+  var schedulesList = JSON.parse(JSON.stringify(settingsData.schedules || []));
+  var moved = schedulesList.splice(sSi, 1)[0];
+  schedulesList.splice(tSi, 0, moved);
+  settingsData = await saveSettings({ schedules: schedulesList });
+  renderSettings();
+  setTimeout(initScheduleDrag, 100);
+}
+
 function onDragStart(e) {
-  const row = e.currentTarget;
+  var row = e.currentTarget;
   row.classList.add('opacity-50', 'ring-1', 'ring-emerald-500');
   e.dataTransfer.effectAllowed = 'move';
 }
 
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('ring-1', 'ring-emerald-500');
-}
-
-function onDragLeave(e) {
-  e.currentTarget.classList.remove('ring-1', 'ring-emerald-500');
-}
-
 function onDragEnd(e) {
   e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
 }
+}
 
-async function onDrop(e) {
+async function onDocDrop(e) {
+  console.log('DND drop fired, target=' + (e.target.tagName || '?') + '.' + (e.target.className || ''));
   e.preventDefault();
-  e.stopPropagation();
-  const target = e.currentTarget;
+  if (hoveredRow) hoveredRow.classList.remove('ring-1', 'ring-emerald-500');
+  hoveredRow = null;
 
-  const dragRow = document.querySelector('.drag-row.opacity-50');
-  target.classList.remove('ring-1', 'ring-emerald-500');
+  var target = e.target.closest('.drag-row');
+  console.log('DND drop closest drag-row=' + !!target + (target ? (' si=' + target.dataset.si + ' wi=' + target.dataset.wi) : ''));
+  if (!target) return;
+
+  var dragRow = document.querySelector('.drag-row.opacity-50');
+  console.log('DND drop source row found=' + !!dragRow + (dragRow ? (' si=' + dragRow.dataset.si + ' wi=' + dragRow.dataset.wi) : ''));
   document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
+  if (!dragRow || dragRow === target) { console.log('DND drop ABORT: no source or source=target'); return; }
 
-  if (!dragRow || dragRow === target) return;
+  var sSi = parseInt(dragRow.dataset.si);
+  var tSi = parseInt(target.dataset.si);
+  console.log('DND drop reorder schedules: move [' + sSi + '] to [' + tSi + ']');
+  if (sSi === tSi) { console.log('DND drop ABORT: same schedule'); return; }
 
-  const sSi = parseInt(dragRow.dataset.si);
-  const sWi = parseInt(dragRow.dataset.wi);
-  const tSi = parseInt(target.dataset.si);
-  const tWi = parseInt(target.dataset.wi);
-  if (sSi !== tSi || sWi === tWi) return;
+  var schedulesList = JSON.parse(JSON.stringify(settingsData.schedules || []));
+  var moved = schedulesList.splice(sSi, 1)[0];
+  schedulesList.splice(tSi, 0, moved);
+  console.log('DND drop schedules reordered, new order: ' + schedulesList.map(function(s,i){ return '['+i+'] days=' + s.days + ' windows=' + s.windows.map(function(w){ return w.start + '-' + w.end; }).join(','); }).join(' | '));
 
-  const schedules = [...(settingsData.schedules || [])];
-  const w = schedules[sSi]?.windows;
-  if (!w) return;
-  const moved = w.splice(sWi, 1)[0];
-  w.splice(tWi, 0, moved);
-  settingsData = await saveSettings({ schedules });
+  settingsData = await saveSettings({ schedules: schedulesList });
+  console.log('DND drop SAVED, re-rendering');
   renderSettings();
   setTimeout(initScheduleDrag, 100);
 }
 
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('ring-1', 'ring-emerald-500');
-}
-
-function onDragLeave(e) {
-  e.currentTarget.classList.remove('ring-1', 'ring-emerald-500');
+function onDragStart(e) {
+  var row = e.currentTarget;
+  console.log('DND dragstart si=' + row.dataset.si + ' wi=' + row.dataset.wi);
+  row.classList.add('opacity-50', 'ring-1', 'ring-emerald-500');
+  e.dataTransfer.effectAllowed = 'move';
 }
 
 function onDragEnd(e) {
+  console.log('DND dragend si=' + e.currentTarget.dataset.si + ' wi=' + e.currentTarget.dataset.wi);
   e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
-}
-
-async function onDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  const target = e.currentTarget;
-
-  const dragRow = document.querySelector('.drag-row.opacity-50');
-
-  target.classList.remove('ring-1', 'ring-emerald-500');
-  document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
-
-  if (!dragRow || dragRow === target) return;
-
-  const sSi = parseInt(dragRow.dataset.si);
-  const sWi = parseInt(dragRow.dataset.wi);
-  const tSi = parseInt(target.dataset.si);
-  const tWi = parseInt(target.dataset.wi);
-  if (sSi !== tSi || sWi === tWi) return;
-
-  const schedules = [...(settingsData.schedules || [])];
-  const w = schedules[sSi]?.windows;
-  if (!w) return;
-  const moved = w.splice(sWi, 1)[0];
-  w.splice(tWi, 0, moved);
-  settingsData = await saveSettings({ schedules });
-  renderSettings();
-  setTimeout(initScheduleDrag, 100);
 }
 
 async function saveMaxBandwidth(mbps) {
