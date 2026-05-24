@@ -27,7 +27,10 @@ export interface AppSettings {
   webhooks: Webhook[];
   incompletePath: string;
   completedPath: string;
+  moviePath: string;
+  tvPath: string;
   testMode: boolean;
+  logLevel: 'debug' | 'info' | 'warn' | 'error';
 }
 
 const settings: AppSettings = {
@@ -38,7 +41,10 @@ const settings: AppSettings = {
   webhooks: [],
   incompletePath: config.incompletePath,
   completedPath: config.completedPath,
+  moviePath: '',
+  tvPath: '',
   testMode: false,
+  logLevel: config.debug ? 'debug' : 'info',
 };
 
 export function getSettings(): AppSettings {
@@ -69,6 +75,15 @@ export function updateSettings(partial: Partial<AppSettings>): AppSettings {
   }
   if (partial.testMode !== undefined) {
     settings.testMode = partial.testMode;
+  }
+  if (partial.logLevel !== undefined) {
+    settings.logLevel = partial.logLevel;
+  }
+  if (partial.moviePath !== undefined) {
+    settings.moviePath = partial.moviePath;
+  }
+  if (partial.tvPath !== undefined) {
+    settings.tvPath = partial.tvPath;
   }
   return settings;
 }

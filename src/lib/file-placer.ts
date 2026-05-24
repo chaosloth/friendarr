@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import { createWriteStream } from 'fs';
 import path from 'path';
 import { config } from '../config';
+import { getSettings } from '../settings';
 
 export function sanitizeFilename(name: string): string {
   return name
@@ -16,9 +17,11 @@ export function getMoviePath(
   libraryPath?: string,
   completedPath?: string
 ): string {
+  const settings = getSettings();
   const base =
     libraryPath ??
-    path.join(completedPath ?? config.completedPath, 'movies');
+    (settings.moviePath ||
+    path.join(completedPath ?? config.completedPath, 'movies'));
   const folderName = sanitizeFilename(`${title} (${year})`);
   return path.join(base, folderName);
 }
@@ -28,9 +31,11 @@ export function getShowPath(
   libraryPath?: string,
   completedPath?: string
 ): string {
+  const settings = getSettings();
   const base =
     libraryPath ??
-    path.join(completedPath ?? config.completedPath, 'tv');
+    (settings.tvPath ||
+    path.join(completedPath ?? config.completedPath, 'tv'));
   const folderName = sanitizeFilename(title);
   return path.join(base, folderName);
 }

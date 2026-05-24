@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/i18n.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -149,15 +150,15 @@
       <nav class="mt-8 flex-1 space-y-1 px-4" id="nav">
         <a href="#" data-view="queue" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-white transition duration-150 ease-in-out bg-gradient-to-br from-teal-700 to-emerald-500 hover:from-teal-600 hover:to-emerald-400">
           <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-          Queue
+          ${T('nav.queue')}
         </a>
         <a href="#" data-view="settings" class="nav-link group flex items-center rounded-md px-2 py-2 text-lg font-medium leading-6 text-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 hover:text-white">
           <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          Settings
+          ${T('nav.settings')}
         </a>
       </nav>
       <div class="px-4 py-3 border-t border-gray-700 mt-auto text-center" id="auth-status">
-        <div class="text-xs text-gray-500">Not authenticated</div>
+        <div class="text-xs text-gray-500">${T('auth.notAuthenticated')}</div>
       </div>
     </div>
   </aside>
@@ -165,10 +166,10 @@
   <!-- Main Content -->
   <main class="flex-1 ml-64 relative flex flex-col min-h-0">
     <header class="sticky top-0 z-10 flex items-center justify-between h-16 px-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur flex-shrink-0">
-      <h2 class="text-xl font-bold text-gray-100" id="page-title">Queue</h2>
+      <h2 class="text-xl font-bold text-gray-100" id="page-title">${T('page.queue')}</h2>
       <button onclick="showAuthModal()" class="btn-ghost btn-sm" id="auth-btn">
         <svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-        Authenticate
+        ${T('auth.authenticate')}
       </button>
     </header>
 
@@ -180,17 +181,17 @@
 <!-- Auth Modal -->
 <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4">Authenticate</h3>
-    <p class="text-sm text-gray-400 mb-4">Enter your master API key to manage the queue and settings.</p>
+    <h3 class="text-brand text-xl font-bold mb-4">${T('auth.modalTitle')}</h3>
+    <p class="text-sm text-gray-400 mb-4">${T('auth.modalDescription')}</p>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Master API Key</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('auth.masterApiKey')}</label>
         <div class="form-input-field"><input type="password" id="auth-key-input" placeholder="sk-..."></div>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-4">
-      <button onclick="hideAuthModal()" class="btn-ghost">Cancel</button>
-      <button onclick="authenticate()" class="btn-primary">Connect</button>
+      <button onclick="hideAuthModal()" class="btn-ghost">${T('common.cancel')}</button>
+      <button onclick="authenticate()" class="btn-primary">${T('auth.connect')}</button>
     </div>
     <div id="auth-error" class="mt-3 text-sm text-red-500 hidden"></div>
   </div>
@@ -199,14 +200,14 @@
 <!-- Endpoint Modal -->
 <div id="ep-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4">Add Source Endpoint</h3>
+    <h3 class="text-brand text-xl font-bold mb-4" id="ep-modal-title">${T('endpoints.addSourceEndpoint')}</h3>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Label</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.label')}</label>
         <div class="form-input-field"><input type="text" id="ep-label" placeholder="My Servers"></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Type</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.type')}</label>
         <div class="form-input-field"><select id="ep-type">
           <option value="plex">Plex</option>
           <option value="emby">Emby</option>
@@ -214,11 +215,11 @@
         </select></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.url')}</label>
         <div class="form-input-field"><input type="text" id="ep-url" placeholder="https://server.example.com"></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Auth Token</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('endpoints.authToken')}</label>
         <div class="form-input-field">
           <input type="password" id="ep-token" class="input-leading" placeholder="API key or token">
           <button onclick="toggleTokenVisibility()" class="input-action" title="Toggle visibility">
@@ -228,8 +229,8 @@
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideEndpointModal()" class="btn-ghost">Cancel</button>
-      <button onclick="saveEndpoint()" class="btn-primary">Save</button>
+      <button onclick="hideEndpointModal()" class="btn-ghost">${T('common.cancel')}</button>
+      <button onclick="saveEndpoint()" class="btn-primary">${T('common.save')}</button>
     </div>
   </div>
 </div>
@@ -237,25 +238,25 @@
 <!-- API Key Modal -->
 <div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4">New API Key</h3>
+    <h3 class="text-brand text-xl font-bold mb-4">${T('apiKeys.newKey')}</h3>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Label</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('apiKeys.label')}</label>
         <div class="form-input-field"><input type="text" id="new-key-label" placeholder="e.g. Seerr instance"></div>
       </div>
       <div id="key-result" class="hidden rounded-md border border-emerald-500 bg-gray-800 px-3 py-2">
         <div class="flex items-center gap-2">
           <span class="text-sm text-emerald-300 font-mono truncate flex-1" id="key-result-text"></span>
-          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="Copy to clipboard">
+          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="${T('apiKeys.copyToClipboard')}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </button>
         </div>
-        <p class="text-xs text-gray-500 mt-1">Copy this key now. It will be masked in the API keys list for security.</p>
+        <p class="text-xs text-gray-500 mt-1">${T('apiKeys.newKeyHint')}</p>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideKeyModal()" class="btn-ghost">Close</button>
-      <button onclick="createApiKey()" class="btn-primary">Create Key</button>
+      <button onclick="hideKeyModal()" class="btn-ghost">${T('apiKeys.close')}</button>
+      <button onclick="createApiKey()" class="btn-primary">${T('apiKeys.createKey')}</button>
     </div>
   </div>
 </div>
@@ -263,36 +264,52 @@
 <!-- Webhook Modal -->
 <div id="webhook-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4">Add Webhook</h3>
+    <h3 class="text-brand text-xl font-bold mb-4" id="wh-modal-title">${T('webhooks.addWebhook')}</h3>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('webhooks.url')}</label>
         <div class="form-input-field"><input type="text" id="wh-url" placeholder="https://hooks.example.com/endpoint"></div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1">Secret (optional)</label>
+        <label class="block text-sm font-medium text-gray-400 mb-1">${T('webhooks.secret')}</label>
         <div class="form-input-field"><input type="password" id="wh-secret" placeholder="Shared secret for HMAC signature"></div>
-        <p class="mt-1 text-xs text-gray-500">If set, webhook payloads include an X-Friendarr-Signature header for recipient verification.</p>
+        <p class="mt-1 text-xs text-gray-500">${T('webhooks.secretHint')}</p>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-400 mb-2">Events</label>
+        <label class="block text-sm font-medium text-gray-400 mb-2">${T('webhooks.events')}</label>
         <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.requested" class="wh-event-cb w-4 h-4 rounded text-green-700"> Requested</label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.started" class="wh-event-cb w-4 h-4 rounded text-green-700"> Started</label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.complete" class="wh-event-cb w-4 h-4 rounded text-green-700"> Complete</label>
-          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.failed" class="wh-event-cb w-4 h-4 rounded text-green-700"> Failed</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.requested" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.requested')}</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.started" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.started')}</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.complete" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.complete')}</label>
+          <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" id="wh-event-download.failed" class="wh-event-cb w-4 h-4 rounded text-green-700"> ${T('event.download.failed')}</label>
         </div>
       </div>
       <div>
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="wh-enabled" checked class="w-5 h-5 rounded text-green-700">
-          <span class="text-sm text-white">Enabled</span>
+          <span class="text-sm text-white">${T('webhooks.enabled')}</span>
         </label>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideWebhookModal()" class="btn-ghost">Cancel</button>
-      <button onclick="saveWebhook()" class="btn-primary">Save</button>
+      <button onclick="hideWebhookModal()" class="btn-ghost">${T('common.cancel')}</button>
+      <button onclick="saveWebhook()" class="btn-primary">${T('common.save')}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Browse Modal -->
+<div id="browse-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
+  <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
+    <h3 class="text-brand text-xl font-bold mb-2" id="browse-title">${T('browse.title')}</h3>
+    <p class="text-sm text-gray-400 mb-3 font-mono" id="browse-path">/</p>
+    <div id="browse-entries" class="max-h-64 overflow-y-auto space-y-0.5 mb-4 rounded border border-gray-700 bg-gray-900 p-1">
+      <div class="text-center py-4 text-gray-500 text-sm">${T('logs.loading')}</div>
+    </div>
+    <input type="hidden" id="browse-target">
+    <div class="flex justify-end gap-2 border-t border-gray-700 pt-4">
+      <button onclick="hideBrowseModal()" class="btn-ghost">${T('common.cancel')}</button>
+      <button onclick="selectBrowse()" class="btn-primary">${T('browse.select')}</button>
     </div>
   </div>
 </div>
@@ -335,7 +352,9 @@ function setupNav() {
 
 function showView(view) {
   currentView = view;
-  document.getElementById('page-title').textContent = view === 'queue' ? 'Queue' : 'Settings';
+  const contentEl = document.getElementById('content');
+  contentEl.classList.add('flex-1', 'min-h-0', 'overflow-auto');
+  document.getElementById('page-title').textContent = view === 'queue' ? T('page.queue') : T('page.settings');
   if (view === 'queue') { renderQueue(); startQueuePolling(); }
   else { stopQueuePolling(); renderSettings(); }
 
@@ -373,7 +392,7 @@ async function authenticate() {
     else { renderSettings(); }
   } catch {
     document.getElementById('auth-error').classList.remove('hidden');
-    document.getElementById('auth-error').textContent = 'Invalid API key. Use your master API key.';
+    document.getElementById('auth-error').textContent = T('auth.invalidKey');
   }
 }
 
@@ -382,19 +401,19 @@ function logout() {
   localStorage.removeItem('friendarr_key');
   updateAuthUI(false);
   stopQueuePolling();
-  document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">Authenticate to continue.</div>';
+  document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">' + T('auth.authenticateToContinue') + '</div>';
 }
 
 function updateAuthUI(authed) {
   const status = document.getElementById('auth-status');
   const btn = document.getElementById('auth-btn');
   if (authed) {
-    status.innerHTML = '<div class="text-xs text-green-400">Authenticated</div>';
-    btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout';
+    status.innerHTML = '<div class="text-xs text-green-400">' + T('auth.authenticated') + '</div>';
+    btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>' + T('auth.logout');
     btn.onclick = logout;
   } else {
-    status.innerHTML = '<div class="text-xs text-gray-500">Not authenticated</div>';
-    btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>Authenticate';
+    status.innerHTML = '<div class="text-xs text-gray-500">' + T('auth.notAuthenticated') + '</div>';
+    btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>' + T('auth.authenticate');
     btn.onclick = showAuthModal;
   }
 }
@@ -434,17 +453,23 @@ function statusBadge(status) {
     complete: 'bg-green-500/80 text-green-100 border border-green-500',
     failed: 'bg-red-600/80 text-red-100 border border-red-500',
   };
-  return `<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${colors[status] || ''}">${status}</span>`;
+  const labels = {
+    queued: T('status.queued'),
+    downloading: T('status.downloading'),
+    complete: T('status.complete'),
+    failed: T('status.failed'),
+  };
+  return `<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${colors[status] || ''}">${labels[status] || status}</span>`;
 }
 
 async function renderQueue() {
   if (!apiKey) {
-    document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">Authenticate to view the queue.</div>';
+    document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">' + T('auth.authenticateToViewQueue') + '</div>';
     return;
   }
   try {
     const r = await fetch('/api/v1/queue', { headers: authHeaders() });
-    if (!r.ok) { document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">Failed to load queue.</div>'; return; }
+    if (!r.ok) { document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('queue.failedToLoad') + '</div>'; return; }
     const data = await r.json();
     const jobs = data.jobs || [];
     const globalPaused = data.globalPaused;
@@ -456,29 +481,29 @@ async function renderQueue() {
 
     // Stats bar
     html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued} queued</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading} downloading</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete} complete</span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed} failed</span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued} ${T('queue.stats.queued')}</span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading} ${T('queue.stats.downloading')}</span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete} ${T('queue.stats.complete')}</span>`;
+    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed} ${T('queue.stats.failed')}</span>`;
     html += `<span class="flex-1"></span>`;
     if (globalPaused) {
-      html += `<button onclick="resumeAll()" class="btn-primary btn-sm">Resume All</button>`;
+      html += `<button onclick="resumeAll()" class="btn-primary btn-sm">${T('queue.resumeAll')}</button>`;
     } else {
-      html += `<button onclick="pauseAll()" class="btn-ghost btn-sm">Pause All</button>`;
+      html += `<button onclick="pauseAll()" class="btn-ghost btn-sm">${T('queue.pauseAll')}</button>`;
     }
-    html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm">Clear Finished</button>`;
+    html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm">${T('queue.clearFinished')}</button>`;
     html += `</div>`;
 
     if (globalPaused) {
-      html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200">Queue is globally paused.</div>`;
+      html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200">${T('queue.globallyPaused')}</div>`;
     }
 
     // Table
     if (jobs.length === 0) {
-      html += `<div class="text-gray-400 text-sm py-8 text-center flex-1">No downloads in queue.</div>`;
+      html += `<div class="text-gray-400 text-sm py-8 text-center flex-1">${T('queue.noDownloads')}</div>`;
     } else {
       html += `<div class="flex-1 min-h-0 overflow-auto rounded-lg ring-1 ring-gray-700"><table class="min-w-full"><thead>`;
-      html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Title</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Size</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Created</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
+      html += `<tr><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.title')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.type')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.status')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.size')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.created')}</th><th class="px-4 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">${T('queue.column.actions')}</th></tr></thead><tbody class="divide-y divide-gray-700 bg-gray-800">`;
       for (const job of jobs) {
         const progress = job.totalBytes ? Math.round((job.bytesDownloaded / job.totalBytes) * 100) : 0;
         html += `<tr>`;
@@ -489,8 +514,8 @@ async function renderQueue() {
         html += `<td class="px-4 py-3 text-sm text-gray-400">${formatDate(job.createdAt)}</td>`;
         html += `<td class="px-4 py-3">`;
         if (job.status === 'queued' || job.status === 'downloading') {
-          html += `<button onclick="cancelJob('${job.id}')" class="btn-danger btn-xs mr-1">Cancel</button>`;
-          html += `<button onclick="pauseJob('${job.id}')" class="btn-ghost btn-xs">Pause</button>`;
+          html += `<button onclick="cancelJob('${job.id}')" class="btn-danger btn-xs mr-1">${T('queue.cancel')}</button>`;
+          html += `<button onclick="pauseJob('${job.id}')" class="btn-ghost btn-xs">${T('queue.pause')}</button>`;
         }
         html += `</td>`;
         html += `</tr>`;
@@ -500,7 +525,7 @@ async function renderQueue() {
 
     document.getElementById('content').innerHTML = html;
   } catch {
-    document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">Failed to load queue.</div>';
+    document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('queue.failedToLoad') + '</div>';
   }
 }
 
@@ -514,15 +539,15 @@ async function resumeJob(id) { await fetch(`/api/v1/queue/${id}/resume`, { metho
 // === Settings ===
 async function renderSettings() {
   if (!apiKey) {
-    document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">Authenticate to manage settings.</div>';
+    document.getElementById('content').innerHTML = '<div class="text-gray-400 text-sm">' + T('auth.authenticateToManageSettings') + '</div>';
     return;
   }
   try {
     const r = await fetch('/api/v1/settings', { headers: authHeaders() });
-    if (!r.ok) { document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">Failed to load settings.</div>'; return; }
+    if (!r.ok) { document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('common.failedToLoadSettings') + '</div>'; return; }
     settingsData = await r.json();
   } catch {
-    document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">Failed to load settings.</div>';
+    document.getElementById('content').innerHTML = '<div class="text-red-400 text-sm">' + T('common.failedToLoadSettings') + '</div>';
     return;
   }
 
@@ -530,13 +555,14 @@ async function renderSettings() {
 
   // Tab bar
   const tabs = [
-    { id: 'endpoints', label: 'Friend Libraries' },
-    { id: 'keys', label: 'API Keys' },
-    { id: 'limits', label: 'Limits' },
-    { id: 'paths', label: 'Paths' },
-    { id: 'schedules', label: 'Schedules' },
-    { id: 'webhooks', label: 'Webhooks' },
-    { id: 'logs', label: 'Logs' },
+    { id: 'endpoints', label: T('settings.tab.friendLibraries') },
+    { id: 'keys', label: T('settings.tab.apiKeys') },
+    { id: 'limits', label: T('settings.tab.limits') },
+    { id: 'paths', label: T('settings.tab.paths') },
+    { id: 'schedules', label: T('settings.tab.schedules') },
+    { id: 'webhooks', label: T('settings.tab.webhooks') },
+    { id: 'logs', label: T('settings.tab.logs') },
+    { id: 'display', label: T('settings.tab.display') },
   ];
   html += `<div class="overflow-x-scroll border-b border-gray-600"><nav class="flex">`;
   for (const tab of tabs) {
@@ -545,8 +571,9 @@ async function renderSettings() {
   }
   html += `</nav></div>`;
 
-  // Tab content
-  html += `<div id="settings-tab-content" class="max-w-6xl">`;
+  // Tab content - logs renders full width, others are max-w-6xl
+  const wrapperClass = activeSettingsTab === 'logs' ? '' : 'max-w-6xl';
+  html += `<div id="settings-tab-content" class="${wrapperClass}">`;
   if (activeSettingsTab === 'limits') {
     html += renderLimitsSection();
   } else if (activeSettingsTab === 'paths') {
@@ -561,10 +588,20 @@ async function renderSettings() {
     html += renderWebhooksSection();
   } else if (activeSettingsTab === 'logs') {
     html += renderLogsSection();
+  } else if (activeSettingsTab === 'display') {
+    html += renderDisplaySection();
   }
   html += `</div>`;
 
   document.getElementById('content').innerHTML = html;
+
+  // Full-width for logs: remove flex-1 overflow-auto constraints
+  const contentEl = document.getElementById('content');
+  if (activeSettingsTab === 'logs') {
+    contentEl.classList.remove('flex-1', 'min-h-0', 'overflow-auto');
+  } else {
+    contentEl.classList.add('flex-1', 'min-h-0', 'overflow-auto');
+  }
 
   if (activeSettingsTab === 'logs') {
     await fetchLogs();
@@ -577,11 +614,14 @@ function switchSettingsTab(tabId) {
 }
 
 function renderLimitsSection() {
+  const logLevel = settingsData.logLevel || 'info';
+  const logLevelOptions = ['debug', 'info', 'warn', 'error'];
+  const logLevelLabels = { debug: 'Debug', info: 'Info', warn: 'Warn', error: 'Error' };
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">Limits</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">Control download concurrency and bandwidth.</p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('limits.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('limits.description')}</p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Max Concurrent Downloads</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('limits.maxConcurrent')}</label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="number" id="s-max-concurrent" value="${settingsData.maxConcurrentDownloads}" min="1" max="50" class="w-24" onchange="saveLimits()">
@@ -589,24 +629,35 @@ function renderLimitsSection() {
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Max Bandwidth</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('limits.maxBandwidth')}</label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="number" id="s-max-bandwidth" value="${settingsData.maxBandwidth}" min="0" class="w-48" onchange="saveLimits()">
         </div>
-        <p class="mt-1 text-xs text-gray-500">Bytes per second. 0 = unlimited.</p>
+        <p class="mt-1 text-xs text-gray-500">${T('limits.bandwidthHint')}</p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-1">Test Mode</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-1">${T('limits.testMode')}</label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="s-test-mode" ${settingsData.testMode ? 'checked' : ''} onchange="saveTestMode()" class="w-5 h-5 rounded text-green-700">
           <div>
-            <span class="text-sm text-white">Enabled</span>
-            <p class="text-xs text-gray-500">Accept download requests but skip actual file fetching. Jobs complete instantly with a fake output path.</p>
+            <span class="text-sm text-white">${T('limits.testModeEnabled')}</span>
+            <p class="text-xs text-gray-500">${T('limits.testModeDescription')}</p>
           </div>
         </label>
+      </div>
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('limits.logLevel')}</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <select id="s-log-level" onchange="saveLogLevel()">
+            ${logLevelOptions.map(l => `<option value="${l}" ${logLevel === l ? 'selected' : ''}>${logLevelLabels[l]}</option>`).join('')}
+          </select>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">${T('limits.logLevelDescription')}</p>
       </div>
     </div>
   </div>`;
@@ -615,11 +666,23 @@ function renderLimitsSection() {
 async function saveLimits() {
   const maxConcurrentDownloads = parseInt(document.getElementById('s-max-concurrent').value) || 2;
   const maxBandwidth = parseInt(document.getElementById('s-max-bandwidth').value) || 0;
+  const logLevel = document.getElementById('s-log-level')?.value || 'info';
   try {
     await fetch('/api/v1/settings', {
       method: 'PUT',
       headers: authHeaders(),
-      body: JSON.stringify({ maxConcurrentDownloads, maxBandwidth }),
+      body: JSON.stringify({ maxConcurrentDownloads, maxBandwidth, logLevel }),
+    });
+  } catch {}
+}
+
+async function saveLogLevel() {
+  const logLevel = document.getElementById('s-log-level').value;
+  try {
+    await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: authHeaders(),
+      body: JSON.stringify({ logLevel }),
     });
   } catch {}
 }
@@ -636,25 +699,56 @@ async function saveTestMode() {
 }
 
 function renderPathsSection() {
+  const completedPath = settingsData.completedPath || '/downloads/complete';
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">Paths</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">Control where files are downloaded during transfer and where completed media is placed.</p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('paths.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('paths.description')}</p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Incomplete Downloads</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.incomplete')}</label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-incomplete-path" value="${esc(settingsData.incompletePath)}" onchange="savePaths()">
+          <button onclick="openBrowse('s-incomplete-path')" class="input-action" title="${T('paths.browse')}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+          </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">Directory where files are temporarily stored during download. Cleared on completion.</p>
+        <p class="mt-1 text-xs text-gray-500">${T('paths.incompleteHint')}</p>
       </div>
     </div>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">Completed Media</label>
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.completed')}</label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
         <div class="form-input-field">
           <input type="text" id="s-completed-path" value="${esc(settingsData.completedPath)}" onchange="savePaths()">
+          <button onclick="openBrowse('s-completed-path')" class="input-action" title="${T('paths.browse')}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+          </button>
         </div>
-        <p class="mt-1 text-xs text-gray-500">Root directory for finished media. Movies go into <code class="text-gray-500">movies/</code>, TV into <code class="text-gray-500">tv/</code> beneath this path.</p>
+        <p class="mt-1 text-xs text-gray-500">${T('paths.completedHint')}</p>
+      </div>
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.movieDir')}</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <input type="text" id="s-movie-path" value="${esc(settingsData.moviePath || completedPath + '/movies')}" onchange="savePaths()">
+          <button onclick="openBrowse('s-movie-path')" class="input-action" title="${T('paths.browse')}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+          </button>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">${T('paths.movieDirHint', { completedPath: esc(completedPath) })}</p>
+      </div>
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('paths.tvDir')}</label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <input type="text" id="s-tv-path" value="${esc(settingsData.tvPath || completedPath + '/tv')}" onchange="savePaths()">
+          <button onclick="openBrowse('s-tv-path')" class="input-action" title="${T('paths.browse')}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+          </button>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">${T('paths.tvDirHint', { completedPath: esc(completedPath) })}</p>
       </div>
     </div>
   </div>`;
@@ -663,19 +757,21 @@ function renderPathsSection() {
 async function savePaths() {
   const incompletePath = document.getElementById('s-incomplete-path').value.trim() || '/downloads/incomplete';
   const completedPath = document.getElementById('s-completed-path').value.trim() || '/downloads/complete';
+  const moviePath = document.getElementById('s-movie-path')?.value.trim() || '';
+  const tvPath = document.getElementById('s-tv-path')?.value.trim() || '';
   try {
     await fetch('/api/v1/settings', {
       method: 'PUT',
       headers: authHeaders(),
-      body: JSON.stringify({ incompletePath, completedPath }),
+      body: JSON.stringify({ incompletePath, completedPath, moviePath, tvPath }),
     });
   } catch {}
 }
 
 async function renderApiKeysSection() {
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">API Keys</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">API keys let external services (like Seerr) authenticate and submit download jobs to Friendarr.</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('apiKeys.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('apiKeys.description')}</p>`;
   try {
     const r = await fetch('/api/v1/api-keys', { headers: authHeaders() });
     const data = await r.json();
@@ -690,13 +786,13 @@ async function renderApiKeysSection() {
             <div class="mt-0.5 text-xs text-gray-400">${esc(k.label)}</div>
           </div>
           <div class="flex items-center gap-1 flex-shrink-0">
-            <button onclick="toggleKeyVisibility('${shortPrefix}')" class="btn-icon" title="Show key">
+            <button onclick="toggleKeyVisibility('${shortPrefix}')" class="btn-icon" title="${T('apiKeys.showKey')}">
               <svg id="ke-${shortPrefix}" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
             </button>
-            <button onclick="copyToClipboard('${esc(k.key)}')" class="btn-icon" title="Copy to clipboard">
+            <button onclick="copyToClipboard('${esc(k.key)}')" class="btn-icon" title="${T('apiKeys.copyToClipboard')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
             </button>
-            <button onclick="deleteApiKey('${esc(k.key)}')" class="btn-icon-danger" title="Revoke">
+            <button onclick="deleteApiKey('${esc(k.key)}')" class="btn-icon-danger" title="${T('apiKeys.revoke')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -704,12 +800,12 @@ async function renderApiKeysSection() {
       }
       inner += `</div>`;
     } else {
-      inner += `<div class="mt-6 text-sm text-gray-500">No API keys configured. Use the master API key to authenticate.</div>`;
+      inner += `<div class="mt-6 text-sm text-gray-500">${T('apiKeys.noKeys')}</div>`;
     }
   } catch (e) {
     console.error('Failed to load API keys', e);
   }
-  inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary">New API Key</button></div>`;
+  inner += `<div class="mt-6"><button onclick="showKeyModal()" class="btn-primary">${T('apiKeys.newKey')}</button></div>`;
   inner += `</div>`;
   return inner;
 }
@@ -756,7 +852,7 @@ async function createApiKey() {
     generatedApiKey = '';
     resultDiv.classList.remove('hidden');
     resultDiv.className = 'rounded-md border border-red-500 bg-red-500/20 px-3 py-2';
-    resultText.textContent = `Error: ${e.message || 'Failed to create key'}`;
+    resultText.textContent = T('apiKeys.createError', { error: e.message || T('apiKeys.unknownError') });
     resultText.className = 'text-sm text-red-200';
   }
 }
@@ -787,10 +883,10 @@ async function copyToClipboard(text) {
 
 function renderSourceEndpointsSection() {
   const eps = settingsData.sourceEndpoints || [];
-  const typeLabels = { seerr: 'Seerr', plex: 'Plex', emby: 'Emby', jellyfin: 'Jellyfin' };
+  const typeLabels = { seerr: T('source.seerr'), plex: T('source.plex'), emby: T('source.emby'), jellyfin: T('source.jellyfin') };
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">Friend Libraries</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">The remote servers Friendarr downloads from — your friends' Seerr, Plex, Emby, or Jellyfin instances.</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('endpoints.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('endpoints.description')}</p>`;
   if (eps.length > 0) {
     inner += `<ul class="space-y-4 mb-4">`;
     for (const ep of eps) {
@@ -804,10 +900,10 @@ function renderSourceEndpointsSection() {
             <div class="mt-1 text-sm text-gray-400">${esc(ep.url)}</div>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="showEndpointModal('${ep.id}')" class="btn-icon" title="Edit">
+            <button onclick="showEndpointModal('${ep.id}')" class="btn-icon" title="${T('endpoints.edit')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
-            <button onclick="deleteEndpoint('${ep.id}')" class="btn-icon-danger" title="Remove">
+            <button onclick="deleteEndpoint('${ep.id}')" class="btn-icon-danger" title="${T('endpoints.remove')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -816,7 +912,7 @@ function renderSourceEndpointsSection() {
     }
     inner += `</ul>`;
   }
-  inner += `<div class="mt-6"><button onclick="showEndpointModal()" class="btn-primary">Add Endpoint</button></div>`;
+  inner += `<div class="mt-6"><button onclick="showEndpointModal()" class="btn-primary">${T('endpoints.addEndpoint')}</button></div>`;
   inner += `</div>`;
   return inner;
 }
@@ -828,7 +924,7 @@ function showEndpointModal(editId) {
   modal.dataset.editId = editingId;
 
   if (editingId) {
-    title.textContent = 'Edit Source Endpoint';
+    title.textContent = T('endpoints.editEndpoint');
     const eps = settingsData.sourceEndpoints || [];
     const ep = eps.find(e => e.id === editingId);
     if (ep) {
@@ -838,7 +934,7 @@ function showEndpointModal(editId) {
       document.getElementById('ep-token').value = ep.authToken;
     }
   } else {
-    title.textContent = 'Add Source Endpoint';
+    title.textContent = T('endpoints.addSourceEndpoint');
     document.getElementById('ep-label').value = '';
     document.getElementById('ep-type').value = 'plex';
     document.getElementById('ep-url').value = '';
@@ -896,33 +992,33 @@ async function deleteEndpoint(id) {
 
 function renderSchedulesSection() {
   const schedules = settingsData.schedules || [];
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayNames = [T('schedules.sun'), T('schedules.mon'), T('schedules.tue'), T('schedules.wed'), T('schedules.thu'), T('schedules.fri'), T('schedules.sat')];
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">Schedules</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">Restrict downloads to specific time windows. If no schedules are set, downloads run at any time.</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('schedules.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('schedules.description')}</p>`;
   if (schedules.length > 0) {
     inner += `<div class="mt-6 space-y-3">`;
     schedules.forEach((s, i) => {
       const dayStr = s.days.map(d => dayNames[d]).join(', ');
       const winStr = s.windows.map(w => `${w.start} &ndash; ${w.end}`).join(', ');
-      inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs">Remove</button></div>`;
+      inner += `<div class="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3"><div><span class="text-sm text-white">${dayStr}</span><span class="ml-2 text-xs text-gray-400">${winStr}</span></div><button onclick="deleteSchedule(${i})" class="btn-danger btn-xs">${T('schedules.remove')}</button></div>`;
     });
     inner += `</div>`;
   }
   inner += `<div class="border-t border-gray-700 pt-6 mt-6">
     <div class="mb-3">
-      <p class="text-sm font-medium text-gray-300 mb-2">Add Schedule</p>
+      <p class="text-sm font-medium text-gray-300 mb-2">${T('schedules.addSchedule')}</p>
       <div class="flex flex-wrap gap-2" id="sched-days">
         ${dayNames.map((d, i) => `<label class="flex items-center gap-1 text-xs text-gray-400"><input type="checkbox" value="${i}" class="sched-day w-4 h-4">${d}</label>`).join('')}
       </div>
     </div>
     <div class="flex gap-3 items-end mb-3">
-      <div><label class="block text-xs text-gray-400 mb-1">Start</label><input type="text" id="sched-start" placeholder="HH:MM" class="w-24"></div>
-      <div><label class="block text-xs text-gray-400 mb-1">End</label><input type="text" id="sched-end" placeholder="HH:MM" class="w-24"></div>
-      <button onclick="addScheduleWindow()" class="btn-ghost btn-sm">Add Window</button>
+      <div><label class="block text-xs text-gray-400 mb-1">${T('schedules.start')}</label><input type="text" id="sched-start" placeholder="HH:MM" class="w-24"></div>
+      <div><label class="block text-xs text-gray-400 mb-1">${T('schedules.end')}</label><input type="text" id="sched-end" placeholder="HH:MM" class="w-24"></div>
+      <button onclick="addScheduleWindow()" class="btn-ghost btn-sm">${T('schedules.addWindow')}</button>
     </div>
     <div id="sched-windows" class="mb-3 space-y-1"></div>
-    <button onclick="saveSchedule()" class="btn-primary">Save Schedule</button>
+    <button onclick="saveSchedule()" class="btn-primary">${T('schedules.saveSchedule')}</button>
   </div>`;
   inner += `</div>`;
   return inner;
@@ -989,11 +1085,11 @@ let logsTimer = null;
 
 function renderLogsSection() {
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">Logs</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">Recent server log entries for diagnosis and monitoring.</p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('logs.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('logs.description')}</p>
     <div class="mt-4 flex items-center gap-2 flex-wrap">
       ${['','info','warn','error','debug'].map(l => {
-        const label = l || 'All';
+        const label = l || T('logs.all');
         const active = logsLevel === l;
         const colors = { info: 'text-green-400 border-green-700', warn: 'text-yellow-400 border-yellow-700', error: 'text-red-400 border-red-700', debug: 'text-blue-400 border-blue-700' };
         const cls = !l ? (active ? 'text-white border-gray-400' : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500') : (active ? colors[l] : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500');
@@ -1002,11 +1098,11 @@ function renderLogsSection() {
       <span class="flex-1"></span>
       <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
         <input type="checkbox" id="logs-auto" ${logsAuto ? 'checked' : ''} onchange="toggleLogsAuto()" class="w-4 h-4 rounded text-green-700">
-        Auto-refresh
+        ${T('logs.autoRefresh')}
       </label>
     </div>
     <div id="logs-container" class="mt-4 rounded-lg border border-gray-700 bg-gray-900 overflow-hidden">
-      <div class="text-center py-12 text-gray-500 text-sm">Loading...</div>
+      <div class="text-center py-12 text-gray-500 text-sm">${T('logs.loading')}</div>
     </div>
   </div>`;
 }
@@ -1033,11 +1129,11 @@ async function fetchLogs() {
     if (logsLevel) params.set('level', logsLevel);
     params.set('limit', '200');
     const r = await fetch('/api/v1/logs?' + params, { headers: authHeaders() });
-    if (!r.ok) { container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">Failed to load logs.</div>'; return; }
+    if (!r.ok) { container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">' + T('logs.failedToLoad') + '</div>'; return; }
     const data = await r.json();
     const logs = data.logs || [];
     if (logs.length === 0) {
-      container.innerHTML = '<div class="text-center py-12 text-gray-500 text-sm">No log entries.</div>';
+      container.innerHTML = '<div class="text-center py-12 text-gray-500 text-sm">' + T('logs.noEntries') + '</div>';
       return;
     }
     const levelColors = { info: 'text-green-400 bg-green-500/10', warn: 'text-yellow-400 bg-yellow-500/10', error: 'text-red-400 bg-red-500/10', debug: 'text-blue-400 bg-blue-500/10' };
@@ -1052,7 +1148,7 @@ async function fetchLogs() {
       </div>`;
     }).join('')}</div>`;
   } catch {
-    container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">Failed to load logs.</div>';
+    container.innerHTML = '<div class="text-center py-12 text-red-400 text-sm">' + T('logs.failedToLoad') + '</div>';
   }
 }
 
@@ -1060,17 +1156,17 @@ async function fetchLogs() {
 function renderWebhooksSection() {
   const hooks = settingsData.webhooks || [];
   let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100">Webhooks</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">Send HTTP POST notifications to external services on download activity.</p>`;
+    <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('webhooks.title')}</h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('webhooks.description')}</p>`;
 
   if (hooks.length > 0) {
     inner += `<ul class="mt-6 space-y-3">`;
     for (const wh of hooks) {
       const eventLabels = {
-        'download.requested': 'Requested',
-        'download.started': 'Started',
-        'download.complete': 'Complete',
-        'download.failed': 'Failed',
+        'download.requested': T('event.download.requested'),
+        'download.started': T('event.download.started'),
+        'download.complete': T('event.download.complete'),
+        'download.failed': T('event.download.failed'),
       };
       const events = (wh.events || []).map(e => eventLabels[e] || e);
       inner += `<li class="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
@@ -1078,21 +1174,21 @@ function renderWebhooksSection() {
           <div class="flex-1 min-w-0 mr-4">
             <div class="flex items-center gap-2">
               <span class="text-sm text-white font-mono truncate">${esc(wh.url)}</span>
-              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${wh.enabled ? 'bg-green-500/20 text-green-400' : 'bg-gray-600 text-gray-400'}">${wh.enabled ? 'Active' : 'Disabled'}</span>
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${wh.enabled ? 'bg-green-500/20 text-green-400' : 'bg-gray-600 text-gray-400'}">${wh.enabled ? T('webhooks.active') : T('webhooks.disabled')}</span>
             </div>
             <div class="mt-1 flex items-center gap-1 flex-wrap">
               ${events.map(e => `<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-gray-700 text-gray-300">${e}</span>`).join('')}
-              ${wh.secret ? '<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400">Secret set</span>' : ''}
+              ${wh.secret ? '<span class="inline-flex items-center rounded px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400">' + T('webhooks.secretSet') + '</span>' : ''}
             </div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <button onclick="testWebhookUrl('${esc(wh.id)}')" class="btn-icon" title="Test">
+            <button onclick="testWebhookUrl('${esc(wh.id)}')" class="btn-icon" title="${T('webhooks.test')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </button>
-            <button onclick="editWebhook('${esc(wh.id)}')" class="btn-icon" title="Edit">
+            <button onclick="editWebhook('${esc(wh.id)}')" class="btn-icon" title="${T('webhooks.edit')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
-            <button onclick="deleteWebhook('${esc(wh.id)}')" class="btn-icon-danger" title="Delete">
+            <button onclick="deleteWebhook('${esc(wh.id)}')" class="btn-icon-danger" title="${T('webhooks.delete')}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -1102,7 +1198,7 @@ function renderWebhooksSection() {
     inner += `</ul>`;
   }
 
-  inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary">Add Webhook</button></div>`;
+  inner += `<div class="mt-6"><button onclick="showWebhookModal()" class="btn-primary">${T('webhooks.addWebhook')}</button></div>`;
   inner += `</div>`;
   return inner;
 }
@@ -1114,7 +1210,7 @@ function showWebhookModal(editId) {
   modal.dataset.editId = editingId;
 
   if (editingId) {
-    title.textContent = 'Edit Webhook';
+    title.textContent = T('webhooks.editWebhook');
     const hooks = settingsData.webhooks || [];
     const wh = hooks.find(h => h.id === editingId);
     if (wh) {
@@ -1127,7 +1223,7 @@ function showWebhookModal(editId) {
       });
     }
   } else {
-    title.textContent = 'Add Webhook';
+    title.textContent = T('webhooks.addWebhook');
     document.getElementById('wh-url').value = '';
     document.getElementById('wh-secret').value = '';
     document.getElementById('wh-enabled').checked = true;
@@ -1190,13 +1286,96 @@ async function testWebhookUrl(id) {
     });
     const data = await r.json();
     if (r.ok) {
-      alert('Test ping sent successfully.');
+      alert(T('webhooks.testSuccess'));
     } else {
-      alert('Test failed: ' + (data.error || 'Unknown error'));
+      alert(T('webhooks.testFailed', { error: data.error || 'Unknown error' }));
     }
     } catch (e) {
-      alert('Test failed: ' + (e.message || 'Connection error'));
+      alert(T('webhooks.testFailed', { error: e.message || 'Connection error' }));
     }
+  }
+
+  // === Browse ===
+  function showBrowseModal() {
+    const modal = document.getElementById('browse-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function hideBrowseModal() {
+    const modal = document.getElementById('browse-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function openBrowse(inputId) {
+    document.getElementById('browse-target').value = inputId;
+    const currentPath = document.getElementById(inputId)?.value || '/';
+    navigateBrowse(currentPath);
+    showBrowseModal();
+  }
+
+  async function navigateBrowse(path) {
+    document.getElementById('browse-path').textContent = path || '/';
+    const entriesDiv = document.getElementById('browse-entries');
+    entriesDiv.innerHTML = '<div class="text-center py-4 text-gray-500 text-sm">' + T('logs.loading') + '</div>';
+    try {
+      const r = await fetch('/api/v1/browse?path=' + encodeURIComponent(path || '/'), { headers: authHeaders() });
+      if (!r.ok) { entriesDiv.innerHTML = '<div class="text-center py-4 text-red-400 text-sm">' + T('browse.failed') + '</div>'; return; }
+      const data = await r.json();
+      const entries = data.entries || [];
+      let html = '';
+      const parentPath = path ? path.substring(0, path.lastIndexOf('/')) || '/' : '/';
+      html += '<div class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-700 text-gray-300" onclick="navigateBrowse(\'' + esc(parentPath) + '\')"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg><span class="text-sm">..</span></div>';
+      for (const entry of entries) {
+        if (entry.isDirectory) {
+          html += '<div class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-700 text-gray-200" onclick="navigateBrowse(\'' + esc(entry.path) + '\')"><svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg><span class="text-sm">' + esc(entry.name) + '</span></div>';
+        }
+      }
+      entriesDiv.innerHTML = html || '<div class="text-center py-4 text-gray-500 text-sm">' + T('browse.noDirectories') + '</div>';
+    } catch {
+      entriesDiv.innerHTML = '<div class="text-center py-4 text-red-400 text-sm">' + T('browse.failed') + '</div>';
+    }
+  }
+
+  function selectBrowse() {
+    const targetId = document.getElementById('browse-target').value;
+    const path = document.getElementById('browse-path').textContent;
+    if (targetId && path) {
+      const input = document.getElementById(targetId);
+      if (input) {
+        input.value = path;
+        input.dispatchEvent(new Event('change'));
+      }
+    }
+    hideBrowseModal();
+  }
+
+  // === Display ===
+  function renderDisplaySection() {
+    const currentLang = window.currentLanguage || (localStorage.getItem('friendarr_language') || 'en');
+    const languages = window.LANGUAGES || { en: 'English', es: 'Spanish', fr: 'French', de: 'German', ja: 'Japanese', zh: 'Chinese', pt: 'Portuguese' };
+    return `<div class="mt-10 text-white">
+      <h2 class="text-2xl font-bold leading-8 text-gray-100">${T('display.title')}</h2>
+      <p class="mt-1 max-w-4xl text-sm text-gray-400">${T('display.languageDescription')}</p>
+      <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+        <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2">${T('display.language')}</label>
+        <div class="mt-2 sm:col-span-2 sm:mt-0">
+          <div class="form-input-field">
+            <select id="s-language" onchange="changeLanguage()">
+              ${Object.entries(languages).map(([code, name]) => `<option value="${code}" ${currentLang === code ? 'selected' : ''}>${name}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function changeLanguage() {
+    const lang = document.getElementById('s-language').value;
+    localStorage.setItem('friendarr_language', lang);
+    window.setLanguage(lang);
+    renderSettings();
   }
 
   // === Setup Wizard ===
@@ -1237,57 +1416,82 @@ async function testWebhookUrl(id) {
     const next = document.getElementById('wizard-next');
 
     prev.style.display = wizardStep === 1 ? 'none' : 'inline-flex';
-    next.textContent = wizardStep === 3 ? 'Finish' : 'Next';
-    next.className = wizardStep === 3 ? 'btn-primary' : 'btn-primary';
+    next.textContent = wizardStep === 4 ? T('wizard.finish') : T('wizard.next');
+    next.className = wizardStep === 4 ? 'btn-primary' : 'btn-primary';
 
     if (wizardStep === 1) {
+      const languages = window.LANGUAGES || { en: 'English', es: 'Spanish', fr: 'French', de: 'German', ja: 'Japanese', zh: 'Chinese', pt: 'Portuguese' };
+      const currentLang = localStorage.getItem('friendarr_language') || 'en';
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">Step 1: Create Login</h3>
-        <p class="text-sm text-gray-400 mb-6">Authenticate with a master API key. This key grants full control — keep it secure.</p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Master API Key</label>
-            <div class="form-input-field"><input type="password" id="wizard-key" placeholder="sk-... or a memorable passphrase"></div>
-            <p class="mt-1 text-xs text-gray-500">If left empty, a random key will be generated on startup.</p>
-          </div>
+        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step1.title')}</h3>
+        <p class="text-sm text-gray-400 mb-6">${T('wizard.step1.description')}</p>
+        <div class="grid grid-cols-2 gap-3">
+          ${Object.entries(languages).map(([code, name]) => {
+            const selected = currentLang === code;
+            return `<div class="rounded-lg border-2 p-4 cursor-pointer transition ${selected ? 'border-emerald-600 bg-emerald-600/10' : 'border-gray-700 hover:border-gray-500 bg-gray-800/50'}" onclick="selectWizardLanguage('${code}', this)" data-lang="${code}">
+              <div class="text-sm font-medium text-white">${name}</div>
+              ${selected ? '<div class="mt-1 text-xs text-emerald-400">&#10003;</div>' : ''}
+            </div>`;
+          }).join('')}
         </div>`;
     } else if (wizardStep === 2) {
-      const incompletePath = localStorage.getItem('friendarr_incomplete') || '/downloads/incomplete';
-      const completedPath = localStorage.getItem('friendarr_completed') || '/downloads/complete';
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">Step 2: Set Paths</h3>
-        <p class="text-sm text-gray-400 mb-6">Where should downloads go while in progress and when finished?</p>
+        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step2.title')}</h3>
+        <p class="text-sm text-gray-400 mb-6">${T('wizard.step2.description')}</p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Incomplete Downloads</label>
-            <div class="form-input-field"><input type="text" id="wiz-incomplete" value="${esc(incompletePath)}"></div>
-            <p class="mt-1 text-xs text-gray-500">Temporary storage during download. Cleared on completion.</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Completed Media</label>
-            <div class="form-input-field"><input type="text" id="wiz-completed" value="${esc(completedPath)}"></div>
-            <p class="mt-1 text-xs text-gray-500">Root directory for finished media. Movies go into <code class="text-gray-500">movies/</code>, TV into <code class="text-gray-500">tv/</code>.</p>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step2.keyLabel')}</label>
+            <div class="form-input-field"><input type="password" id="wizard-key" placeholder="sk-... or a memorable passphrase"></div>
+            <p class="mt-1 text-xs text-gray-500">${T('wizard.step2.keyHint')}</p>
           </div>
         </div>`;
     } else if (wizardStep === 3) {
+      const incompletePath = localStorage.getItem('friendarr_incomplete') || '/downloads/incomplete';
+      const completedPath = localStorage.getItem('friendarr_completed') || '/downloads/complete';
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4">Step 3: Add Friend Library</h3>
-        <p class="text-sm text-gray-400 mb-6">Optionally configure a remote server to download from. You can skip this and add more later in Settings.</p>
+        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step3.title')}</h3>
+        <p class="text-sm text-gray-400 mb-6">${T('wizard.step3.description')}</p>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Label</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step3.incomplete')}</label>
+            <div class="form-input-field">
+              <input type="text" id="wiz-incomplete" value="${esc(incompletePath)}">
+              <button onclick="openBrowse('wiz-incomplete')" class="input-action" title="${T('paths.browse')}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+              </button>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">${T('wizard.step3.incompleteHint')}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step3.completed')}</label>
+            <div class="form-input-field">
+              <input type="text" id="wiz-completed" value="${esc(completedPath)}">
+              <button onclick="openBrowse('wiz-completed')" class="input-action" title="${T('paths.browse')}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+              </button>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">${T('wizard.step3.completedHint')}</p>
+          </div>
+        </div>`;
+    } else if (wizardStep === 4) {
+      body.innerHTML = `
+        <h3 class="text-brand text-xl font-bold mb-4">${T('wizard.step4.title')}</h3>
+        <p class="text-sm text-gray-400 mb-6">${T('wizard.step4.description')}</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.label')}</label>
             <div class="form-input-field"><input type="text" id="wiz-ep-label" placeholder="My Server"></div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Type</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.type')}</label>
             <div class="form-input-field"><select id="wiz-ep-type"><option value="plex">Plex</option><option value="emby">Emby</option><option value="jellyfin">Jellyfin</option></select></div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.url')}</label>
             <div class="form-input-field"><input type="text" id="wiz-ep-url" placeholder="https://server.example.com"></div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1">Auth Token</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">${T('wizard.step4.token')}</label>
             <div class="form-input-field"><input type="password" id="wiz-ep-token" placeholder="API key or token"></div>
           </div>
         </div>`;
@@ -1295,17 +1499,17 @@ async function testWebhookUrl(id) {
   }
 
   function wizardNext() {
-    if (wizardStep === 1) {
+    if (wizardStep === 2) {
       const keyEl = document.getElementById('wizard-key');
       wizardMasterKey = keyEl ? keyEl.value.trim() : '';
     }
-    if (wizardStep === 2) {
+    if (wizardStep === 3) {
       const incomplete = document.getElementById('wiz-incomplete');
       const completed = document.getElementById('wiz-completed');
       if (incomplete) localStorage.setItem('friendarr_incomplete', incomplete.value.trim() || '/downloads/incomplete');
       if (completed) localStorage.setItem('friendarr_completed', completed.value.trim() || '/downloads/complete');
     }
-    if (wizardStep === 3) {
+    if (wizardStep === 4) {
       finishWizard();
       return;
     }
@@ -1316,8 +1520,26 @@ async function testWebhookUrl(id) {
   function wizardPrev() {
     if (wizardStep > 1) {
       wizardStep--;
-      if (wizardStep === 1) wizardMasterKey = '';
+      if (wizardStep === 2) wizardMasterKey = '';
       renderWizardStep();
+    }
+  }
+
+  function selectWizardLanguage(code, el) {
+    localStorage.setItem('friendarr_language', code);
+    window.setLanguage(code);
+    document.querySelectorAll('[data-lang]').forEach(d => {
+      d.className = 'rounded-lg border-2 p-4 cursor-pointer transition border-gray-700 hover:border-gray-500 bg-gray-800/50';
+      const check = d.querySelector('.text-xs.text-emerald-400');
+      if (check) check.remove();
+    });
+    el.className = 'rounded-lg border-2 p-4 cursor-pointer transition border-emerald-600 bg-emerald-600/10';
+    const existing = el.querySelector('.text-xs');
+    if (!existing || !existing.classList.contains('text-emerald-400')) {
+      const checkmark = document.createElement('div');
+      checkmark.className = 'mt-1 text-xs text-emerald-400';
+      checkmark.innerHTML = '&#10003;';
+      el.appendChild(checkmark);
     }
   }
 
@@ -1360,12 +1582,13 @@ async function testWebhookUrl(id) {
       <div class="wizard-dot w-3 h-3 rounded-full bg-emerald-600"></div>
       <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
       <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
+      <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
     </div>
     <div id="wizard-body"></div>
     <div class="flex justify-between mt-8 border-t border-gray-700 pt-5">
-      <button id="wizard-prev" onclick="wizardPrev()" class="btn-ghost" style="display:none">Back</button>
-      <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost">Skip</button>
-      <button id="wizard-next" onclick="wizardNext()" class="btn-primary">Next</button>
+      <button id="wizard-prev" onclick="wizardPrev()" class="btn-ghost" style="display:none">${T('wizard.back')}</button>
+      <button id="wizard-skip" onclick="finishWizard()" class="btn-ghost">${T('wizard.skip')}</button>
+      <button id="wizard-next" onclick="wizardNext()" class="btn-primary">${T('wizard.next')}</button>
     </div>
   </div>
 </div>

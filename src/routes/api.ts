@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import fs from 'fs/promises';
+import path from 'path';
 import {
   authenticateApiKey,
   authenticateMasterKey,
@@ -165,6 +167,29 @@ router.post('/webhooks/test', authenticateMasterKey, async (req, res) => {
     res.status(502).json({
       status: 'failed',
       error: (e as Error).message,
+    });
+  }
+});
+
+router.get('/browse', authenticateMasterKey, async (req, res) => {
+  const dirPath = (req.query.path as string) || '/';
+  try {
+    const resolved = path.resolve(dirPath);
+    const entries = await fs.readdir(resolved, { withFileTypes: true });
+    const listing = entries
+      .filter((e) => e.isDirectory())
+      .map((e) => ({
+        name: e.name,
+        isDirectory: true,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    res.status(200).json({
+      path: resolved,
+      entries: listing,
+    });
+  } catch (e) {
+    res.status(400).json({
+      error: `Cannot read directory: ${(e as Error).message}`,
     });
   }
 });

@@ -1,10 +1,23 @@
 import { config } from './config';
+import { getSettings } from './settings';
 
 export interface LogEntry {
   timestamp: string;
   level: string;
   label: string;
   message: string;
+}
+
+const levelPriority: Record<string, number> = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  debug: 3,
+};
+
+function shouldLog(level: string): boolean {
+  const currentLevel = getSettings().logLevel;
+  return (levelPriority[level] ?? 2) <= (levelPriority[currentLevel] ?? 2);
 }
 
 const logBuffer: LogEntry[] = [];
@@ -55,6 +68,7 @@ function format(
 
 export const logger = {
   info(message: string, label?: string): void {
+    if (!shouldLog('info')) return;
     const labelStr = label ?? 'Server';
     addToBuffer({
       timestamp: new Date().toISOString(),
@@ -65,6 +79,7 @@ export const logger = {
     console.log(format('info', colors.green, message, labelStr));
   },
   warn(message: string, label?: string): void {
+    if (!shouldLog('warn')) return;
     const labelStr = label ?? 'Server';
     addToBuffer({
       timestamp: new Date().toISOString(),
@@ -75,6 +90,7 @@ export const logger = {
     console.warn(format('warn', colors.yellow, message, labelStr));
   },
   error(message: string, label?: string): void {
+    if (!shouldLog('error')) return;
     const labelStr = label ?? 'Server';
     addToBuffer({
       timestamp: new Date().toISOString(),
@@ -85,7 +101,7 @@ export const logger = {
     console.error(format('error', colors.red, message, labelStr));
   },
   debug(message: string, label?: string): void {
-    if (!config.debug) return;
+    if (!shouldLog('debug')) return;
     const labelStr = label ?? 'Server';
     addToBuffer({
       timestamp: new Date().toISOString(),

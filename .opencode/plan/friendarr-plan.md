@@ -79,6 +79,18 @@ Seerr's `POST /api/v1/request/:id/send-to-remote` route builds a `downloadServic
 | 4.0.3 | S3/cloud storage destination support | pending |
 | 4.0.4 | Checksum verification after download | pending |
 
+### Phase 5.0 — UX Polish
+
+| #     | Task                                                      | Status  |
+| ----- | --------------------------------------------------------- | ------- |
+| 5.0.1 | Runtime log level control from UI                         | done    |
+| 5.0.2 | Full-width logs table                                     | done    |
+| 5.0.3 | Configurable movie/TV directory paths                     | done    |
+| 5.0.4 | File browser for path inputs (server-side API + modal UI) | done    |
+| 5.0.5 | i18n translation system with 7 languages                  | done    |
+| 5.0.6 | Language selection in setup wizard (first question)       | done    |
+| 5.0.7 | Language selector in settings (new Display section)       | done    |
+
 ## Source-Specific Download Details
 
 ### Seerr
