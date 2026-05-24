@@ -86,7 +86,6 @@ export async function downloadFromPlex(request: DownloadRequest): Promise<{
 
   // Multi-part: concatenate
   const combined = new PassThrough();
-  let downloaded = 0;
 
   void (async () => {
     try {
@@ -102,7 +101,6 @@ export async function downloadFromPlex(request: DownloadRequest): Promise<{
         await new Promise<void>((resolve, reject) => {
           response.data.pipe(combined, { end: false });
           response.data.on('end', () => {
-            downloaded += part.size;
             resolve();
           });
           response.data.on('error', reject);

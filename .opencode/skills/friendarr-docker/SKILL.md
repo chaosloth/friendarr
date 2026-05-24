@@ -93,7 +93,7 @@ Expected: `{"status":"ok","activeDownloads":0}`
 docker run --rm -p 5056:5056 \
   -e API_KEY=sk-test \
   -e MAX_CONCURRENT_DOWNLOADS=4 \
-  -e LIBRARY_BASE_PATH=/data/media \
+  -e COMPLETED_PATH=/data/media \
   friendarr:test
 ```
 
@@ -101,9 +101,8 @@ docker run --rm -p 5056:5056 \
 
 ```bash
 docker run --rm -p 5056:5056 \
-  -e LIBRARY_BASE_PATH=/media \
-  -e TEMP_DIR=/tmp/friendarr \
-  -v /path/to/media:/media:rw \
+  -e COMPLETED_PATH=/downloads/complete \
+  -v /path/to/downloads:/downloads:rw \
   friendarr:test
 ```
 

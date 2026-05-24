@@ -37,8 +37,27 @@ graph LR
     A[Seerr] -->|POST /api/v1/download| B[Friendarr :5056]
     B -->|Plex / Emby / Jellyfin| C[Remote Media Server]
     B -->|Write file| D[Media Library]
-    B -->|Webhook| E[External Services]
+     B -->|Webhook| E[External Services]
 ```
+
+## Screenshots
+
+<div class="screenshots-grid">
+  <div>
+    <img src="/screenshots/queue.png" alt="Queue Dashboard">
+    <p><strong>Queue Dashboard</strong> — monitor and manage downloads</p>
+  </div>
+  <div>
+    <img src="/screenshots/settings.png" alt="Settings">
+    <p><strong>Settings</strong> — configure sources, schedules, and paths</p>
+  </div>
+  <div>
+    <img src="/screenshots/logs.png" alt="Logs">
+    <p><strong>Logs Viewer</strong> — real-time server log tail</p>
+  </div>
+</div>
+
+## Quick Start
 
 ## Quick Start
 
