@@ -922,15 +922,15 @@ function renderSchedulesSection() {
       const bwMB = w.bandwidth ? (w.bandwidth / (1024*1024)).toFixed(1) + ' MB/s' : 'Unlimited';
       const canMoveUp = wi > 0;
       const canMoveDown = wi < s.windows.length - 1;
-      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3" data-si="${si}" data-wi="${wi}">
-        <div class="flex flex-col shrink-0 gap-0.5">
-          <span class="block cursor-pointer text-gray-400 hover:text-white text-xs leading-none select-none" data-action="moveup">&#9650;</span>
-          <span class="block text-gray-600 text-xs leading-none select-none">&#8942;</span>
-          <span class="block cursor-pointer text-gray-400 hover:text-white text-xs leading-none select-none" data-action="movedown">&#9660;</span>
-        </div>
+      inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-3">
+        <span class="flex flex-col shrink-0 select-none text-xs leading-none gap-0.5">
+          <span onclick="reorderWindow(${si},${wi},-1)" class="cursor-pointer text-gray-400 hover:text-white">&#9650;</span>
+          <span class="text-gray-600">&#8942;</span>
+          <span onclick="reorderWindow(${si},${wi},1)" class="cursor-pointer text-gray-400 hover:text-white">&#9660;</span>
+        </span>
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
-        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5" size="4"
-          class="w-12 bg-gray-700 border border-gray-600 rounded text-white text-sm px-1.5 py-1"
+        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5" size="3"
+          class="w-10 bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-1"
           onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
         <span class="text-xs text-gray-400 shrink-0">MB/s</span>
         <button onclick="deleteScheduleWindow(${si}, ${wi})" class="text-gray-400 hover:text-red-400 shrink-0 p-1" title="Delete">
@@ -950,8 +950,8 @@ function renderSchedulesSection() {
     <div class="mt-6 border-t border-gray-700 pt-4">
       <label class="text-sm text-gray-400">Default bandwidth (when no schedules are set):</label>
       <div class="flex items-center gap-2 mt-1">
-        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5" size="5"
-          class="w-16 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
+        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5" size="3"
+          class="w-10 bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-1"
           onchange="saveMaxBandwidth(this.value)">
         <span class="text-xs text-gray-400">MB/s (0 = unlimited)</span>
       </div>
@@ -997,9 +997,6 @@ function initScheduleDrag() {
     createWindowFromDrag();
     clearDragHighlight();
   });
-
-  document.removeEventListener('click', handleWindowAction);
-  document.addEventListener('click', handleWindowAction);
 }
 
 function updateDragHighlight() {
@@ -1073,17 +1070,6 @@ async function deleteScheduleWindow(si, wi) {
   settingsData = await saveSettings({ schedules });
   renderSettings();
   setTimeout(initScheduleDrag, 100);
-}
-
-function handleWindowAction(e) {
-  const action = e.target.closest('[data-action]')?.dataset.action;
-  if (!action) return;
-  const row = e.target.closest('[data-si]');
-  if (!row) return;
-  const si = parseInt(row.dataset.si);
-  const wi = parseInt(row.dataset.wi);
-  if (action === 'moveup') reorderWindow(si, wi, -1);
-  if (action === 'movedown') reorderWindow(si, wi, 1);
 }
 
 async function reorderWindow(si, wi, direction) {
