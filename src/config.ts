@@ -15,4 +15,6 @@ export const config = {
   debug: process.env.DEBUG === 'true',
   logBufferSize: parseInt(process.env.LOG_BUFFER_SIZE ?? '500', 10),
   dataDir: process.env.DATA_DIR ?? path.join(process.cwd(), 'config'),
+  moviePath: process.env.MOVIE_PATH ?? '',
+  tvPath: process.env.TV_PATH ?? '',
 };

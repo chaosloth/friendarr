@@ -32,8 +32,8 @@ const settings: AppSettings = {
   webhooks: [],
   incompletePath: config.incompletePath,
   completedPath: config.completedPath,
-  moviePath: '',
-  tvPath: '',
+  moviePath: config.moviePath,
+  tvPath: config.tvPath,
   testMode: false,
   logLevel: config.debug ? 'debug' : 'info',
 };

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/tailwind.css">
   <script src="/i18n.js"></script>
   <script>
     tailwind.config = {
@@ -1652,15 +1652,29 @@ async function testWebhookUrl(id) {
     }
 
     if (wizardStep === 1) {
-      const languages = window.LANGUAGES || { en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', ja: '日本語', zh: '中文', pt: 'Português' };
-      const flags = { en: '🇬🇧', es: '🇪🇸', fr: '🇫🇷', de: '🇩🇪', ja: '🇯🇵', zh: '🇨🇳', pt: '🇧🇷' };
+      const languages = window.LANGUAGES || {};
+      const flags = {
+        en: '🇬🇧', es: '🇪🇸', 'es-MX': '🇲🇽', fr: '🇫🇷', de: '🇩🇪', ja: '🇯🇵',
+        'zh-Hans': '🇨🇳', 'zh-Hant': '🇹🇼', 'pt-BR': '🇧🇷', 'pt-PT': '🇵🇹',
+        it: '🇮🇹', nl: '🇳🇱', pl: '🇵🇱', ru: '🇷🇺', sv: '🇸🇪', ko: '🇰🇷',
+        tr: '🇹🇷', vi: '🇻🇳', ar: '🇸🇦', he: '🇮🇱', cs: '🇨🇿', da: '🇩🇰',
+        fi: '🇫🇮', hu: '🇭🇺', ro: '🇷🇴', sk: '🇸🇰', sl: '🇸🇮', uk: '🇺🇦',
+        bg: '🇧🇬', el: '🇬🇷', et: '🇪🇪', hi: '🇮🇳', hr: '🇭🇷', kab: '🇩🇿',
+        lb: '🇱🇺', lt: '🇱🇹', 'nb-NO': '🇳🇴', sq: '🇦🇱', sr: '🇷🇸'
+      };
       const currentLang = window.getLanguage();
+      const sorted = Object.entries(languages).sort(function(a, b) {
+        if (a[0] === 'en') return -1;
+        if (b[0] === 'en') return 1;
+        return a[1].localeCompare(b[1]);
+      });
       body.innerHTML = `
         <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step1.title"></span></h3>
         <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step1.description"></span></p>
         <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step1.detail"></span></p>
         <div class="max-h-72 overflow-y-auto rounded border border-gray-700">
-          ${Object.entries(languages).map(([code, name]) => {
+          ${sorted.map(function(entry) {
+            const code = entry[0], name = entry[1];
             const selected = currentLang === code;
             return `<div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${selected ? 'bg-emerald-600/20 border-l-2 border-emerald-600' : 'border-l-2 border-transparent hover:bg-gray-700/50'}" onclick="selectWizardLanguage('${code}', this)" data-lang="${code}">
               <span class="text-xl leading-none w-7 text-center">${flags[code] || ''}</span>
