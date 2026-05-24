@@ -50,9 +50,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Generate API docs
-        run: pnpm docs:api
-
       - name: Build docs
         run: pnpm docs:build
 

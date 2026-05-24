@@ -284,6 +284,6 @@ const outDir = resolve(__dirname, "../docs/api");
 if (!existsSync(outDir)) {
   mkdirSync(outDir, { recursive: true });
 }
-const outPath = resolve(outDir, "endpoints.md");
+const outPath = resolve(outDir, "_generated.md");
 writeFileSync(outPath, generateMarkdown(), "utf-8");
 console.log(`Generated ${outPath}`);

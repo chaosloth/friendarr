@@ -83,6 +83,7 @@ docker run -d \
   -e COMPLETED_PATH=/downloads/complete \
   -e INCOMPLETE_PATH=/downloads/incomplete \
   -v /path/to/your/downloads:/downloads:rw \
+  -v ./config:/app/config \
   conno/friendarr:latest
 ```
 

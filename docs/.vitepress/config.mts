@@ -51,7 +51,11 @@ export default withMermaid(
           text: "API Reference",
           items: [
             { text: "Overview", link: "/api/overview" },
-            { text: "Endpoints", link: "/api/endpoints" },
+            { text: "Download", link: "/api/download" },
+            { text: "Queue", link: "/api/queue" },
+            { text: "Settings", link: "/api/settings" },
+            { text: "API Keys", link: "/api/api-keys" },
+            { text: "Utilities", link: "/api/other" },
           ],
         },
       ],

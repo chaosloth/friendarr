@@ -44,6 +44,10 @@ graph LR
 
 <div class="screenshots-grid">
   <div>
+    <img src="/screenshots/wizard-step1.png" alt="Setup Wizard - Language">
+    <p><strong>Setup Wizard</strong> — language selection on first launch</p>
+  </div>
+  <div>
     <img src="/screenshots/queue.png" alt="Queue Dashboard">
     <p><strong>Queue Dashboard</strong> — monitor and manage downloads</p>
   </div>
@@ -56,8 +60,6 @@ graph LR
     <p><strong>Logs Viewer</strong> — real-time server log tail</p>
   </div>
 </div>
-
-## Quick Start
 
 ## Quick Start
 
@@ -86,6 +88,7 @@ docker run -d \
   -e API_KEY=your-master-key \
   -e COMPLETED_PATH=/downloads/complete \
   -e INCOMPLETE_PATH=/downloads/incomplete \
-  -v /path/to/downloads:/downloads \
+  -v /path/to/downloads:/downloads:rw \
+  -v ./config:/app/config \
   conno/friendarr:latest
 ```
