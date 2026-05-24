@@ -74,6 +74,5 @@ export function authenticateMasterKey(
     return;
   }
 
-  logger.debug('Authenticated via master key', 'Auth');
   next();
 }
