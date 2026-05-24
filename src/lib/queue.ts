@@ -156,6 +156,20 @@ class DownloadQueue {
     return true;
   }
 
+  public retryJob(id: string): boolean {
+    const job = this.jobs.get(id);
+    if (!job || job.status !== 'failed') return false;
+    job.status = 'queued';
+    job.progress = 0;
+    job.bytesDownloaded = 0;
+    job.error = undefined;
+    job.outputPath = undefined;
+    this.queue.push(job.id);
+    logger.info(`Retrying: ${job.request.destination.title}`, 'Queue');
+    this.processQueue();
+    return true;
+  }
+
   public clearCompleted(): number {
     let count = 0;
     for (const [id, job] of this.jobs) {

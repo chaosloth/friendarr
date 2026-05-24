@@ -45,7 +45,7 @@ export function authenticateApiKey(
   const token = authHeader.slice(7);
 
   if (!isValidApiKey(token)) {
-    logger.debug('Auth failed: invalid API key', 'Auth');
+    logger.warn('Auth failed: invalid API key', 'Auth');
     res.status(403).json({ error: 'Invalid API key' });
     return;
   }

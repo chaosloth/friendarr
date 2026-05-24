@@ -119,6 +119,15 @@ router.delete('/queue/:id', authenticateMasterKey, (req, res) => {
   res.status(200).json({ status: 'cancelled' });
 });
 
+router.post('/queue/:id/retry', authenticateMasterKey, (req, res) => {
+  const ok = downloadQueue.retryJob(req.params.id);
+  if (!ok) {
+    res.status(404).json({ error: 'Job not found or not failed' });
+    return;
+  }
+  res.status(200).json({ status: 'queued' });
+});
+
 router.delete('/queue', authenticateMasterKey, (_req, res) => {
   const count = downloadQueue.clearCompleted();
   logger.info(`Cleared ${count} completed/failed jobs`, 'Queue');
