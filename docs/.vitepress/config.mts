@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
+  base: "/friendarr/",
   title: "Friendarr",
   description: "Standalone downloading service for Friend Libraries",
   lang: "en-US",
