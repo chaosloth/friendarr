@@ -98,6 +98,12 @@ jobs:
             type=semver,pattern=v{{major}}.{{minor}}
             type=semver,pattern=v{{major}}
           labels: |
+            org.opencontainers.image.title=Friendarr
+            org.opencontainers.image.description=Standalone downloading microservice for Friend Libraries
+            org.opencontainers.image.url=https://github.com/chaosloth/friendarr
+            org.opencontainers.image.source=https://github.com/chaosloth/friendarr
+            org.opencontainers.image.documentation=https://chaosloth.github.io/friendarr
+            org.opencontainers.image.licenses=MIT
             org.opencontainers.image.created=${{ steps.ts.outputs.TIMESTAMP }}
 
       - name: Build & Push (multi-arch)

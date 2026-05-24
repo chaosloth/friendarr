@@ -8,22 +8,22 @@
 </p>
 
 <p align="center">
-  <a href="https://conno.github.io/friendarr/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen" alt="Docs"></a>
+  <a href="https://chaosloth.github.io/friendarr/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen" alt="Docs"></a>
   <img src="https://img.shields.io/docker/pulls/conno/friendarr" alt="Docker pulls">
   <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node">
 </p>
 
 **Friendarr** is the download companion to [Seerr](https://github.com/seerr-team/seerr)'s **Friend Libraries** feature. Seerr discovers media on your friends' remote libraries (Plex, Emby, Jellyfin). When you request something from a friend, Seerr hands the download job to Friendarr. Friendarr pulls the file from the remote server and places it into your local media library.
 
-**[Read the full documentation →](https://conno.github.io/friendarr/)**
+**[Read the full documentation →](https://chaosloth.github.io/friendarr/)**
 
 ## Screenshots
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/conno/friendarr/main/docs/public/screenshots/queue.png" alt="Queue Dashboard" width="400">
-  <img src="https://raw.githubusercontent.com/conno/friendarr/main/docs/public/screenshots/settings.png" alt="Settings" width="400">
+  <img src="https://raw.githubusercontent.com/chaosloth/friendarr/main/docs/screenshots/queue.png" alt="Queue Dashboard" width="400">
+  <img src="https://raw.githubusercontent.com/chaosloth/friendarr/main/docs/screenshots/settings.png" alt="Settings" width="400">
   <br/>
-  <img src="https://raw.githubusercontent.com/conno/friendarr/main/docs/public/screenshots/logs.png" alt="Logs" width="400">
+  <img src="https://raw.githubusercontent.com/chaosloth/friendarr/main/docs/screenshots/logs.png" alt="Logs" width="400">
 </p>
 
 ## How It Fits Together
@@ -89,7 +89,7 @@ docker run -d \
 ### Manual
 
 ```bash
-git clone https://github.com/conno/friendarr.git
+git clone https://github.com/chaosloth/friendarr.git
 cd friendarr
 pnpm install
 cp .env.example .env
@@ -102,7 +102,7 @@ Open **http://localhost:5056** and enter your master API key.
 
 ## Documentation
 
-Full documentation with configuration, API reference, file placement, and source setup: **[conno.github.io/friendarr](https://conno.github.io/friendarr/)**
+Full documentation with configuration, API reference, file placement, and source setup: **[chaosloth.github.io/friendarr](https://chaosloth.github.io/friendarr/)**
 
 ## Development
 
@@ -114,7 +114,7 @@ pnpm lint       # ESLint
 pnpm format     # Prettier
 ```
 
-See the [documentation](https://conno.github.io/friendarr/) for the full architecture overview and contributing guide.
+See the [documentation](https://chaosloth.github.io/friendarr/) for the full architecture overview and contributing guide.
 
 ## License
 

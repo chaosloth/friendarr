@@ -55,7 +55,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/conno/friendarr" },
+      { icon: "github", link: "https://github.com/chaosloth/friendarr" },
     ],
 
     search: {
