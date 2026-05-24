@@ -1,5 +1,6 @@
 import axios from "axios";
 import { logger } from "../logger";
+import { config } from "../config";
 import type { DownloadRequest } from "../types";
 
 export async function downloadFromEmbyJellyfin(
@@ -24,7 +25,9 @@ export async function downloadFromEmbyJellyfin(
 
   logger.info(`Downloading from Emby/Jellyfin: ${downloadUrl}`, "EmbyJellyfin");
 
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    "User-Agent": config.userAgent,
+  };
   if (authToken) {
     headers["Authorization"] =
       `MediaBrowser Client="Seerr", Device="Seerr", DeviceId="${safeDeviceId}", Version="1.0.0", Token="${authToken}"`;

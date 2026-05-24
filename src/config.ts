@@ -41,6 +41,7 @@ function loadMasterKey(): string {
 export const config = {
   version: commitInfo.version,
   commitTag: commitInfo.commitTag,
+  userAgent: `Friendarr/${commitInfo.version} (${commitInfo.commitTag.slice(0, 7)})`,
   port: parseInt(process.env.PORT ?? "5056", 10),
   masterKey: loadMasterKey(),
   incompletePath: process.env.INCOMPLETE_PATH ?? "/downloads/incomplete",

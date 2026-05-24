@@ -1,6 +1,7 @@
 import axios from "axios";
 import { PassThrough } from "stream";
 import { logger } from "../logger";
+import { config } from "../config";
 import type { DownloadRequest } from "../types";
 
 interface PlexPart {
@@ -29,7 +30,10 @@ export async function downloadFromPlex(request: DownloadRequest): Promise<{
     throw new Error("ratingKey is required for Plex source");
   }
 
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "User-Agent": config.userAgent,
+  };
   if (authToken) {
     headers["X-Plex-Token"] = authToken;
   }

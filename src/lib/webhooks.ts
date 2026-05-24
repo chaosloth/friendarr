@@ -2,6 +2,7 @@ import crypto from "crypto";
 import https from "https";
 import type { DownloadJob, Webhook } from "../types";
 import { logger } from "../logger";
+import { config } from "../config";
 
 interface WebhookPayload {
   event: string;
@@ -29,6 +30,7 @@ function postJSON(
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       "Content-Length": String(body.length),
+      "User-Agent": config.userAgent,
       ...extraHeaders,
     };
 
