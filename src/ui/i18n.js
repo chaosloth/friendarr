@@ -1194,17 +1194,17 @@
   };
 
   window.T = function (key, fallback) {
-    var lang = localStorage.getItem('friendarr_lang') || 'en';
+    var lang = localStorage.getItem('friendarr_language') || 'en';
     var dict = translations[lang] || translations['en'];
     return dict[key] || fallback || key;
   };
 
   window.setLanguage = function (lang) {
-    localStorage.setItem('friendarr_lang', lang);
+    localStorage.setItem('friendarr_language', lang);
   };
 
   window.getLanguage = function () {
-    return localStorage.getItem('friendarr_lang') || 'en';
+    return localStorage.getItem('friendarr_language') || 'en';
   };
 
   window.getLanguageName = function (lang) {
@@ -1217,8 +1217,16 @@
       zh: '中文',
       pt: 'Português',
     };
-    return names[lang] || lang;
+    return names[lang || window.getLanguage()] || lang;
   };
 
-  window.LANGUAGES = ['en', 'es', 'fr', 'de', 'ja', 'zh', 'pt'];
+  window.LANGUAGES = {
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    ja: '日本語',
+    zh: '中文',
+    pt: 'Português',
+  };
 })();
