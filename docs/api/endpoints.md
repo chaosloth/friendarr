@@ -249,3 +249,9 @@ Test a webhook URL.
 { "status": "ok" }
 ```
 
+### other
+
+| Method | Path | Auth |
+|---|---|---|
+| GET | `/api/v1/browse` | Master key |
+

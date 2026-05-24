@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,4 +14,5 @@ export const config = {
   ),
   debug: process.env.DEBUG === 'true',
   logBufferSize: parseInt(process.env.LOG_BUFFER_SIZE ?? '500', 10),
+  dataDir: process.env.DATA_DIR ?? path.join(process.cwd(), 'config'),
 };

@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import fs from 'fs/promises';
+import { readFileSync, writeFileSync } from 'fs';
+import { statfs } from 'fs';
 import path from 'path';
 import {
   authenticateApiKey,
@@ -12,6 +14,7 @@ import { downloadQueue } from '../lib/queue';
 import { testWebhook } from '../lib/webhooks';
 import { getLogs, logger } from '../logger';
 import { getSettings, updateSettings } from '../settings';
+import { config } from '../config';
 
 const router: Router = Router();
 
@@ -156,22 +159,36 @@ router.put('/settings', authenticateMasterKey, (req, res) => {
   const scheduleChanged = changed.includes('schedules');
   const logLevelChanged = changed.includes('logLevel');
 
-  logger.info(
-    `Settings updated: ${changed.join(', ') || 'no fields'}`,
-    'Settings'
-  );
-
   if (scheduleChanged) {
     const schedules = updated.schedules;
-    const totalWindows = schedules.reduce((sum, s) => sum + s.windows.length, 0);
     if (schedules.length === 0) {
-      logger.info('Schedule removed: downloads now unrestricted', 'Settings');
+      logger.info('Schedules cleared — downloads unrestricted', 'Settings');
     } else {
-      logger.info(
-        `Schedule updated: ${schedules.length} day(s), ${totalWindows} window(s)`,
-        'Settings'
-      );
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const parts = schedules.map((s) => {
+        const days = s.days.map((d) => dayNames[d]).join(',');
+        const wins = s.windows
+          .map((w) => {
+            const bw =
+              w.bandwidth > 0
+                ? `${(w.bandwidth / 1048576).toFixed(1)}MB/s`
+                : 'unlimited';
+            return `${w.start}-${w.end}(${bw})`;
+          })
+          .join(' ');
+        return `[${days}] ${wins}`;
+      });
+      const fb =
+        updated.maxBandwidth > 0
+          ? `fallback=${(updated.maxBandwidth / 1048576).toFixed(1)}MB/s`
+          : 'unrestricted';
+      logger.info(`Schedules: ${parts.join(' | ')} | ${fb}`, 'Settings');
     }
+  } else {
+    logger.info(
+      `Settings updated: ${changed.join(', ') || 'no fields'}`,
+      'Settings'
+    );
   }
 
   if (logLevelChanged) {
@@ -243,6 +260,58 @@ router.get('/browse', authenticateMasterKey, async (req, res) => {
     res.status(400).json({
       error: `Cannot read directory: ${(e as Error).message}`,
     });
+  }
+});
+
+router.get('/disk', authenticateMasterKey, (_req, res) => {
+  const settings = getSettings();
+  const dirs = [
+    { key: 'incomplete', p: settings.incompletePath },
+    { key: 'completed', p: settings.completedPath },
+  ];
+  const result: Record<string, { available: number; total: number }> = {};
+  let pending = dirs.length;
+
+  for (const { key, p } of dirs) {
+    try {
+      statfs(p, (err, stats) => {
+        if (err) {
+          result[key] = { available: 0, total: 0 };
+        } else {
+          result[key] = {
+            available: stats.bsize * stats.bavail,
+            total: stats.bsize * stats.blocks,
+          };
+        }
+        if (--pending === 0) res.status(200).json(result);
+      });
+    } catch {
+      result[key] = { available: 0, total: 0 };
+      if (--pending === 0) res.status(200).json(result);
+    }
+  }
+});
+
+router.post('/bootstrap', (req, res) => {
+  if (config.masterKey) {
+    res.status(403).json({ error: 'Master key already configured' });
+    return;
+  }
+  const { key } = req.body;
+  if (!key || typeof key !== 'string') {
+    res.status(400).json({ error: 'key is required' });
+    return;
+  }
+  config.masterKey = key;
+  res.json({ message: 'Master key activated' });
+  try {
+    const envPath = path.resolve(process.cwd(), '.env');
+    let env = readFileSync(envPath, 'utf-8');
+    env = env.replace(/^API_KEY=.*/m, `API_KEY=${key}`);
+    writeFileSync(envPath, env, 'utf-8');
+    logger.info('Master key persisted to .env', 'Bootstrap');
+  } catch {
+    logger.info('Master key activated (could not persist .env — may be read-only)', 'Bootstrap');
   }
 });
 

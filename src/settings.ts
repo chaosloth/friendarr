@@ -111,6 +111,8 @@ export function getActiveScheduleWindow(
   const day = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
+  let match: ScheduleWindow | null = null;
+
   for (const schedule of schedules) {
     if (!schedule.days.includes(day)) continue;
     for (const window of schedule.windows) {
@@ -120,12 +122,55 @@ export function getActiveScheduleWindow(
       const end = endH * 60 + endM;
 
       if (end > start) {
-        if (currentMinutes >= start && currentMinutes < end) return window;
+        if (currentMinutes >= start && currentMinutes < end) match = window;
       } else {
-        if (currentMinutes >= start || currentMinutes < end) return window;
+        if (currentMinutes >= start || currentMinutes < end) match = window;
       }
     }
   }
 
-  return null;
+  return match;
+}
+
+export function getNextScheduleWindow(
+  schedules: Schedule[]
+): { day: string; start: string } | null {
+  if (schedules.length === 0) return null;
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const now = new Date();
+  const currentDay = now.getDay();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  let closest: { day: string; start: string; minutesFromNow: number } | null =
+    null;
+
+  for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
+    const day = (currentDay + dayOffset) % 7;
+    for (const schedule of schedules) {
+      if (!schedule.days.includes(day)) continue;
+      for (const window of schedule.windows) {
+        const [startH, startM] = window.start.split(':').map(Number);
+        const start = startH * 60 + startM;
+        let minutesFromNow: number;
+        if (dayOffset === 0 && start <= currentMinutes) {
+          minutesFromNow = 7 * 24 * 60 - currentMinutes + start;
+        } else {
+          minutesFromNow = dayOffset * 24 * 60 + start - currentMinutes;
+        }
+        if (
+          minutesFromNow > 0 &&
+          (!closest || minutesFromNow < closest.minutesFromNow)
+        ) {
+          closest = {
+            day: dayNames[day],
+            start: window.start,
+            minutesFromNow,
+          };
+        }
+      }
+    }
+  }
+
+  return closest ? { day: closest.day, start: closest.start } : null;
 }

@@ -11,3 +11,4 @@ services:
       - .:/app:rw,cached
       - /app/node_modules
       - /app/dist
+      - ./config:/app/config

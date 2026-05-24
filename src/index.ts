@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import { banner, logger } from './logger';
 import { config } from './config';
@@ -15,8 +16,21 @@ app.get('/health', (_req, res) => {
 app.use('/api/v1', apiRoutes);
 
 const uiPath = path.join(__dirname, 'ui');
+app.get('/', (_req, res) => {
+  const filePath = path.join(uiPath, 'index.html');
+  let html = fs.readFileSync(filePath, 'utf-8');
+  const defaults = JSON.stringify({
+    incompletePath: config.incompletePath,
+    completedPath: config.completedPath,
+    hasMasterKey: !!config.masterKey,
+  });
+  html = html.replace(
+    '<head>',
+    `<head><script>window.__FRIENDARR_DEFAULTS__ = ${defaults};</script>`
+  );
+  res.send(html);
+});
 app.use(express.static(uiPath));
-app.get('/', (_req, res) => res.sendFile(path.join(uiPath, 'index.html')));
 
 app.listen(config.port, () => {
   banner();

@@ -70,6 +70,13 @@
       height: 1.5rem; width: 1.5rem; border-radius: 0.375rem;
       color: #059669; transition: 150ms ease-in-out;
     }
+    input[type='number']::-webkit-outer-spin-button,
+    input[type='number']::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
     .btn-primary {
       display: inline-flex; align-items: center; justify-content: center;
       border: 1px solid #059669; border-radius: 0.375rem; font-weight: 500;
@@ -162,8 +169,8 @@
           <span class="nav-label">Settings</span>
         </a>
       </nav>
-      <div class="px-4 py-3 border-t border-gray-700 mt-auto text-center" id="auth-status">
-        <div class="text-xs text-gray-500"><span data-t="auth.notAuthenticated"></span></div>
+      <div class="px-4 py-3 border-t border-gray-700 mt-auto text-xs text-gray-500 space-y-1" id="auth-status">
+        <div><span data-t="auth.notAuthenticated"></span></div>
       </div>
     </div>
   </aside>
@@ -266,7 +273,7 @@
 </div>
 
 <!-- Browse Modal -->
-<div id="browse-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
+<div id="browse-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
     <h3 class="text-brand text-xl font-bold mb-2" id="browse-title"><span data-t="browse.title"></span></h3>
     <p class="text-sm text-gray-400 mb-3 font-mono" id="browse-path">/</p>
@@ -287,18 +294,28 @@ let apiKey = localStorage.getItem('friendarr_key') || '';
 let currentView = 'queue';
 let queueTimer = null;
 let settingsData = null;
-let activeSettingsTab = 'keys';
+let activeSettingsTab = 'schedules';
 
 // === Init ===
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   translateStatic();
   if (!localStorage.getItem('friendarr_key')) {
     setTimeout(showWizard, 500);
     setupNav();
     return;
   }
-  if (apiKey) { updateAuthUI(true); }
   setupNav();
+  try {
+    const r = await fetch('/api/v1/settings', { headers: authHeaders() });
+    if (r.ok) {
+      updateAuthUI(true);
+      showView(currentView);
+      return;
+    }
+  } catch(e) {}
+  apiKey = '';
+  localStorage.removeItem('friendarr_key');
+  updateAuthUI(false);
   showView(currentView);
 });
 
@@ -352,6 +369,9 @@ function showAuthModal() {
   document.getElementById('auth-modal').classList.remove('hidden');
   document.getElementById('auth-modal').classList.add('flex');
   document.getElementById('auth-error').classList.add('hidden');
+  const input = document.getElementById('auth-key-input');
+  const stored = localStorage.getItem('friendarr_key');
+  if (input && stored) input.value = stored;
 }
 
 function hideAuthModal() {
@@ -389,15 +409,138 @@ function updateAuthUI(authed) {
   const status = document.getElementById('auth-status');
   const btn = document.getElementById('auth-btn');
   if (authed) {
-    status.innerHTML = '<div class="text-xs text-green-400">' + T('auth.authenticated') + '</div>';
     btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>' + T('auth.logout');
     btn.onclick = logout;
+    refreshSidebar();
   } else {
-    status.innerHTML = '<div class="text-xs text-gray-500">' + T('auth.notAuthenticated') + '</div>';
+    status.innerHTML = '<div><span data-t="auth.notAuthenticated"></span></div>';
     btn.innerHTML = '<svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>' + T('auth.authenticate');
     btn.onclick = showAuthModal;
   }
 }
+
+function updateTitle() {
+  var totalSpeed = 0;
+  try {
+    var jobs = JSON.parse(localStorage.getItem('_friendarr_jobs') || '[]');
+    jobs.forEach(function(j) {
+      if (j.status === 'downloading' && j.bytesDownloaded > 0) {
+        totalSpeed += (j._speed || 0);
+      }
+    });
+  } catch(e) {}
+  if (totalSpeed > 0) {
+    document.title = '(' + formatBytes(totalSpeed) + '/s) Friendarr';
+  } else {
+    document.title = 'Friendarr';
+  }
+}
+
+async function refreshSidebar() {
+  if (!apiKey) return;
+  var status = document.getElementById('auth-status');
+  if (!status) return;
+
+  var lines = [];
+  lines.push('<div class="text-green-400">' + T('auth.authenticated') + '</div>');
+
+  // Queue stats
+  try {
+    var r = await fetch('/api/v1/queue', { headers: authHeaders() });
+    if (r.ok) {
+      var d = await r.json();
+      var jobs = d.jobs || [];
+      var counts = { queued:0, downloading:0, complete:0, failed:0 };
+      jobs.forEach(function(j){ if (counts[j.status] !== undefined) counts[j.status]++; });
+      lines.push('<div>' + counts.queued + ' queued, ' + counts.downloading + ' active</div>');
+      if (counts.complete > 0) lines.push('<div>' + counts.complete + ' completed</div>');
+
+      // Track speed for title
+      jobs.forEach(function(j) {
+        if (j.status === 'downloading') {
+          var prev = (j._prevBytes || 0);
+          j._speed = j.bytesDownloaded - prev;
+          j._prevBytes = j.bytesDownloaded;
+        } else { j._speed = 0; j._prevBytes = 0; }
+      });
+      localStorage.setItem('_friendarr_jobs', JSON.stringify(jobs));
+      updateTitle();
+    }
+  } catch(e) {}
+
+  // Schedule / bandwidth
+  try {
+    var sr = await fetch('/api/v1/settings', { headers: authHeaders() });
+    if (sr.ok) {
+      var sd = await sr.json();
+      var scheds = sd.schedules || [];
+      var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var now = new Date();
+      var currentMinutes = now.getHours() * 60 + now.getMinutes();
+      var currentDay = now.getDay();
+      var active = false;
+      var currentBw = sd.maxBandwidth || 0;
+
+      for (var i = 0; i < scheds.length; i++) {
+        var s = scheds[i];
+        if (!s.days.includes(currentDay)) continue;
+        for (var j = 0; j < s.windows.length; j++) {
+          var w = s.windows[j];
+          var startH = parseInt(w.start);
+          var endH = parseInt(w.end);
+          if (currentMinutes >= startH * 60 && currentMinutes < endH * 60) {
+            active = true;
+            if (w.bandwidth > 0) currentBw = w.bandwidth;
+          }
+        }
+      }
+
+      if (active && scheds.length > 0) {
+        var bws = currentBw > 0 ? '(' + (currentBw / 1048576).toFixed(1) + ' MB/s) ' : '(unlimited) ';
+        var days = scheds.filter(function(s){ return s.days.includes(currentDay); }).map(function(s){ return dayNames[currentDay]; }).join(',');
+        lines.push('<div>' + days + ' ' + bws + '</div>');
+      } else if (scheds.length > 0) {
+        // Find next window
+        var nextWin = null;
+        var minDist = Infinity;
+        for (var di = 0; di < 8; di++) {
+          var day = (currentDay + di) % 7;
+          for (var si = 0; si < scheds.length; si++) {
+            if (!scheds[si].days.includes(day)) continue;
+            for (var wi = 0; wi < scheds[si].windows.length; wi++) {
+              var nw = scheds[si].windows[wi];
+              var nStart = parseInt(nw.start) * 60;
+              var dist = di * 24 * 60 + nStart - currentMinutes;
+              if (dist <= 0) dist += 7 * 24 * 60;
+              if (dist < minDist) { minDist = dist; nextWin = { day: dayNames[day], start: nw.start }; }
+            }
+          }
+        }
+        if (nextWin) {
+          lines.push('<div class="text-yellow-400">Blocked — next: ' + nextWin.day + ' ' + nextWin.start + '</div>');
+        } else {
+          lines.push('<div class="text-yellow-400">Blocked by schedule</div>');
+        }
+      }
+    }
+  } catch(e) {}
+
+  // Disk space
+  try {
+    var dr = await fetch('/api/v1/disk', { headers: authHeaders() });
+    if (dr.ok) {
+      var dd = await dr.json();
+      if (dd.completed && dd.completed.available > 0) {
+        lines.push('<div>' + formatBytes(dd.completed.available) + ' free</div>');
+      }
+    }
+  } catch(e) {}
+
+  status.innerHTML = lines.join('');
+}
+
+// Poll sidebar every 5s
+setInterval(function(){ if (apiKey) refreshSidebar(); }, 5000);
 
 function authHeaders() {
   return apiKey ? { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' } : {};
@@ -459,8 +602,6 @@ async function renderQueue() {
     jobs.forEach(j => { if (counts[j.status] !== undefined) counts[j.status]++; });
 
     let html = '<div class="flex flex-col h-full">';
-
-    // Stats bar
     html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
     html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued}&nbsp;<span data-t="queue.stats.queued"></span></span>`;
     html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading}&nbsp;<span data-t="queue.stats.downloading"></span></span>`;
@@ -474,12 +615,9 @@ async function renderQueue() {
     }
     html += `<button onclick="clearCompleted()" class="btn-ghost btn-sm"><span data-t="queue.clearFinished"></span></button>`;
     html += `</div>`;
-
     if (globalPaused) {
       html += `<div class="mb-4 rounded-md border border-yellow-500 bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200"><span data-t="queue.globallyPaused"></span></div>`;
     }
-
-    // Table
     if (jobs.length === 0) {
       html += `<div class="text-gray-400 text-sm py-8 text-center flex-1"><span data-t="queue.noDownloads"></span></div>`;
     } else {
@@ -501,12 +639,10 @@ async function renderQueue() {
         if (job.status === 'failed') {
           html += `<button onclick="retryJob('${job.id}')" class="btn-primary btn-xs mr-1"><svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg><span data-t="queue.retry"></span></button>`;
         }
-        html += `</td>`;
-        html += `</tr>`;
+        html += `</td></tr>`;
       }
       html += `</tbody></table></div>`;
     }
-
     document.getElementById('content').innerHTML = html;
     translateStatic();
   } catch {
@@ -541,13 +677,12 @@ async function renderSettings() {
 
   // Tab bar
   const tabs = [
-    { id: 'keys', label: T('settings.tab.apiKeys') },
-    { id: 'limits', label: T('settings.tab.limits') },
-    { id: 'paths', label: T('settings.tab.paths') },
     { id: 'schedules', label: T('settings.tab.schedules') },
+    { id: 'general', label: T('settings.tab.general') },
+    { id: 'paths', label: T('settings.tab.paths') },
     { id: 'webhooks', label: T('settings.tab.webhooks') },
+    { id: 'keys', label: T('settings.tab.apiKeys') },
     { id: 'logs', label: T('settings.tab.logs') },
-    { id: 'display', label: T('settings.tab.display') },
   ];
   html += `<div class="overflow-x-scroll border-b border-gray-600"><nav class="flex">`;
   for (const tab of tabs) {
@@ -559,20 +694,18 @@ async function renderSettings() {
   // Tab content - logs renders full width, others are max-w-6xl
   const wrapperClass = activeSettingsTab === 'logs' ? '' : 'max-w-6xl';
   html += `<div id="settings-tab-content" class="${wrapperClass}">`;
-  if (activeSettingsTab === 'limits') {
-    html += renderLimitsSection();
+  if (activeSettingsTab === 'schedules') {
+    html += renderSchedulesSection();
+  } else if (activeSettingsTab === 'general') {
+    html += renderGeneralSection();
   } else if (activeSettingsTab === 'paths') {
     html += renderPathsSection();
   } else if (activeSettingsTab === 'keys') {
     html += await renderApiKeysSection();
-  } else if (activeSettingsTab === 'schedules') {
-    html += renderSchedulesSection();
   } else if (activeSettingsTab === 'webhooks') {
     html += renderWebhooksSection();
   } else if (activeSettingsTab === 'logs') {
     html += renderLogsSection();
-  } else if (activeSettingsTab === 'display') {
-    html += renderDisplaySection();
   }
   html += `</div>`;
 
@@ -600,13 +733,15 @@ function switchSettingsTab(tabId) {
   renderSettings();
 }
 
-function renderLimitsSection() {
+function renderGeneralSection() {
   const logLevel = settingsData.logLevel || 'info';
   const logLevelOptions = ['debug', 'info', 'warn', 'error'];
   const logLevelLabels = { debug: 'Debug', info: 'Info', warn: 'Warn', error: 'Error' };
+  const currentLang = window.getLanguage();
+  const languages = window.LANGUAGES || { en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', ja: '日本語', zh: '中文', pt: 'Português' };
   return `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="limits.title"></span></h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="limits.description"></span></p>
+    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="general.title"></span></h2>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="general.description"></span></p>
     <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
       <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="limits.maxConcurrent"></span></label>
       <div class="mt-2 sm:col-span-2 sm:mt-0">
@@ -637,6 +772,19 @@ function renderLimitsSection() {
         </div>
         <p class="mt-1 text-xs text-gray-500"><span data-t="limits.logLevelDescription"></span></p>
       </div>
+    </div>
+    <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+      <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="display.language"></span></label>
+      <div class="mt-2 sm:col-span-2 sm:mt-0">
+        <div class="form-input-field">
+          <select id="s-language" onchange="changeLanguage()">
+            ${Object.entries(languages).map(([code, name]) => `<option value="${code}" ${currentLang === code ? 'selected' : ''}>${name} (${code})</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="mt-8 border-t border-gray-700 pt-6">
+      <button onclick="showWizard()" class="btn-ghost"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span data-t="general.setupWizard"></span></button>
     </div>
   </div>`;
 }
@@ -877,7 +1025,7 @@ function renderSchedulesSection() {
 
   let inner = `<div class="mt-10 text-white">
     <h2 class="text-2xl font-bold leading-8 text-gray-100">Schedules</h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400">Click and drag on the grid to set download windows. Set bandwidth to 0 for unlimited.</p>
+    <p class="mt-1 max-w-4xl text-sm text-gray-400">Click and drag on the grid to set download windows. Set bandwidth to 0 for unlimited. When windows overlap, the lower one in the list wins — drag to reorder.</p>
 
     <div class="mt-4 overflow-x-auto">
       <div class="inline-grid grid-cols-[60px_repeat(24,minmax(24px,1fr))] gap-px bg-gray-600 p-px">
@@ -894,10 +1042,8 @@ function renderSchedulesSection() {
                 const end = parseInt(w.end);
                 if (h >= start && h < end) {
                   bestWindow = w;
-                  break;
                 }
               }
-              if (bestWindow) break;
             }
             const bw = bestWindow?.bandwidth ?? 0;
             let color = 'bg-gray-800';
@@ -924,7 +1070,7 @@ function renderSchedulesSection() {
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
         <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
           class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
-          style="width:4.5ch"
+          style="width:80px;flex:none;padding-left:4px;padding-right:4px;text-align:right"
           onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
         <span class="text-xs text-gray-400 shrink-0">MB/s</span>
         <button onclick="deleteScheduleWindow(${si}, ${wi})" class="text-gray-400 hover:text-red-400 shrink-0 p-1" title="Delete">
@@ -946,7 +1092,7 @@ function renderSchedulesSection() {
       <div class="flex items-center gap-2 mt-1">
         <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5"
           class="bg-gray-700 border border-gray-600 rounded text-white text-sm px-1 py-0.5"
-          style="width:4.5ch"
+          style="width:80px;flex:none;padding-left:4px;padding-right:4px;text-align:right"
           onchange="saveMaxBandwidth(this.value)">
         <span class="text-xs text-gray-400">MB/s (0 = unlimited)</span>
       </div>
@@ -1123,50 +1269,6 @@ function onDragStart(e) {
 }
 
 function onDragEnd(e) {
-  e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
-}
-}
-
-async function onDocDrop(e) {
-  console.log('DND drop fired, target=' + (e.target.tagName || '?') + '.' + (e.target.className || ''));
-  e.preventDefault();
-  if (hoveredRow) hoveredRow.classList.remove('ring-1', 'ring-emerald-500');
-  hoveredRow = null;
-
-  var target = e.target.closest('.drag-row');
-  console.log('DND drop closest drag-row=' + !!target + (target ? (' si=' + target.dataset.si + ' wi=' + target.dataset.wi) : ''));
-  if (!target) return;
-
-  var dragRow = document.querySelector('.drag-row.opacity-50');
-  console.log('DND drop source row found=' + !!dragRow + (dragRow ? (' si=' + dragRow.dataset.si + ' wi=' + dragRow.dataset.wi) : ''));
-  document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
-  if (!dragRow || dragRow === target) { console.log('DND drop ABORT: no source or source=target'); return; }
-
-  var sSi = parseInt(dragRow.dataset.si);
-  var tSi = parseInt(target.dataset.si);
-  console.log('DND drop reorder schedules: move [' + sSi + '] to [' + tSi + ']');
-  if (sSi === tSi) { console.log('DND drop ABORT: same schedule'); return; }
-
-  var schedulesList = JSON.parse(JSON.stringify(settingsData.schedules || []));
-  var moved = schedulesList.splice(sSi, 1)[0];
-  schedulesList.splice(tSi, 0, moved);
-  console.log('DND drop schedules reordered, new order: ' + schedulesList.map(function(s,i){ return '['+i+'] days=' + s.days + ' windows=' + s.windows.map(function(w){ return w.start + '-' + w.end; }).join(','); }).join(' | '));
-
-  settingsData = await saveSettings({ schedules: schedulesList });
-  console.log('DND drop SAVED, re-rendering');
-  renderSettings();
-  setTimeout(initScheduleDrag, 100);
-}
-
-function onDragStart(e) {
-  var row = e.currentTarget;
-  console.log('DND dragstart si=' + row.dataset.si + ' wi=' + row.dataset.wi);
-  row.classList.add('opacity-50', 'ring-1', 'ring-emerald-500');
-  e.dataTransfer.effectAllowed = 'move';
-}
-
-function onDragEnd(e) {
-  console.log('DND dragend si=' + e.currentTarget.dataset.si + ' wi=' + e.currentTarget.dataset.wi);
   e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
 }
 
@@ -1479,39 +1581,6 @@ async function testWebhookUrl(id) {
   }
 
   // === Display ===
-  function renderDisplaySection() {
-    const currentLang = window.getLanguage();
-    const languages = window.LANGUAGES || { en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', ja: '日本語', zh: '中文', pt: 'Português' };
-  return `<div class="mt-10 text-white flex flex-col min-h-0" style="height:calc(100vh - 12rem)">
-      <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="display.title"></span></h2>
-      <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="display.languageDescription"></span></p>
-      <div class="mt-6 max-w-6xl sm:mt-5 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-        <label class="block text-sm font-bold leading-5 text-gray-400 sm:mt-2"><span data-t="display.language"></span></label>
-        <div class="mt-2 sm:col-span-2 sm:mt-0">
-          <div class="form-input-field">
-            <select id="s-language" onchange="changeLanguage()">
-              ${Object.entries(languages).map(([code, name]) => `<option value="${code}" ${currentLang === code ? 'selected' : ''}>${name} (${code})</option>`).join('')}
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  function changeLanguage() {
-    const lang = document.getElementById('s-language').value;
-    window.setLanguage(lang);
-    translateStatic();
-    updateAuthUI(!!apiKey);
-    setupNav();
-    if (currentView === 'queue') {
-      renderQueue();
-      startQueuePolling();
-    } else {
-      renderSettings();
-    }
-  }
-
   // === Setup Wizard ===
   let wizardStep = 1;
   let wizardMasterKey = '';
@@ -1548,43 +1617,89 @@ async function testWebhookUrl(id) {
     const body = document.getElementById('wizard-body');
     const prev = document.getElementById('wizard-prev');
     const next = document.getElementById('wizard-next');
+    const skip = document.getElementById('wizard-skip');
 
+    const defaults = window.__FRIENDARR_DEFAULTS__ || {};
     prev.style.display = wizardStep === 1 ? 'none' : 'inline-flex';
-    next.textContent = wizardStep === 3 ? T('wizard.finish') : T('wizard.next');
-    next.className = wizardStep === 3 ? 'btn-primary' : 'btn-primary';
+
+    if (wizardStep === 2 && !defaults.hasMasterKey) {
+      next.textContent = wizardMasterKey ? T('wizard.step2.activate') : T('wizard.next');
+      next.onclick = wizardMasterKey ? activateKey : null;
+      next.className = wizardMasterKey ? 'btn-primary' : 'btn-primary opacity-50 cursor-not-allowed';
+      prev.style.display = 'none';
+      skip.style.display = 'inline-flex';
+    } else {
+      next.textContent = wizardStep === 3 ? T('wizard.finish') : T('wizard.next');
+      next.onclick = wizardStep === 3 ? wizardNext : wizardNext;
+      next.className = 'btn-primary';
+      skip.style.display = 'inline-flex';
+    }
 
     if (wizardStep === 1) {
       const languages = window.LANGUAGES || { en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', ja: '日本語', zh: '中文', pt: 'Português' };
+      const flags = { en: '🇬🇧', es: '🇪🇸', fr: '🇫🇷', de: '🇩🇪', ja: '🇯🇵', zh: '🇨🇳', pt: '🇧🇷' };
       const currentLang = window.getLanguage();
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step1.title"></span></h3>
-        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step1.description"></span></p>
-        <div class="grid grid-cols-2 gap-3">
+        <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step1.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step1.description"></span></p>
+        <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step1.detail"></span></p>
+        <div class="max-h-72 overflow-y-auto rounded border border-gray-700">
           ${Object.entries(languages).map(([code, name]) => {
             const selected = currentLang === code;
-            return `<div class="rounded-lg border-2 p-4 cursor-pointer transition ${selected ? 'border-emerald-600 bg-emerald-600/10' : 'border-gray-700 hover:border-gray-500 bg-gray-800/50'}" onclick="selectWizardLanguage('${code}', this)" data-lang="${code}">
-              <div class="text-sm font-medium text-white">${name}</div>
-              ${selected ? '<div class="mt-1 text-xs text-emerald-400">&#10003;</div>' : ''}
+            return `<div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${selected ? 'bg-emerald-600/20 border-l-2 border-emerald-600' : 'border-l-2 border-transparent hover:bg-gray-700/50'}" onclick="selectWizardLanguage('${code}', this)" data-lang="${code}">
+              <span class="text-xl leading-none w-7 text-center">${flags[code] || ''}</span>
+              <span class="text-sm text-white flex-1">${name}</span>
+              <span class="text-xs text-gray-500">${code}</span>
             </div>`;
           }).join('')}
         </div>`;
     } else if (wizardStep === 2) {
-      body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step2.title"></span></h3>
-        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step2.description"></span></p>
+      const defaults = window.__FRIENDARR_DEFAULTS__ || {};
+      const hasKey = !!defaults.hasMasterKey || !!wizardMasterKey;
+      body.innerHTML = hasKey ? `
+        <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step2.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step2.description"></span></p>
+        <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step2.detail"></span></p>
+        <div class="round border border-emerald-600 bg-emerald-600/10 p-3 text-sm text-emerald-300 mb-4"><span data-t="wizard.step2.masterKeySet"></span></div>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step2.keyLabel"></span></label>
-            <div class="form-input-field"><input type="password" id="wizard-key" placeholder="sk-... or a memorable passphrase"></div>
+            <div class="form-input-field">
+              <input type="password" id="wizard-key" placeholder="Paste your master API key" onkeydown="if(event.key==='Enter')wizardNext()">
+            </div>
+          </div>
+          <div id="wizard-key-error" class="rounded-md border border-red-500 bg-red-500/20 px-3 py-2 text-sm text-red-200" style="display:none"></div>
+        </div>` : `
+        <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step2.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step2.description"></span></p>
+        <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step2.detail"></span></p>
+        <div class="rounded border border-amber-600 bg-amber-600/10 p-3 text-sm text-amber-300 mb-4"><span data-t="wizard.step2.noMasterKey"></span></div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step2.keyLabel"></span></label>
+            <button onclick="generateWizardKey()" class="btn-primary btn-sm"><svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>Generate Key</button>
             <p class="mt-1 text-xs text-gray-500"><span data-t="wizard.step2.keyHint"></span></p>
+          </div>
+          <div id="wizard-key-result" class="rounded-md border border-emerald-500 bg-gray-800 px-3 py-2" style="display:none">
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-emerald-300 font-mono break-all" id="wizard-key-result-text"></span>
+              <button onclick="copyWizardKey()" class="btn-icon btn-xs flex-shrink-0" title="Copy to clipboard">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-1"><span data-t="apiKeys.newKeyHint"></span></p>
           </div>
         </div>`;
     } else if (wizardStep === 3) {
-      const incompletePath = localStorage.getItem('friendarr_incomplete') || '/downloads/incomplete';
-      const completedPath = localStorage.getItem('friendarr_completed') || '/downloads/complete';
+      const defaults = window.__FRIENDARR_DEFAULTS__ || { incompletePath: '/downloads/incomplete', completedPath: '/downloads/complete' };
+      const incompletePath = localStorage.getItem('friendarr_incomplete') || defaults.incompletePath;
+      const completedPath = localStorage.getItem('friendarr_completed') || defaults.completedPath;
+      const moviePath = localStorage.getItem('friendarr_movie') || '';
+      const tvPath = localStorage.getItem('friendarr_tv') || '';
       body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step3.title"></span></h3>
-        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step3.description"></span></p>
+        <h3 class="text-brand text-xl font-bold mb-2"><span data-t="wizard.step3.title"></span></h3>
+        <p class="text-sm text-gray-400 mb-2"><span data-t="wizard.step3.description"></span></p>
+        <p class="text-xs text-gray-500 mb-5"><span data-t="wizard.step3.detail"></span></p>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step3.incomplete"></span></label>
@@ -1606,20 +1721,73 @@ async function testWebhookUrl(id) {
             </div>
             <p class="mt-1 text-xs text-gray-500"><span data-t="wizard.step3.completedHint"></span></p>
           </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="paths.movieDir"></span></label>
+            <div class="form-input-field">
+              <input type="text" id="wiz-movie" value="${esc(moviePath)}" placeholder="${esc(completedPath + '/movies')}">
+              <button onclick="openBrowse('wiz-movie')" class="input-action" title="${T('paths.browse')}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+              </button>
+            </div>
+            <p class="mt-1 text-xs text-gray-500"><span data-t="paths.movieDirHint"></span></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="paths.tvDir"></span></label>
+            <div class="form-input-field">
+              <input type="text" id="wiz-tv" value="${esc(tvPath)}" placeholder="${esc(completedPath + '/tv')}">
+              <button onclick="openBrowse('wiz-tv')" class="input-action" title="${T('paths.browse')}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+              </button>
+            </div>
+            <p class="mt-1 text-xs text-gray-500"><span data-t="paths.tvDirHint"></span></p>
+          </div>
         </div>`;
     }
+    translateStatic();
   }
 
-  function wizardNext() {
+  async function wizardNext() {
     if (wizardStep === 2) {
       const keyEl = document.getElementById('wizard-key');
-      wizardMasterKey = keyEl ? keyEl.value.trim() : '';
+      const key = keyEl ? keyEl.value.trim() : '';
+      if (!key) return;
+      wizardMasterKey = key;
+
+      const defaults = window.__FRIENDARR_DEFAULTS__ || {};
+      if (defaults.hasMasterKey || key) {
+        const prevKey = apiKey;
+        apiKey = key;
+        try {
+          const r = await fetch('/api/v1/settings', { headers: authHeaders() });
+          if (r.ok) {
+            const errEl = document.getElementById('wizard-key-error');
+            if (errEl) errEl.style.display = 'none';
+            wizardStep++;
+            renderWizardStep();
+            return;
+          }
+        } catch(e) {}
+        apiKey = prevKey;
+        wizardMasterKey = '';
+        const errEl = document.getElementById('wizard-key-error');
+        if (errEl) { errEl.textContent = T('wizard.step2.authFailed'); errEl.style.display = 'block'; }
+        return;
+      }
+      wizardStep++;
+      renderWizardStep();
+      return;
     }
     if (wizardStep === 3) {
       const incomplete = document.getElementById('wiz-incomplete');
       const completed = document.getElementById('wiz-completed');
+      const movie = document.getElementById('wiz-movie');
+      const tv = document.getElementById('wiz-tv');
       if (incomplete) localStorage.setItem('friendarr_incomplete', incomplete.value.trim() || '/downloads/incomplete');
       if (completed) localStorage.setItem('friendarr_completed', completed.value.trim() || '/downloads/complete');
+      if (movie) localStorage.setItem('friendarr_movie', movie.value.trim() || '');
+      if (tv) localStorage.setItem('friendarr_tv', tv.value.trim() || '');
+      finishWizard();
+      return;
     }
     wizardStep++;
     renderWizardStep();
@@ -1632,42 +1800,136 @@ async function testWebhookUrl(id) {
     }
   }
 
-  function selectWizardLanguage(code, el) {
-    window.setLanguage(code);
-    translateStatic();
-    document.querySelectorAll('[data-lang]').forEach(d => {
-      d.className = 'rounded-lg border-2 p-4 cursor-pointer transition border-gray-700 hover:border-gray-500 bg-gray-800/50';
-      const check = d.querySelector('.text-xs.text-emerald-400');
-      if (check) check.remove();
-    });
-    el.className = 'rounded-lg border-2 p-4 cursor-pointer transition border-emerald-600 bg-emerald-600/10';
-    const existing = el.querySelector('.text-xs');
-    if (!existing || !existing.classList.contains('text-emerald-400')) {
-      const checkmark = document.createElement('div');
-      checkmark.className = 'mt-1 text-xs text-emerald-400';
-      checkmark.innerHTML = '&#10003;';
-      el.appendChild(checkmark);
+  function generateWizardKey() {
+    const arr = new Uint8Array(24);
+    crypto.getRandomValues(arr);
+    const key = 'sk-' + Array.from(arr, b => b.toString(16).padStart(2,'0')).join('');
+    wizardMasterKey = key;
+    showWizardKeyResult(key);
+    const next = document.getElementById('wizard-next');
+    if (next) {
+      next.textContent = T('wizard.step2.activate');
+      next.onclick = activateKey;
+      next.className = 'btn-primary';
     }
   }
 
+  async function activateKey() {
+    if (!wizardMasterKey) return;
+    localStorage.setItem('friendarr_key', wizardMasterKey);
+    const next = document.getElementById('wizard-next');
+    if (next) {
+      next.textContent = T('wizard.step2.activating');
+      next.className = 'btn-primary opacity-50 cursor-not-allowed';
+      next.onclick = null;
+    }
+    try {
+      const r = await fetch('/api/v1/bootstrap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: wizardMasterKey })
+      });
+      if (r.ok) {
+        apiKey = wizardMasterKey;
+        finishWizard();
+        return;
+      }
+    } catch(e) {}
+    if (next) {
+      next.textContent = T('wizard.step2.activate');
+      next.onclick = activateKey;
+      next.className = 'btn-primary';
+    }
+  }
+
+  function showWizardKeyResult(key) {
+    const result = document.getElementById('wizard-key-result');
+    const text = document.getElementById('wizard-key-result-text');
+    if (result && text) {
+      result.style.display = 'block';
+      text.textContent = key;
+    }
+  }
+
+  function copyWizardKey() {
+    const text = document.getElementById('wizard-key-result-text');
+    if (text && text.textContent) copyToClipboard(text.textContent);
+  }
+
+  function wizardKeyInput() {
+    const el = document.getElementById('wizard-key');
+    if (el && el.value.trim()) {
+      wizardMasterKey = el.value.trim();
+      showWizardKeyResult(wizardMasterKey);
+    } else {
+      wizardMasterKey = '';
+      const result = document.getElementById('wizard-key-result');
+      if (result) result.style.display = 'none';
+    }
+  }
+
+  function selectWizardLanguage(code, el) {
+    window.setLanguage(code);
+    translateStatic();
+    document.querySelectorAll('#wizard-body [data-lang]').forEach(d => {
+      d.className = d.className.replace(/bg-emerald-600\/20\s+|\bborder-emerald-600\b/g, '');
+      if (!d.className.includes('border-l-2 border-transparent hover:bg-gray-700/50')) {
+        d.className = 'flex items-center gap-3 px-4 py-2.5 cursor-pointer transition border-l-2 border-transparent hover:bg-gray-700/50';
+      }
+    });
+    el.className = 'flex items-center gap-3 px-4 py-2.5 cursor-pointer transition bg-emerald-600/20 border-l-2 border-emerald-600';
+  }
+
   async function finishWizard() {
-    // Save master key
     if (wizardMasterKey) {
       localStorage.setItem('friendarr_key', wizardMasterKey);
       apiKey = wizardMasterKey;
     }
 
+    var authOk = false;
+    if (apiKey) {
+      try {
+        const r = await fetch('/api/v1/settings', { headers: authHeaders() });
+        authOk = r.ok;
+      } catch(e) {}
+    }
 
     hideWizard();
-    updateAuthUI(!!apiKey);
-    if (currentView === 'queue') { renderQueue(); startQueuePolling(); }
-    else { renderSettings(); }
+
+    if (authOk) {
+      try {
+        var settings = {};
+        var incomplete = localStorage.getItem('friendarr_incomplete');
+        var completed = localStorage.getItem('friendarr_completed');
+        var movie = localStorage.getItem('friendarr_movie');
+        var tv = localStorage.getItem('friendarr_tv');
+        if (incomplete) settings.incompletePath = incomplete;
+        if (completed) settings.completedPath = completed;
+        if (movie) settings.moviePath = movie;
+        if (tv) settings.tvPath = tv;
+        if (Object.keys(settings).length > 0) {
+          await fetch('/api/v1/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(settings) });
+        }
+      } catch(e) {}
+      updateAuthUI(true);
+      refreshSidebar();
+      if (currentView === 'queue') { renderQueue(); startQueuePolling(); }
+      else { renderSettings(); }
+    } else {
+      apiKey = '';
+      localStorage.removeItem('friendarr_key');
+      updateAuthUI(false);
+      showView(currentView);
+    }
   }
 </script>
 
 <!-- Setup Wizard -->
-<div id="setup-wizard" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900">
-  <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-8 shadow-xl ring-1 ring-gray-700">
+<div id="setup-wizard" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
+  <div class="relative w-full max-w-2xl rounded-lg bg-gray-800 p-8 shadow-xl ring-1 ring-gray-700">
+    <div class="text-center mb-6">
+      <span class="text-3xl font-bold" style="font-family:'Silkscreen',monospace;background:linear-gradient(135deg,#0d9488,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Friendarr</span>
+    </div>
     <div class="flex items-center justify-center space-x-3 mb-8" id="wizard-dots">
       <div class="wizard-dot w-3 h-3 rounded-full bg-emerald-600"></div>
       <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>

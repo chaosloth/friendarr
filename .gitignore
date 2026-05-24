@@ -1,5 +1,7 @@
-dist/
+config/
 node_modules/
+dist/
 .env
-docs/.vitepress/dist/
-docs/.vitepress/cache/
+*.log
+.DS_Store
+
