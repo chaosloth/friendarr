@@ -1072,69 +1072,75 @@ async function deleteScheduleWindow(si, wi) {
 
 let dragRowSi = -1;
 let dragRowWi = -1;
-let dragStartY = 0;
 
 function startRowDrag(e, si, wi) {
   dragRowSi = si;
   dragRowWi = wi;
-  dragStartY = e.clientY;
-  const row = e.target.closest('[data-si]');
-  if (row) row.classList.add('ring-2', 'ring-emerald-500', 'opacity-50');
+  const allRows = document.querySelectorAll('[data-si]');
+  allRows.forEach(r => r.style.borderTop = r.style.borderBottom = '');
+  const row = document.querySelector(`[data-si="${si}"][data-wi="${wi}"]`);
+  if (row) { row.classList.add('ring-2', 'ring-emerald-500'); row.style.opacity = '0.5'; }
   document.addEventListener('mousemove', onRowDragMove);
   document.addEventListener('mouseup', onRowDragUp);
   e.preventDefault();
 }
 
 function onRowDragMove(e) {
-  const rows = Array.from(document.querySelectorAll('[data-si]'));
-  rows.forEach(r => r.style.borderBottom = '');
-  for (const row of rows) {
+  const allRows = document.querySelectorAll('[data-si]');
+  allRows.forEach(r => r.style.borderTop = r.style.borderBottom = '');
+  let best = null, bestDist = Infinity;
+  for (const row of allRows) {
     const rSi = parseInt(row.dataset.si);
     const rWi = parseInt(row.dataset.wi);
-    if (rSi === dragRowSi && rWi === dragRowWi) continue;
+    if (rSi !== dragRowSi) continue; // different schedule
     const rect = row.getBoundingClientRect();
-    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-      if (rSi === dragRowSi) {
-        row.style.borderBottom = '2px solid #10b981';
-      }
-      break;
-    }
+    const mid = rect.top + rect.height / 2;
+    const dist = Math.abs(e.clientY - mid);
+    if (dist < bestDist) { bestDist = dist; best = row; }
+  }
+  if (best) {
+    const rect = best.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if (e.clientY < mid) best.style.borderTop = '2px solid #10b981';
+    else best.style.borderBottom = '2px solid #10b981';
   }
 }
 
 async function onRowDragUp(e) {
   document.removeEventListener('mousemove', onRowDragMove);
   document.removeEventListener('mouseup', onRowDragUp);
-  document.querySelectorAll('[data-si]').forEach(r => {
-    r.classList.remove('ring-2', 'ring-emerald-500', 'opacity-50');
-    r.style.borderBottom = '';
+  const allRows = document.querySelectorAll('[data-si]');
+  allRows.forEach(r => {
+    r.classList.remove('ring-2', 'ring-emerald-500'); r.style.opacity = '';
+    r.style.borderTop = r.style.borderBottom = '';
   });
   if (dragRowSi < 0) return;
 
-  const rows = Array.from(document.querySelectorAll('[data-si]'));
-  let targetSi = -1;
-  let targetWi = -1;
-  for (const row of rows) {
+  let best = null, bestDist = Infinity;
+  for (const row of allRows) {
     const rSi = parseInt(row.dataset.si);
-    const rWi = parseInt(row.dataset.wi);
-    if (rSi === dragRowSi && rWi === dragRowWi) continue;
+    if (rSi !== dragRowSi) continue;
     const rect = row.getBoundingClientRect();
-    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-      targetSi = rSi;
-      targetWi = rWi;
-      break;
-    }
+    const mid = rect.top + rect.height / 2;
+    const dist = Math.abs(e.clientY - mid);
+    if (dist < bestDist) { bestDist = dist; best = row; }
   }
-  if (targetSi < 0 || targetSi !== dragRowSi) { dragRowSi = -1; return; }
+  if (!best) { dragRowSi = -1; return; }
+  const tWi = parseInt(best.dataset.wi);
+  if (tWi === dragRowWi) { dragRowSi = -1; return; }
 
   const schedules = [...(settingsData.schedules || [])];
   const w = schedules[dragRowSi]?.windows;
   if (!w) { dragRowSi = -1; return; }
   const moved = w.splice(dragRowWi, 1)[0];
-  const insertAt = targetWi > dragRowWi ? targetWi - 1 : targetWi;
+  const rect = best.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  let insertAt = tWi;
+  if (e.clientY > mid) insertAt++;
+  if (insertAt > dragRowWi) insertAt--;
   w.splice(insertAt, 0, moved);
-  settingsData = await saveSettings({ schedules });
   dragRowSi = -1;
+  settingsData = await saveSettings({ schedules });
   renderSettings();
   setTimeout(initScheduleDrag, 100);
 }
