@@ -23,6 +23,8 @@ app.get("/", (_req, res) => {
     incompletePath: config.incompletePath,
     completedPath: config.completedPath,
     hasMasterKey: !!config.masterKey,
+    version: config.version,
+    commitTag: config.commitTag,
   });
   html = html.replace(
     "<head>",
@@ -34,7 +36,10 @@ app.use(express.static(uiPath));
 
 app.listen(config.port, () => {
   banner();
-  logger.info(`Friendarr 0.1.0`, "Server");
+  logger.info(
+    `Friendarr ${config.version} (${config.commitTag.slice(0, 7)})`,
+    "Server",
+  );
 
   logger.info(
     `Server ready — API: http://localhost:${config.port}/api/v1  UI: http://localhost:${config.port}`,

@@ -1,9 +1,26 @@
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 
 dotenv.config();
 
+function readCommitTag(): { version: string; commitTag: string } {
+  try {
+    const data = fs.readFileSync(
+      path.join(process.cwd(), "committag.json"),
+      "utf-8",
+    );
+    return JSON.parse(data);
+  } catch {
+    return { version: "dev", commitTag: "unknown" };
+  }
+}
+
+const commitInfo = readCommitTag();
+
 export const config = {
+  version: commitInfo.version,
+  commitTag: commitInfo.commitTag,
   port: parseInt(process.env.PORT ?? "5056", 10),
   masterKey: process.env.API_KEY ?? "",
   incompletePath: process.env.INCOMPLETE_PATH ?? "/downloads/incomplete",

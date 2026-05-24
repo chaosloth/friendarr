@@ -50,7 +50,26 @@ All four must succeed with no errors.
 
 ## Version Bumping
 
-Update the `version` field in `package.json`:
+The version must be updated in **two places** that must match:
+
+| Source         | Location                      | Purpose                                                        |
+| -------------- | ----------------------------- | -------------------------------------------------------------- |
+| `package.json` | `"version"` field             | Source of truth for the project version                        |
+| Git tag        | `v<version>` (e.g., `v0.2.0`) | Triggers the release workflow; injected as `VERSION` build arg |
+
+**The git tag determines the Docker image version.** The workflow passes it into the Dockerfile as `VERSION`, which is written to `committag.json` at build time and displayed in the sidebar of the web UI.
+
+### Step 1: Update `package.json`
+
+```bash
+# Check current version
+node -p "require('./package.json').version"
+
+# Edit to the new version
+# e.g. "0.1.0" → "0.2.0"
+```
+
+Manually edit the `version` field:
 
 ```json
 {
@@ -58,11 +77,34 @@ Update the `version` field in `package.json`:
 }
 ```
 
-Commit the version bump separately from the feature work:
+### Step 2: Verify it matches the intended tag
+
+The git tag must match the value in `package.json`:
+
+```bash
+PKG_VERSION=$(node -p "require('./package.json').version")
+echo "package.json: $PKG_VERSION"
+echo "Tag should be: v$PKG_VERSION        (for stable)"
+echo "  or:           v$PKG_VERSION-rc1   (for pre-release)"
+```
+
+### Step 3: Commit the version bump
 
 ```bash
 git add package.json
 git commit -m "chore(release): bump version to 0.2.0"
+```
+
+### How the version flows to the UI
+
+```
+git tag v0.2.0
+  → release.yml sets VERSION=${{ github.ref_name }}   ("v0.2.0")
+  → Dockerfile ARG VERSION / ENV VERSION               ("v0.2.0")
+  → committag.json                                     ({"version":"v0.2.0","commitTag":"abc1234"})
+  → src/config.ts reads committag.json                 (config.version, config.commitTag)
+  → src/index.ts injects into __FRIENDARR_DEFAULTS__    (window.__FRIENDARR_DEFAULTS__)
+  → UI sidebar displays "v0.2.0 (abc1234)"
 ```
 
 ## Release Types
@@ -234,23 +276,40 @@ For a stable tag `v0.2.0`, the following tags are pushed:
 
 ## Manual Release (without GitHub Actions)
 
-If the workflow can't be used (e.g., Docker Hub auth issue), build and push manually:
+If the workflow can't be used, build and push manually:
 
 ```bash
-pnpm docker:release
-```
-
-This builds a single-arch image (current platform only) and pushes `:latest`. For a version tag:
-
-```bash
-pnpm docker:build
+# Build with version and commit info
 VERSION=$(node -p "require('./package.json').version")
+docker build \
+  --build-arg COMMIT_TAG=$(git rev-parse HEAD) \
+  --build-arg VERSION="v$VERSION" \
+  -t friendarr:latest \
+  -f Dockerfile .
+
+# Tag and push
 docker tag friendarr:latest conno/friendarr:v$VERSION
+docker tag friendarr:latest conno/friendarr:latest
 docker push conno/friendarr:v$VERSION
 docker push conno/friendarr:latest
 ```
 
-Manual releases won't include ARM images.
+For a pre-release:
+
+```bash
+VERSION="0.2.0-rc1"
+docker build \
+  --build-arg COMMIT_TAG=$(git rev-parse HEAD) \
+  --build-arg VERSION="v$VERSION" \
+  -t friendarr:latest \
+  -f Dockerfile .
+
+docker tag friendarr:latest conno/friendarr:v$VERSION
+docker push conno/friendarr:v$VERSION
+# No :latest tag for pre-releases
+```
+
+Manual releases build a single-arch image (current platform only) and won't include ARM images.
 
 ## Troubleshooting
 

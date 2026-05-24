@@ -955,6 +955,17 @@
           }
         } catch (e) {}
 
+        var defs = window.__FRIENDARR_DEFAULTS__ || {};
+        var ver = defs.version || "dev";
+        var com = (defs.commitTag || "unknown").slice(0, 7);
+        lines.push(
+          '<div class="text-gray-600 text-xs border-t border-gray-700 pt-2 mt-1">v' +
+            esc(ver) +
+            " (" +
+            esc(com) +
+            ")</div>",
+        );
+
         status.innerHTML = lines.join("");
       }
 
