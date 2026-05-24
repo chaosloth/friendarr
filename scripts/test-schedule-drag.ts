@@ -56,27 +56,35 @@ async function main() {
   }
   console.log('Navigated to Schedules');
 
-  // 3. Drag first row to below third row
+  // 3. Drag first row to below third row using native DnD events
   const rows = page.locator('[data-si][data-wi]');
   const rowCount = await rows.count();
   console.log(`Found ${rowCount} rows`);
   if (rowCount < 3) { console.log('Not enough rows'); await browser.close(); process.exit(1); }
 
-  const first = rows.nth(0);
-  const third = rows.nth(2);
-  const thirdBox = await third.boundingBox();
-  if (!thirdBox) { console.log('No bounding box'); await browser.close(); process.exit(1); }
+  // Dispatch real HTML5 DnD events programmatically
+  await page.evaluate(() => {
+    const rows = Array.from(document.querySelectorAll('[data-si][data-wi]'));
+    const src = rows[0], tgt = rows[2];
+    if (!src || !tgt) throw new Error('rows not found');
 
-  await first.evaluate(el => el.scrollIntoView());
-  await third.evaluate(el => el.scrollIntoView());
-  await page.waitForTimeout(500);
+    // Build and dispatch dragstart
+    const dt = new DataTransfer();
+    const ds = new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer: dt });
+    src.dispatchEvent(ds);
 
-  await page.mouse.move(thirdBox.x + 30, thirdBox.y + thirdBox.height / 2);
-  await page.mouse.down();
-  await page.waitForTimeout(500);
-  await page.mouse.move(thirdBox.x + 30, thirdBox.y + thirdBox.height / 2);
-  await page.waitForTimeout(500);
-  await page.mouse.up();
+    // Drag over the target
+    const de = new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt });
+    tgt.dispatchEvent(de);
+
+    // Drop on target
+    const dp = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt });
+    tgt.dispatchEvent(dp);
+
+    // End drag
+    const end = new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer: dt });
+    src.dispatchEvent(end);
+  });
   await page.waitForTimeout(1000);
 
   // 4. Verify order changed via API

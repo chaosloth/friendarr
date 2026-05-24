@@ -1100,10 +1100,11 @@ async function onDrop(e) {
   e.preventDefault();
   e.stopPropagation();
   const target = e.currentTarget;
+
+  const dragRow = document.querySelector('.drag-row.opacity-50');
   target.classList.remove('ring-1', 'ring-emerald-500');
   document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
 
-  const dragRow = document.querySelector('.drag-row.opacity-50');
   if (!dragRow || dragRow === target) return;
 
   const sSi = parseInt(dragRow.dataset.si);
@@ -1116,8 +1117,49 @@ async function onDrop(e) {
   const w = schedules[sSi]?.windows;
   if (!w) return;
   const moved = w.splice(sWi, 1)[0];
-  const insertAt = tWi > sWi ? tWi - 1 : tWi;
-  w.splice(insertAt, 0, moved);
+  w.splice(tWi, 0, moved);
+  settingsData = await saveSettings({ schedules });
+  renderSettings();
+  setTimeout(initScheduleDrag, 100);
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('ring-1', 'ring-emerald-500');
+}
+
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('ring-1', 'ring-emerald-500');
+}
+
+function onDragEnd(e) {
+  e.currentTarget.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500');
+}
+
+async function onDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const target = e.currentTarget;
+
+  const dragRow = document.querySelector('.drag-row.opacity-50');
+
+  target.classList.remove('ring-1', 'ring-emerald-500');
+  document.querySelectorAll('.drag-row').forEach(r => r.classList.remove('opacity-50', 'ring-1', 'ring-emerald-500'));
+
+  if (!dragRow || dragRow === target) return;
+
+  const sSi = parseInt(dragRow.dataset.si);
+  const sWi = parseInt(dragRow.dataset.wi);
+  const tSi = parseInt(target.dataset.si);
+  const tWi = parseInt(target.dataset.wi);
+  if (sSi !== tSi || sWi === tWi) return;
+
+  const schedules = [...(settingsData.schedules || [])];
+  const w = schedules[sSi]?.windows;
+  if (!w) return;
+  const moved = w.splice(sWi, 1)[0];
+  w.splice(tWi, 0, moved);
   settingsData = await saveSettings({ schedules });
   renderSettings();
   setTimeout(initScheduleDrag, 100);
