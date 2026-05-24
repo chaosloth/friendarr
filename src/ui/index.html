@@ -1877,6 +1877,13 @@
           .replace(/"/g, "&quot;");
       }
 
+      function uuid() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+          var r = (crypto.getRandomValues(new Uint8Array(1))[0] & 15) >> (c === "x" ? 0 : 4);
+          return (c === "x" ? r : (r & 3) | 8).toString(16);
+        });
+      }
+
       // === Logs ===
       let logsLevel = "";
       let logsAuto = false;
@@ -2109,7 +2116,7 @@
 
         let hooks = [...(settingsData.webhooks || [])];
         const entry = {
-          id: editId || crypto.randomUUID(),
+          id: editId || uuid(),
           url,
           secret,
           enabled,
