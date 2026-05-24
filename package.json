@@ -13,7 +13,12 @@
     "docker:build": "docker build --build-arg COMMIT_TAG=$(git rev-parse HEAD) -t friendarr:latest -f Dockerfile .",
     "docker:tag": "docker tag friendarr:latest ${DOCKER_REPO:-conno/friendarr}:latest",
     "docker:push": "docker push ${DOCKER_REPO:-conno/friendarr}:latest",
-    "docker:release": "pnpm docker:build && pnpm docker:tag && pnpm docker:push"
+    "docker:release": "pnpm docker:build && pnpm docker:tag && pnpm docker:push",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:api": "npx tsx scripts/generate-api-docs.ts",
+    "docs:screenshots": "npx tsx scripts/screenshot.ts --all"
   },
   "dependencies": {
     "axios": "^1.7.0",
@@ -22,14 +27,17 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/express": "^4.17.21",
     "@types/node": "^20.0.0",
     "@types/uuid": "^9.0.0",
-    "eslint": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.0.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.0.0"
+    "tsx": "^4.22.3",
+    "typescript": "^5.0.0",
+    "vitepress": "^1.6.4"
   },
   "engines": {
     "node": ">=20.0.0"
