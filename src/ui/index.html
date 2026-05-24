@@ -461,10 +461,10 @@ async function renderQueue() {
 
     // Stats bar
     html += `<div class="flex flex-wrap items-center gap-3 py-3 flex-shrink-0">`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued} <span data-t="queue.stats.queued"></span></span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading} <span data-t="queue.stats.downloading"></span></span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete} <span data-t="queue.stats.complete"></span></span>`;
-    html += `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed} <span data-t="queue.stats.failed"></span></span>`;
+    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-gray-600 text-gray-200">${counts.queued}&nbsp;<span data-t="queue.stats.queued"></span></span>`;
+    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-600/80 text-green-100 border border-green-600">${counts.downloading}&nbsp;<span data-t="queue.stats.downloading"></span></span>`;
+    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-green-500/80 text-green-100 border border-green-500">${counts.complete}&nbsp;<span data-t="queue.stats.complete"></span></span>`;
+    html += `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-red-600/80 text-red-100 border border-red-500">${counts.failed}&nbsp;<span data-t="queue.stats.failed"></span></span>`;
     html += `<span class="flex-1"></span>`;
     if (globalPaused) {
       html += `<button onclick="resumeAll()" class="btn-primary btn-sm"><span data-t="queue.resumeAll"></span></button>`;
