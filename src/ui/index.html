@@ -1665,7 +1665,7 @@ async function testWebhookUrl(id) {
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step2.keyLabel"></span></label>
             <div class="form-input-field">
-              <input type="password" id="wizard-key" placeholder="Paste your master API key" onkeydown="if(event.key==='Enter')wizardNext()">
+              <input type="password" id="wizard-key" placeholder="${T('wizard.step2.pasteKey')}" onkeydown="if(event.key==='Enter')wizardNext()">
             </div>
           </div>
           <div id="wizard-key-error" class="rounded-md border border-red-500 bg-red-500/20 px-3 py-2 text-sm text-red-200" style="display:none"></div>
