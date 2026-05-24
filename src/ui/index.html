@@ -924,15 +924,17 @@ function renderSchedulesSection() {
       const canMoveDown = wi < s.windows.length - 1;
       inner += `<div class="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3">
         <div class="flex flex-col shrink-0">
-          ${canMoveUp ? `<button onclick="moveWindowUp(${si}, ${wi})" class="text-gray-500 hover:text-white leading-none text-xs">&blacktriangle;</button>` : `<span class="text-gray-700 leading-none text-xs">&blacktriangle;</span>`}
-          ${canMoveDown ? `<button onclick="moveWindowDown(${si}, ${wi})" class="text-gray-500 hover:text-white leading-none text-xs">&blacktriangledown;</button>` : `<span class="text-gray-700 leading-none text-xs">&blacktriangledown;</span>`}
+          <button onclick="moveWindowUp(${si}, ${wi})" class="text-gray-300 hover:text-white disabled:text-gray-700 leading-none text-sm cursor-pointer" ${!canMoveUp ? 'disabled' : ''}>&#9650;</button>
+          <button onclick="moveWindowDown(${si}, ${wi})" class="text-gray-300 hover:text-white disabled:text-gray-700 leading-none text-sm cursor-pointer" ${!canMoveDown ? 'disabled' : ''}>&#9660;</button>
         </div>
         <span class="text-sm text-white flex-1">${dayStr} &mdash; ${w.start} to ${w.end}</span>
-        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5"
-          class="w-20 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
+        <input type="number" value="${w.bandwidth / (1024*1024) || 0}" min="0" step="0.5" size="5"
+          class="w-16 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
           onchange="updateWindowBandwidth(${si}, ${wi}, this.value)">
         <span class="text-xs text-gray-400 shrink-0">MB/s</span>
-        <button onclick="deleteScheduleWindow(${si}, ${wi})" class="btn-danger btn-xs">Del</button>
+        <button onclick="deleteScheduleWindow(${si}, ${wi})" class="text-gray-400 hover:text-red-400 shrink-0" title="Delete">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>`;
     });
   });
@@ -947,8 +949,8 @@ function renderSchedulesSection() {
     <div class="mt-6 border-t border-gray-700 pt-4">
       <label class="text-sm text-gray-400">Default bandwidth (when no schedules are set):</label>
       <div class="flex items-center gap-2 mt-1">
-        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5"
-          class="w-24 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
+        <input type="number" id="s-max-bandwidth" value="${(settingsData.maxBandwidth || 0) / (1024*1024)}" min="0" step="0.5" size="5"
+          class="w-16 bg-gray-700 border border-gray-600 rounded text-white text-sm px-2 py-1"
           onchange="saveMaxBandwidth(this.value)">
         <span class="text-xs text-gray-400">MB/s (0 = unlimited)</span>
       </div>
