@@ -11,19 +11,10 @@ export interface Schedule {
   windows: ScheduleWindow[];
 }
 
-export interface SourceEndpoint {
-  id: string;
-  type: 'plex' | 'emby' | 'jellyfin';
-  url: string;
-  authToken: string;
-  label: string;
-}
-
 export interface AppSettings {
   maxConcurrentDownloads: number;
   maxBandwidth: number;
   schedules: Schedule[];
-  sourceEndpoints: SourceEndpoint[];
   webhooks: Webhook[];
   incompletePath: string;
   completedPath: string;
@@ -37,7 +28,6 @@ const settings: AppSettings = {
   maxConcurrentDownloads: config.maxConcurrentDownloads,
   maxBandwidth: 0,
   schedules: [],
-  sourceEndpoints: [],
   webhooks: [],
   incompletePath: config.incompletePath,
   completedPath: config.completedPath,
@@ -60,9 +50,6 @@ export function updateSettings(partial: Partial<AppSettings>): AppSettings {
   }
   if (partial.schedules !== undefined) {
     settings.schedules = partial.schedules;
-  }
-  if (partial.sourceEndpoints !== undefined) {
-    settings.sourceEndpoints = partial.sourceEndpoints;
   }
   if (partial.webhooks !== undefined) {
     settings.webhooks = partial.webhooks;

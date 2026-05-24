@@ -201,44 +201,6 @@
   </div>
 </div>
 
-<!-- Endpoint Modal -->
-<div id="ep-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
-  <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
-    <h3 class="text-brand text-xl font-bold mb-4" id="ep-modal-title"><span data-t="endpoints.addSourceEndpoint"></span></h3>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.label"></span></label>
-        <div class="form-input-field"><input type="text" id="ep-label" placeholder="My Servers"></div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.type"></span></label>
-        <div class="form-input-field"><select id="ep-type">
-          <option value="plex">Plex</option>
-          <option value="emby">Emby</option>
-          <option value="jellyfin">Jellyfin</option>
-        </select></div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.url"></span></label>
-        <div class="form-input-field"><input type="text" id="ep-url" placeholder="https://server.example.com"></div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="endpoints.authToken"></span></label>
-        <div class="form-input-field">
-          <input type="password" id="ep-token" class="input-leading" placeholder="API key or token">
-          <button onclick="toggleTokenVisibility()" class="input-action" title="Toggle visibility">
-            <svg id="ep-token-eye" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="flex justify-end gap-2 mt-6 border-t border-gray-700 pt-5">
-      <button onclick="hideEndpointModal()" class="btn-ghost"><span data-t="common.cancel"></span></button>
-      <button onclick="saveEndpoint()" class="btn-primary"><span data-t="common.save"></span></button>
-    </div>
-  </div>
-</div>
-
 <!-- API Key Modal -->
 <div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-800/70">
   <div class="relative w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-xl ring-1 ring-gray-700">
@@ -250,8 +212,8 @@
       </div>
       <div id="key-result" class="hidden rounded-md border border-emerald-500 bg-gray-800 px-3 py-2">
         <div class="flex items-center gap-2">
-          <span class="text-sm text-emerald-300 font-mono truncate flex-1" id="key-result-text"></span>
-          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="<span data-t="apiKeys.copyToClipboard"></span>">
+          <span class="text-sm text-emerald-300 font-mono break-all flex-1" id="key-result-text"></span>
+          <button onclick="copyGeneratedKey()" class="btn-icon btn-xs" title="Copy to clipboard">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </button>
         </div>
@@ -324,7 +286,7 @@ let apiKey = localStorage.getItem('friendarr_key') || '';
 let currentView = 'queue';
 let queueTimer = null;
 let settingsData = null;
-let activeSettingsTab = 'endpoints';
+let activeSettingsTab = 'keys';
 
 // === Init ===
 document.addEventListener('DOMContentLoaded', () => {
@@ -574,7 +536,6 @@ async function renderSettings() {
 
   // Tab bar
   const tabs = [
-    { id: 'endpoints', label: T('settings.tab.friendLibraries') },
     { id: 'keys', label: T('settings.tab.apiKeys') },
     { id: 'limits', label: T('settings.tab.limits') },
     { id: 'paths', label: T('settings.tab.paths') },
@@ -597,8 +558,6 @@ async function renderSettings() {
     html += renderLimitsSection();
   } else if (activeSettingsTab === 'paths') {
     html += renderPathsSection();
-  } else if (activeSettingsTab === 'endpoints') {
-    html += renderSourceEndpointsSection();
   } else if (activeSettingsTab === 'keys') {
     html += await renderApiKeysSection();
   } else if (activeSettingsTab === 'schedules') {
@@ -865,9 +824,8 @@ async function createApiKey() {
     resultDiv.classList.remove('hidden');
     resultDiv.className = 'rounded-md border border-emerald-500 bg-gray-800 px-3 py-2';
     resultText.textContent = data.apiKey;
-    resultText.className = 'text-sm text-emerald-300 font-mono truncate flex-1';
+    resultText.className = 'text-sm text-emerald-300 font-mono break-all flex-1';
     input.value = '';
-    setTimeout(() => { hideKeyModal(); renderSettings(); }, 5000);
   } catch (e) {
     generatedApiKey = '';
     resultDiv.classList.remove('hidden');
@@ -899,115 +857,6 @@ function toggleKeyVisibility(prefix) {
 
 async function copyToClipboard(text) {
   try { await navigator.clipboard.writeText(text); } catch {}
-}
-
-function renderSourceEndpointsSection() {
-  const eps = settingsData.sourceEndpoints || [];
-  const typeLabels = { seerr: T('source.seerr'), plex: T('source.plex'), emby: T('source.emby'), jellyfin: T('source.jellyfin') };
-  let inner = `<div class="mt-10 text-white">
-    <h2 class="text-2xl font-bold leading-8 text-gray-100"><span data-t="endpoints.title"></span></h2>
-    <p class="mt-1 max-w-4xl text-sm text-gray-400"><span data-t="endpoints.description"></span></p>`;
-  if (eps.length > 0) {
-    inner += `<ul class="space-y-4 mb-4">`;
-    for (const ep of eps) {
-      inner += `<li class="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-lg font-medium text-gray-200">${esc(ep.label)}</span>
-              <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-gray-600 text-gray-200">${typeLabels[ep.type] || ep.type}</span>
-            </div>
-            <div class="mt-1 text-sm text-gray-400">${esc(ep.url)}</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="showEndpointModal('${ep.id}')" class="btn-icon" title="${T('endpoints.edit')}">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </button>
-            <button onclick="deleteEndpoint('${ep.id}')" class="btn-icon-danger" title="${T('endpoints.remove')}">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>
-        </div>
-      </li>`;
-    }
-    inner += `</ul>`;
-  }
-  inner += `<div class="mt-6"><button onclick="showEndpointModal()" class="btn-primary"><span data-t="endpoints.addEndpoint"></span></button></div>`;
-  inner += `</div>`;
-  return inner;
-}
-
-function showEndpointModal(editId) {
-  const modal = document.getElementById('ep-modal');
-  const title = modal.querySelector('h3');
-  const editingId = editId || '';
-  modal.dataset.editId = editingId;
-
-  if (editingId) {
-    title.textContent = T('endpoints.editEndpoint');
-    const eps = settingsData.sourceEndpoints || [];
-    const ep = eps.find(e => e.id === editingId);
-    if (ep) {
-      document.getElementById('ep-label').value = ep.label;
-      document.getElementById('ep-type').value = ep.type;
-      document.getElementById('ep-url').value = ep.url;
-      document.getElementById('ep-token').value = ep.authToken;
-    }
-  } else {
-    title.textContent = T('endpoints.addSourceEndpoint');
-    document.getElementById('ep-label').value = '';
-    document.getElementById('ep-type').value = 'plex';
-    document.getElementById('ep-url').value = '';
-    document.getElementById('ep-token').value = '';
-  }
-
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-}
-
-function hideEndpointModal() {
-  const modal = document.getElementById('ep-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-}
-
-async function saveEndpoint() {
-  const modal = document.getElementById('ep-modal');
-  const editId = modal.dataset.editId;
-  const label = document.getElementById('ep-label').value.trim();
-  const type = document.getElementById('ep-type').value;
-  const url = document.getElementById('ep-url').value.trim();
-  const authToken = document.getElementById('ep-token').value.trim();
-  if (!label || !url) return;
-
-  let eps = [...(settingsData.sourceEndpoints || [])];
-  const entry = { id: editId || crypto.randomUUID(), type, url, authToken, label };
-
-  if (editId) {
-    eps = eps.map(e => e.id === editId ? entry : e);
-  } else {
-    eps.push(entry);
-  }
-
-  settingsData = await saveSettings({ sourceEndpoints: eps });
-  hideEndpointModal();
-  renderSettings();
-}
-
-function toggleTokenVisibility() {
-  const input = document.getElementById('ep-token');
-  const eye = document.getElementById('ep-token-eye');
-  const isPassword = input.type === 'password';
-  input.type = isPassword ? 'text' : 'password';
-  eye.innerHTML = isPassword
-    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
-    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.97 9.97 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
-}
-
-async function deleteEndpoint(id) {
-  const eps = (settingsData.sourceEndpoints || []).filter(e => e.id !== id);
-  settingsData = await saveSettings({ sourceEndpoints: eps });
-  renderSettings();
 }
 
 function renderSchedulesSection() {
@@ -1454,8 +1303,8 @@ async function testWebhookUrl(id) {
     const next = document.getElementById('wizard-next');
 
     prev.style.display = wizardStep === 1 ? 'none' : 'inline-flex';
-    next.textContent = wizardStep === 4 ? T('wizard.finish') : T('wizard.next');
-    next.className = wizardStep === 4 ? 'btn-primary' : 'btn-primary';
+    next.textContent = wizardStep === 3 ? T('wizard.finish') : T('wizard.next');
+    next.className = wizardStep === 3 ? 'btn-primary' : 'btn-primary';
 
     if (wizardStep === 1) {
       const languages = window.LANGUAGES || { en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', ja: '日本語', zh: '中文', pt: 'Português' };
@@ -1511,28 +1360,6 @@ async function testWebhookUrl(id) {
             <p class="mt-1 text-xs text-gray-500"><span data-t="wizard.step3.completedHint"></span></p>
           </div>
         </div>`;
-    } else if (wizardStep === 4) {
-      body.innerHTML = `
-        <h3 class="text-brand text-xl font-bold mb-4"><span data-t="wizard.step4.title"></span></h3>
-        <p class="text-sm text-gray-400 mb-6"><span data-t="wizard.step4.description"></span></p>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.label"></span></label>
-            <div class="form-input-field"><input type="text" id="wiz-ep-label" placeholder="My Server"></div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.type"></span></label>
-            <div class="form-input-field"><select id="wiz-ep-type"><option value="plex">Plex</option><option value="emby">Emby</option><option value="jellyfin">Jellyfin</option></select></div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.url"></span></label>
-            <div class="form-input-field"><input type="text" id="wiz-ep-url" placeholder="https://server.example.com"></div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1"><span data-t="wizard.step4.token"></span></label>
-            <div class="form-input-field"><input type="password" id="wiz-ep-token" placeholder="API key or token"></div>
-          </div>
-        </div>`;
     }
   }
 
@@ -1547,10 +1374,6 @@ async function testWebhookUrl(id) {
       if (incomplete) localStorage.setItem('friendarr_incomplete', incomplete.value.trim() || '/downloads/incomplete');
       if (completed) localStorage.setItem('friendarr_completed', completed.value.trim() || '/downloads/complete');
     }
-    if (wizardStep === 4) {
-      finishWizard();
-      return;
-    }
     wizardStep++;
     renderWizardStep();
   }
@@ -1558,7 +1381,6 @@ async function testWebhookUrl(id) {
   function wizardPrev() {
     if (wizardStep > 1) {
       wizardStep--;
-      if (wizardStep === 2) wizardMasterKey = '';
       renderWizardStep();
     }
   }
@@ -1588,23 +1410,6 @@ async function testWebhookUrl(id) {
       apiKey = wizardMasterKey;
     }
 
-    // Save optional endpoint
-    const label = document.getElementById('wiz-ep-label')?.value.trim();
-    const type = document.getElementById('wiz-ep-type')?.value;
-    const url = document.getElementById('wiz-ep-url')?.value.trim();
-    const token = document.getElementById('wiz-ep-token')?.value.trim();
-
-    if (label && url) {
-      try {
-        await fetch('/api/v1/settings', {
-          method: 'PUT',
-          headers: authHeaders(),
-          body: JSON.stringify({
-            sourceEndpoints: [{ id: crypto.randomUUID(), type, url, authToken: token, label }],
-          }),
-        });
-      } catch {}
-    }
 
     hideWizard();
     updateAuthUI(!!apiKey);
@@ -1618,7 +1423,6 @@ async function testWebhookUrl(id) {
   <div class="relative w-full max-w-lg rounded-lg bg-gray-800 p-8 shadow-xl ring-1 ring-gray-700">
     <div class="flex items-center justify-center space-x-3 mb-8" id="wizard-dots">
       <div class="wizard-dot w-3 h-3 rounded-full bg-emerald-600"></div>
-      <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
       <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
       <div class="wizard-dot w-3 h-3 rounded-full bg-gray-600"></div>
     </div>

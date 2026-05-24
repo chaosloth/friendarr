@@ -9,7 +9,6 @@ All settings can be changed at runtime via the web UI (Settings tab) or the `PUT
 | `maxConcurrentDownloads` | `number` | `2` | Maximum parallel downloads |
 | `maxBandwidth` | `number` | `0` | Bandwidth limit in bytes/sec (0 = unlimited) |
 | `schedules` | `Schedule[]` | `[]` | Time windows when downloads are allowed |
-| `sourceEndpoints` | `SourceEndpoint[]` | `[]` | Remote media server endpoints for repeated use |
 | `webhooks` | `Webhook[]` | `[]` | URLs to POST download event notifications |
 | `incompletePath` | `string` | env `INCOMPLETE_PATH` | Directory for in-progress downloads |
 | `completedPath` | `string` | env `COMPLETED_PATH` | Root directory for completed media |
@@ -34,27 +33,6 @@ Schedule windows restrict downloads to specific days and times. When schedules a
 
 - `days`: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 - `windows`: Time ranges in 24-hour `HH:MM` format. Windows can span midnight (e.g., `22:00` to `04:00`).
-
-## Source Endpoints
-
-Pre-configured media server connections that can be referenced by downloads.
-
-```json
-{
-  "sourceEndpoints": [
-    {
-      "id": "abc123",
-      "type": "plex",
-      "url": "http://192.168.1.100:32400",
-      "authToken": "your-plex-token",
-      "label": "Home Plex"
-    }
-  ]
-}
-```
-
-- `type`: `plex`, `emby`, or `jellyfin`
-- `authToken`: Plex token or Emby/Jellyfin API key
 
 ## Webhooks
 
