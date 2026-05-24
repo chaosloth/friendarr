@@ -103,6 +103,7 @@ jobs:
 
   publish:
     name: Publish develop image
+    environment: production
     needs: build-docker
     runs-on: ubuntu-24.04
     permissions:
