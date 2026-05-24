@@ -27,6 +27,8 @@ jobs:
   build:
     name: Build docs
     runs-on: ubuntu-24.04
+    env:
+      PNPM_MINIMUM_RELEASE_AGE: "0"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,7 +45,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --minimum-release-age=0
+        run: pnpm install
 
       - name: Generate API docs
         run: pnpm docs:api
