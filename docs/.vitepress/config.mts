@@ -3,7 +3,7 @@ import { withMermaid } from "vitepress-plugin-mermaid";
 
 export default withMermaid(
   defineConfig({
-  base: "/friendarr/",
+  base: "/",
   title: "Friendarr",
   description: "Standalone downloading service for Friend Libraries",
   lang: "en-US",

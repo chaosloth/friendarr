@@ -144,7 +144,7 @@ jobs:
             org.opencontainers.image.description=Standalone downloading microservice for Friend Libraries
             org.opencontainers.image.url=https://github.com/chaosloth/friendarr
             org.opencontainers.image.source=https://github.com/chaosloth/friendarr
-            org.opencontainers.image.documentation=https://chaosloth.github.io/friendarr
+            org.opencontainers.image.documentation=https://friendarr.download
             org.opencontainers.image.licenses=MIT
             org.opencontainers.image.created=${{ steps.ts.outputs.TIMESTAMP }}
           tags: ${{ env.DOCKER_REPO }}:develop

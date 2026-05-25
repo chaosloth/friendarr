@@ -8,14 +8,14 @@
 </p>
 
 <p align="center">
-  <a href="https://chaosloth.github.io/friendarr/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen" alt="Docs"></a>
+  <a href="https://friendarr.download/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen" alt="Docs"></a>
   <img src="https://img.shields.io/docker/pulls/conno/friendarr" alt="Docker pulls">
   <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node">
 </p>
 
 **Friendarr** is the download companion to [Seerr](https://github.com/seerr-team/seerr)'s **Friend Libraries** feature. Seerr discovers media on your friends' remote libraries (Plex, Emby, Jellyfin). When you request something from a friend, Seerr hands the download job to Friendarr. Friendarr pulls the file from the remote server and places it into your local media library.
 
-**[Read the full documentation →](https://chaosloth.github.io/friendarr/)**
+**[Read the full documentation →](https://friendarr.download/)**
 
 ## Screenshots
 
@@ -108,7 +108,7 @@ Open **http://localhost:5056** and enter your master API key.
 
 ## Documentation
 
-Full documentation with configuration, API reference, file placement, and source setup: **[chaosloth.github.io/friendarr](https://chaosloth.github.io/friendarr/)**
+Full documentation with configuration, API reference, file placement, and source setup: **[friendarr.download](https://friendarr.download/)**
 
 ## Development
 
@@ -120,7 +120,7 @@ pnpm lint       # ESLint
 pnpm format     # Prettier
 ```
 
-See the [documentation](https://chaosloth.github.io/friendarr/) for the full architecture overview and contributing guide.
+See the [documentation](https://friendarr.download/) for the full architecture overview and contributing guide.
 
 ## License
 
