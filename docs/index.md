@@ -37,7 +37,37 @@ graph LR
     A[Seerr] -->|POST /api/v1/download| B[Friendarr :5056]
     B -->|Plex / Emby / Jellyfin| C[Remote Media Server]
     B -->|Write file| D[Media Library]
-     B -->|Webhook| E[External Services]
+      B -->|Webhook| E[External Services]
+```
+
+- **Seerr** handles the full request lifecycle — discovery, approvals, user management, notifications
+- **Friendarr** is a lightweight companion that only does one thing: download files from friend libraries
+- They communicate over a REST API authenticated with API keys
+
+## Request Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Seerr
+    participant Friendarr as Friendarr<br/>(Download Service)
+    participant Remote as Friend's<br/>Media Server
+    participant Storage as Your<br/>Media Storage
+
+    User->>Seerr: Browse discover/search<br/>Sees "3 friends" badge
+    User->>Seerr: Request movie from<br/>friend's library
+    Seerr->>Friendarr: POST /api/v1/download<br/>Bearer sk-...
+    Note right of Friendarr: {source, destination, metadata}
+    Friendarr->>Friendarr: Enqueue job<br/>Check schedule window
+    Friendarr->>Remote: GET /download (authenticated)
+    Remote-->>Friendarr: Stream file
+    Friendarr->>Storage: Write file
+    Friendarr-->>Seerr: 202 Accepted + downloadId
+    Seerr->>Friendarr: GET /api/v1/status/:id (poll)
+    Friendarr-->>Seerr: {status: "downloading", progress: 45%}
+    Seerr-->>User: Request status: Downloading
+    Friendarr-->>Seerr: {status: "complete"}
+    Seerr-->>User: Media available in your library!
 ```
 
 ## Screenshots

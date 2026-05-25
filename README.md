@@ -26,51 +26,6 @@
   <img src="https://raw.githubusercontent.com/chaosloth/friendarr/main/docs/screenshots/logs.png" alt="Logs" width="400">
 </p>
 
-## How It Fits Together
-
-```mermaid
-graph LR
-    A[Your Media Server<br/>Plex / Jellyfin / Emby] <--> B[Seerr<br/>Request Manager]
-    B --> C[Friendarr<br/>Downloading Service]
-    C --> D[Friend's Library<br/>Plex / Emby / Jellyfin]
-    C --> E[Your Media Storage<br/>/movies, /tv]
-    B -->|Discovers content| D
-    B -->|Sends download request| C
-    C -->|Fetches file| D
-    C -->|Writes file| E
-    A <-->|Scans library| E
-```
-
-- **Seerr** handles the full request lifecycle — discovery, approvals, user management, notifications.
-- **Friendarr** is a lightweight companion that only does one thing: download files from friend libraries.
-- They communicate over a REST API authenticated with API keys.
-
-## Request Flow
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant Seerr
-    participant Friendarr as Friendarr<br/>(Download Service)
-    participant Remote as Friend's<br/>Media Server
-    participant Storage as Your<br/>Media Storage
-
-    User->>Seerr: Browse discover/search<br/>Sees "3 friends" badge
-    User->>Seerr: Request movie from<br/>friend's library
-    Seerr->>Friendarr: POST /api/v1/download<br/>Bearer sk-...
-    Note right of Friendarr: {source, destination, metadata}
-    Friendarr->>Friendarr: Enqueue job<br/>Check schedule window
-    Friendarr->>Remote: GET /download (authenticated)
-    Remote-->>Friendarr: Stream file
-    Friendarr->>Storage: Write to /movies/Title (Year)/Title (Year).mkv
-    Friendarr-->>Seerr: 202 Accepted + downloadId
-    Seerr->>Friendarr: GET /api/v1/status/:id (poll)
-    Friendarr-->>Seerr: {status: "downloading", progress: 45%}
-    Seerr-->>User: Request status: Downloading
-    Friendarr-->>Seerr: {status: "complete"}
-    Seerr-->>User: Media available in your library!
-```
-
 ## Quick Start
 
 ### Docker
